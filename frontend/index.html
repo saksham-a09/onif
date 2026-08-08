@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FINOVO - Premium Investment & Referral Portal</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Auth Screen Overlay (Login / Register) -->
+  <div id="auth-screen" class="auth-screen" style="display: none;">
+    <div class="auth-card">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div class="brand-icon" style="margin: 0 auto 12px; width: 48px; height: 48px; font-size: 24px;">F</div>
+        <h2 style="font-weight: 800; font-size: 24px;">Welcome to FINOVO</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">Smart Crypto Investment & Referral Network</p>
+      </div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login-btn" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" id="tab-register-btn" onclick="switchAuthTab('register')">Register</div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="form-login" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="login-email" class="form-control" placeholder="user@example.com" required value="l1_alice@finovo.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required value="Password123!">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;">Sign In to Portal</button>
+        <button type="button" class="btn btn-secondary" onclick="enableDemoMode()" style="width: 100%; justify-content: center; margin-top: 10px;">Explore Demo Mode Offline</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="form-register" onsubmit="handleRegister(event)" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="reg-firstname" class="form-control" placeholder="First Name" required>
+            <input type="text" id="reg-lastname" class="form-control" placeholder="Last Name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" id="reg-username" class="form-control" placeholder="johndoe" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="user@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="Minimum 8 characters" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sponsor / Referral Code (Optional)</label>
+          <input type="text" id="reg-refcode" class="form-control" placeholder="e.g. ABC12345">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">F</div>
+      <div class="brand-text">FINOVO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="switchNav('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" onclick="switchNav('investments')" id="nav-investments">
+        <span class="nav-icon">💼</span>
+        <span>Investments</span>
+      </a>
+      <a class="nav-item" onclick="switchNav('wallet')" id="nav-wallet">
+        <span class="nav-icon">💳</span>
+        <span>Wallet & Ledger</span>
+      </a>
+      <a class="nav-item" onclick="switchNav('referrals')" id="nav-referrals">
+        <span class="nav-icon">👥</span>
+        <span>Referral Team</span>
+      </a>
+      <a class="nav-item" onclick="switchNav('support')" id="nav-support">
+        <span class="nav-icon">💬</span>
+        <span>Support Tickets</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar">U</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebar-username">Alice Smith</div>
+        <div class="user-role" id="sidebar-userrole">Level 2 Unlock</div>
+      </div>
+      <button onclick="handleLogout()" class="btn btn-sm btn-secondary" style="padding: 6px 8px;" title="Logout">🚪</button>
+    </div>
+  </aside>
+
+  <!-- Main Layout -->
+  <div class="main-wrapper">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="page-title-box">
+        <h1 id="header-page-title">Dashboard Overview</h1>
+      </div>
+      <div class="topbar-actions">
+        <div id="connection-status" class="status-badge">
+          <span class="dot"></span>
+          <span id="status-text">Backend API Live</span>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="toggleDemoBackendMode()" id="mode-toggle-btn">Switch Mode</button>
+        <button class="btn btn-sm btn-primary" onclick="openModal('modal-deposit')">+ Deposit</button>
+        <button class="btn btn-sm btn-secondary" onclick="openModal('modal-withdraw')">Withdraw</button>
+      </div>
+    </header>
+
+    <!-- Main Content Views Container -->
+    <main class="content-body">
+
+      <!-- ================= 1. DASHBOARD VIEW ================= -->
+      <section id="view-dashboard" class="page-view active">
+        <!-- Metric Cards Grid -->
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Wallet Balance</div>
+              <div class="stat-value" id="dash-wallet-balance">$1,450.00</div>
+            </div>
+            <div class="stat-icon">💰</div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Active Investments</div>
+              <div class="stat-value" id="dash-active-invest">$1,000.00</div>
+            </div>
+            <div class="stat-icon">📈</div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Total ROI Earned</div>
+              <div class="stat-value" id="dash-total-roi" style="color: var(--accent-green);">$125.00</div>
+            </div>
+            <div class="stat-icon">💵</div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Direct Referral Income</div>
+              <div class="stat-value" id="dash-direct-income" style="color: var(--primary-cyan);">$80.00</div>
+            </div>
+            <div class="stat-icon">👥</div>
+          </div>
+        </div>
+
+        <!-- Middle Content Grid -->
+        <div class="grid-2">
+          <!-- Active Investment Progress -->
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Active Investments</h2>
+              <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ New Plan</button>
+            </div>
+            <div id="dash-active-investments-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Quick Referral Share Box -->
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Your Referral Code</h2>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+              Share your link to earn <b>2.0% Direct Commission</b> on investments + <b>1.5% Weekly ROI Level Income</b> up to 5 levels!
+            </p>
+            <div class="ref-box">
+              <input type="text" id="dash-ref-link" class="ref-code-input" readonly value="https://finovo.app/register?ref=ALICE123">
+              <button class="btn btn-sm btn-primary" onclick="copyReferralLink()">Copy</button>
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 13px;">
+              <span style="color: var(--text-muted);">Direct Downlines: <b id="dash-downline-count" style="color:#fff;">4 Users</b></span>
+              <span style="color: var(--text-muted);">Unlocked Levels: <b id="dash-unlocked-levels" style="color:var(--primary-cyan);">Level 2</b></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Ledger Activity Table -->
+        <div class="card">
+          <div class="section-header">
+            <h2 class="section-title">Recent Wallet Ledger</h2>
+            <button class="btn btn-sm btn-secondary" onclick="switchNav('wallet')">View All Ledger</button>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Balance After</th>
+                  <th>Date & Description</th>
+                </tr>
+              </thead>
+              <tbody id="dash-ledger-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. INVESTMENTS VIEW ================= -->
+      <section id="view-investments" class="page-view">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Investment Plans</h2>
+            <p style="font-size: 13px; color: var(--text-muted);">Choose a plan to generate weekly ROI and unlock referral levels</p>
+          </div>
+        </div>
+
+        <!-- Plan Cards Grid -->
+        <div class="grid-3">
+          <!-- Starter Plan -->
+          <div class="plan-card">
+            <div class="plan-name">Starter Plan</div>
+            <div class="plan-roi">2.50% <span>/ weekly ROI</span></div>
+            <ul class="plan-features">
+              <li>Min Investment <span>$100.00</span></li>
+              <li>Max Investment <span>$1,000.00</span></li>
+              <li>Max Total Return <span>300.00%</span></li>
+              <li>Duration <span>120 Weeks</span></li>
+            </ul>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="openInvestModal('Starter Plan', 100, 1000)">Invest Starter</button>
+          </div>
+
+          <!-- Pro Plan -->
+          <div class="plan-card popular">
+            <div class="popular-badge">Popular</div>
+            <div class="plan-name">Pro Plan</div>
+            <div class="plan-roi">3.50% <span>/ weekly ROI</span></div>
+            <ul class="plan-features">
+              <li>Min Investment <span>$500.00</span></li>
+              <li>Max Investment <span>$5,000.00</span></li>
+              <li>Max Total Return <span>300.00%</span></li>
+              <li>Duration <span>120 Weeks</span></li>
+            </ul>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="openInvestModal('Pro Plan', 500, 5000)">Invest Pro Plan</button>
+          </div>
+
+          <!-- Elite Plan -->
+          <div class="plan-card">
+            <div class="plan-name">Elite Plan</div>
+            <div class="plan-roi">5.00% <span>/ weekly ROI</span></div>
+            <ul class="plan-features">
+              <li>Min Investment <span>$1,000.00</span></li>
+              <li>Max Investment <span>$10,000.00</span></li>
+              <li>Max Total Return <span>300.00%</span></li>
+              <li>Duration <span>120 Weeks</span></li>
+            </ul>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="openInvestModal('Elite Plan', 1000, 10000)">Invest Elite Plan</button>
+          </div>
+        </div>
+
+        <!-- My Investments List -->
+        <div class="card">
+          <div class="section-header">
+            <h2 class="section-title">My Investments History</h2>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Plan Name</th>
+                  <th>Amount</th>
+                  <th>Max Return</th>
+                  <th>Credited ROI</th>
+                  <th>Status</th>
+                  <th>Start Date</th>
+                </tr>
+              </thead>
+              <tbody id="investments-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. WALLET & TRANSACTIONS VIEW ================= -->
+      <section id="view-wallet" class="page-view">
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Wallet Balance</div>
+              <div class="stat-value" id="wallet-pg-balance">$1,450.00</div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="openModal('modal-deposit')">+ Deposit</button>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Total Deposited</div>
+              <div class="stat-value" id="wallet-pg-deposited">$1,000.00</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Total Withdrawn</div>
+              <div class="stat-value" id="wallet-pg-withdrawn">$50.00</div>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="openModal('modal-withdraw')">Withdraw</button>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Lifetime Earnings</div>
+              <div class="stat-value" id="wallet-pg-earnings" style="color: var(--primary-cyan);">$205.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deposit & Withdrawal History -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Deposits History</h2>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Amount</th>
+                    <th>Network</th>
+                    <th>Tx Hash</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="deposits-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Withdrawals History</h2>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Net Payout</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="withdrawals-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. REFERRAL NETWORK VIEW ================= -->
+      <section id="view-referrals" class="page-view">
+        <!-- Referral Level Unlock Overview -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Multi-Level Unlock Status</h2>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+              Active Directs unlock downline levels up to 5 levels deep.
+            </p>
+            <div id="referral-levels-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Referral Earnings Summary</h2>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm);">
+                <span>Direct Income (2.0%):</span>
+                <b id="ref-summary-direct" style="color: var(--primary-cyan); font-size: 18px;">$80.00</b>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm);">
+                <span>ROI Level Income (1.5%):</span>
+                <b id="ref-summary-roi" style="color: var(--accent-green); font-size: 18px;">$25.00</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Team Members Table -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="section-header">
+            <h2 class="section-title">My Direct Downline Members</h2>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>User Email</th>
+                  <th>Username</th>
+                  <th>Joined Date</th>
+                  <th>Direct Level</th>
+                </tr>
+              </thead>
+              <tbody id="referral-team-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Commissions Ledger Table -->
+        <div class="card">
+          <div class="section-header">
+            <h2 class="section-title">Earned Referral Commissions (5 Levels)</h2>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Level</th>
+                  <th>From User</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="referral-commissions-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. SUPPORT TICKETS VIEW ================= -->
+      <section id="view-support" class="page-view">
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Create Support Ticket</h2>
+            </div>
+            <form id="form-support-ticket" onsubmit="handleCreateTicket(event)">
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <input type="text" id="ticket-subject" class="form-control" placeholder="How can we help you?" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="ticket-category" class="form-control">
+                  <option value="GENERAL">General Question</option>
+                  <option value="DEPOSIT">Deposit Query</option>
+                  <option value="WITHDRAWAL">Withdrawal Issue</option>
+                  <option value="REFERRAL">Referral Bonus</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea id="ticket-message" class="form-control" rows="4" placeholder="Describe your request..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Support Ticket</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <h2 class="section-title">Your Support Tickets</h2>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="support-tickets-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1. Deposit Modal -->
+  <div id="modal-deposit" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Deposit Crypto Funds</h3>
+        <button class="modal-close" onclick="closeModal('modal-deposit')">✕</button>
+      </div>
+      <form onsubmit="handleDepositSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Amount ($)</label>
+          <input type="number" id="dep-amount" class="form-control" min="10" step="0.01" value="500.00" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Network</label>
+          <select id="dep-network" class="form-control">
+            <option value="BEP20">BEP20 (Binance Smart Chain - USDT)</option>
+            <option value="TRC20">TRC20 (TRON - USDT)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Transaction Hash (TxID)</label>
+          <input type="text" id="dep-txhash" class="form-control" placeholder="0x..." required value="0x892a7f82b1c9842a">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Submit Deposit for Admin Review</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Withdrawal Modal -->
+  <div id="modal-withdraw" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Withdraw Wallet Funds</h3>
+        <button class="modal-close" onclick="closeModal('modal-withdraw')">✕</button>
+      </div>
+      <form onsubmit="handleWithdrawSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Withdrawal Type</label>
+          <select id="wdr-type" class="form-control" onchange="updateWithdrawalFeeCalc()">
+            <option value="PROFIT">Profit Withdrawal (Fee $1, Min $10)</option>
+            <option value="CAPITAL">Capital Withdrawal (Fee $10, Min $100)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Requested Amount ($)</label>
+          <input type="number" id="wdr-amount" class="form-control" min="10" step="0.01" value="100.00" oninput="updateWithdrawalFeeCalc()" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Network</label>
+          <select id="wdr-network" class="form-control">
+            <option value="BEP20">BEP20 (USDT)</option>
+            <option value="TRC20">TRC20 (USDT)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destination Wallet Address</label>
+          <input type="text" id="wdr-address" class="form-control" placeholder="0x..." required value="0x71C7656EC7ab88b098defB751B7401B5f6d8976F">
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--text-muted);">Transaction Fee:</span>
+            <span id="wdr-fee-preview">$1.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-weight: 700;">
+            <span>Net Received Amount:</span>
+            <span id="wdr-net-preview" style="color: var(--accent-green);">$99.00</span>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Submit Withdrawal Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. New Investment Modal -->
+  <div id="modal-invest" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Investment</h3>
+        <button class="modal-close" onclick="closeModal('modal-invest')">✕</button>
+      </div>
+      <form onsubmit="handleInvestSubmit(event)">
+        <input type="hidden" id="inv-plan-name">
+        <div class="form-group">
+          <label class="form-label">Selected Plan</label>
+          <input type="text" id="inv-plan-display" class="form-control" readonly style="font-weight: 700; color: var(--primary-cyan);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Investment Amount ($)</label>
+          <input type="number" id="inv-amount" class="form-control" min="100" step="1" required>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--text-muted);">Max Total Return (300%):</span>
+            <span id="inv-max-return" style="color: var(--accent-green); font-weight: 700;">$0.00</span>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Confirm Investment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+</body>
+</html>
