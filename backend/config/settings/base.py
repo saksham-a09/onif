@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
+    'django_celery_beat',
     
     # Local apps
     'apps.accounts',
@@ -151,6 +152,15 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+# Celery Beat — schedule the weekly ROI distribution every Saturday at 00:00 UTC
+from celery.schedules import crontab
+CELERY_BEAT_SCHEDULE = {
+    'weekly-roi-distribution': {
+        'task': 'apps.investments.tasks.distribute_weekly_roi_task',
+        'schedule': crontab(hour=0, minute=0, day_of_week='saturday'),
+    },
+}
 
 # Logging configuration
 LOGGING = {

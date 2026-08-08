@@ -1,8 +1,37 @@
 version: '3.8'
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared environment for all Django-based services (backend, worker, beat)
+# ─────────────────────────────────────────────────────────────────────────────
+x-django-env: &django-env
+  DJANGO_SETTINGS_MODULE: config.settings.development
+  DEBUG: "True"
+  SECRET_KEY: ${SECRET_KEY:-django-insecure-default-key-change-in-production}
+  DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-investment_db}
+  CELERY_BROKER_URL: redis://redis:6379/0
+  CELERY_RESULT_BACKEND: redis://redis:6379/0
+  EMAIL_BACKEND: django.core.mail.backends.console.EmailBackend
+  EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+  EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+  EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+  DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
+  DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-admin@finovo.com}
+  DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-admin123}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared volume mount for all Django-based services
+# ─────────────────────────────────────────────────────────────────────────────
+x-django-volumes: &django-volumes
+  - .:/app
+  - media_data:/app/media
+  - static_data:/app/static
+  - log_data:/app/logs
+
 services:
+
+  # ───────────────────────────────────────────────────────── PostgreSQL ─────
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-investment_db}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -16,21 +45,80 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
+  # ──────────────────────────────────────────────────────────────── Redis ─────
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────── Django Backend (dev) ─────
   backend:
     build: .
+    # Override CMD for development — skip gunicorn, use Django dev server
     command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    volumes: *django-volumes
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-investment_db}
-      - DJANGO_SETTINGS_MODULE=config.settings.development
-      - DEBUG=True
+      <<: *django-env
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
+  # ──────────────────────────────────────────── Celery Worker (concurrency 2) ─────
+  celery_worker:
+    build: .
+    # Skip entrypoint migrations/collectstatic — backend handles that
+    entrypoint: []
+    command: celery -A config worker --loglevel=info --concurrency=2 -E
+    volumes: *django-volumes
+    environment:
+      <<: *django-env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+  # ────────────────────────────────────────── Celery Beat (Saturday ROI job) ─────
+  celery_beat:
+    build: .
+    entrypoint: []
+    # Uses django_celery_beat DatabaseScheduler so schedule is managed via Admin
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes: *django-volumes
+    environment:
+      <<: *django-env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+# ─────────────────────────────────────────────────────────── Named Volumes ─────
 volumes:
   postgres_data:
+  redis_data:
+  media_data:
+  static_data:
+  log_data:

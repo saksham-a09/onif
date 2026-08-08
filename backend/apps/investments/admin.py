@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils import timezone
 from .models import Plan, Investment
 
 @admin.register(Plan)
@@ -19,9 +20,18 @@ class InvestmentAdmin(admin.ModelAdmin):
     
     actions = ['approve_investments', 'cancel_investments']
     
-    @admin.action(description='Approve selected investments')
+    @admin.action(description='Approve selected investments & distribute direct income')
     def approve_investments(self, request, queryset):
-        queryset.update(status=Investment.Status.ACTIVE)
+        from apps.investments.tasks import distribute_direct_income_task
+        for investment in queryset.filter(status=Investment.Status.PENDING):
+            investment.status = Investment.Status.ACTIVE
+            investment.approved_by = request.user
+            investment.approved_at = timezone.now()
+            investment.start_date = timezone.now().date()
+            investment.save(update_fields=['status', 'approved_by', 'approved_at', 'start_date'])
+            # Trigger async direct income + notification
+            distribute_direct_income_task.delay(str(investment.id))
+        self.message_user(request, "Selected investments approved and income distribution queued.")
         
     @admin.action(description='Cancel selected investments')
     def cancel_investments(self, request, queryset):
