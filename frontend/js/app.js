@@ -98,11 +98,85 @@ function updateConnectionBadge(isConnected) {
 
 // Show/Hide Auth Screen
 function showAuthOverlay() {
-  document.getElementById('auth-screen').style.display = 'flex';
+  const el = document.getElementById('auth-screen');
+  if (el) el.style.display = 'block';
+  initAuthCanvas();
 }
 
 function hideAuthOverlay() {
   document.getElementById('auth-screen').style.display = 'none';
+}
+
+function initAuthCanvas() {
+  const canvas = document.getElementById('authCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const candleW = 9, gapW = 7;
+  let candles = [], lastPrice = 100;
+
+  function nextCandle(){
+    const open = lastPrice;
+    const change = (Math.random() - 0.47) * 5.5;
+    const close = Math.max(30, open + change);
+    const high = Math.max(open, close) + Math.random() * 3;
+    const low = Math.min(open, close) - Math.random() * 3;
+    lastPrice = close;
+    return {open, close, high, low};
+  }
+  function seedCandles(width){
+    candles = []; lastPrice = 100;
+    const count = Math.ceil(width / (candleW + gapW)) + 3;
+    for(let i=0;i<count;i++) candles.push(nextCandle());
+  }
+  function draw(){
+    const w = canvas.width / dpr, h = canvas.height / dpr;
+    ctx.clearRect(0,0,w,h);
+    const values = candles.flatMap(c => [c.high, c.low]);
+    const max = Math.max(...values), min = Math.min(...values);
+    const pad = 20;
+    const scaleY = v => h - pad - ((v - min) / ((max - min) || 1)) * (h - pad * 2);
+    candles.forEach((c,i) => {
+      const x = i * (candleW + gapW);
+      const up = c.close >= c.open;
+      ctx.strokeStyle = up ? 'rgba(63,203,140,0.5)' : 'rgba(228,105,78,0.45)';
+      ctx.fillStyle = up ? 'rgba(63,203,140,0.22)' : 'rgba(228,105,78,0.20)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x + candleW/2, scaleY(c.high));
+      ctx.lineTo(x + candleW/2, scaleY(c.low));
+      ctx.stroke();
+      const yO = scaleY(c.open), yC = scaleY(c.close);
+      const top = Math.min(yO,yC), hgt = Math.max(2, Math.abs(yO-yC));
+      ctx.fillRect(x, top, candleW, hgt);
+    });
+  }
+  function resize(){
+    if (!canvas.parentElement) return;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    seedCandles(rect.width);
+    draw();
+  }
+  if (canvas._resizeHandler) {
+    window.removeEventListener('resize', canvas._resizeHandler);
+  }
+  canvas._resizeHandler = resize;
+  window.addEventListener('resize', resize);
+  resize();
+  if (!reduceMotion && !canvas._intervalId) {
+    canvas._intervalId = setInterval(() => {
+      const screen = document.getElementById('auth-screen');
+      if (screen && screen.style.display === 'none') return;
+      candles.shift();
+      candles.push(nextCandle());
+      draw();
+    }, 1300);
+  }
 }
 
 // Load All Data from Backend API
@@ -477,10 +551,25 @@ function switchNav(viewName) {
 
 // Auth Handlers
 function switchAuthTab(tab) {
-  document.getElementById('tab-login-btn').className = `auth-tab ${tab === 'login' ? 'active' : ''}`;
-  document.getElementById('tab-register-btn').className = `auth-tab ${tab === 'register' ? 'active' : ''}`;
+  const loginTab = document.getElementById('tab-login-btn');
+  const regTab = document.getElementById('tab-register-btn');
+  if (loginTab) loginTab.className = `auth-tab ${tab === 'login' ? 'active' : ''}`;
+  if (regTab) regTab.className = `auth-tab ${tab === 'register' ? 'active' : ''}`;
+  
   document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+
+  const title = document.getElementById('auth-form-title');
+  const subtitle = document.getElementById('auth-form-subtitle');
+  if (title && subtitle) {
+    if (tab === 'login') {
+      title.innerText = 'Sign in to your account';
+      subtitle.innerHTML = 'Don\'t have an account? <a href="#" onclick="switchAuthTab(\'register\'); return false;">Register</a>';
+    } else {
+      title.innerText = 'Create your account';
+      subtitle.innerHTML = 'Already have an account? <a href="#" onclick="switchAuthTab(\'login\'); return false;">Sign in</a>';
+    }
+  }
 }
 
 async function handleLogin(e) {
