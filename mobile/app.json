@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "FINOVO Mobile",
+    "slug": "finovo-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#090d16"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "backgroundColor": "#090d16"
+    },
+    "web": {
+      "backgroundColor": "#090d16"
+    }
+  }
+}
