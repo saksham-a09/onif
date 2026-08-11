@@ -138,13 +138,20 @@
             </div>
 
             <div class="field">
+              <label>Confirm Password</label>
+              <div class="input-row">
+                <input type="password" id="reg-password2" placeholder="Re-enter your password" required>
+              </div>
+            </div>
+
+            <div class="field">
               <label>Sponsor / Referral Code (Optional)</label>
               <div class="input-row">
                 <input type="text" id="reg-refcode" placeholder="e.g. ABC12345">
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Create Account</button>
+            <button type="submit" id="reg-submit-btn" class="btn btn-primary">Create Account</button>
 
             <div class="divider">or</div>
 
@@ -153,6 +160,38 @@
                   class="forgot">Sign in</a></span>
             </div>
           </form>
+
+          <!-- OTP Verification Form (shown after registration) -->
+          <div id="form-verify-otp" style="display: none;">
+            <div class="otp-verify-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <p class="otp-verify-desc">We've sent a 6-digit verification code to<br><strong id="otp-email-display"></strong></p>
+
+            <form onsubmit="handleVerifyOTP(event)">
+              <div class="otp-input-group">
+                <input type="text" id="otp-d1" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" required>
+                <input type="text" id="otp-d2" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" required>
+                <input type="text" id="otp-d3" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" required>
+                <input type="text" id="otp-d4" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" required>
+                <input type="text" id="otp-d5" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" required>
+                <input type="text" id="otp-d6" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" required>
+              </div>
+
+              <button type="submit" id="otp-submit-btn" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;">Verify Email</button>
+            </form>
+
+            <div class="otp-resend-row">
+              <span id="otp-countdown" class="otp-countdown-text"></span>
+              <button id="otp-resend-btn" class="otp-resend-btn" onclick="handleResendOTP()" disabled>Resend Code</button>
+            </div>
+
+            <div style="margin-top: 20px; text-align:center;">
+              <a href="#" onclick="switchAuthTab('register'); return false;" class="forgot" style="font-size:13px;">← Back to registration</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>

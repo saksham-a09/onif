@@ -637,9 +637,10 @@ function switchAuthTab(tab) {
   const regTab = document.getElementById('tab-register-btn');
   if (loginTab) loginTab.className = `auth-tab ${tab === 'login' ? 'active' : ''}`;
   if (regTab) regTab.className = `auth-tab ${tab === 'register' ? 'active' : ''}`;
-  
+
   document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('form-verify-otp').style.display = 'none';
 
   const title = document.getElementById('auth-form-title');
   const subtitle = document.getElementById('auth-form-subtitle');
@@ -652,6 +653,104 @@ function switchAuthTab(tab) {
       subtitle.innerHTML = 'Already have an account? <a href="#" onclick="switchAuthTab(\'login\'); return false;">Sign in</a>';
     }
   }
+}
+
+// Show the OTP verification step
+let _otpEmail = '';
+let _otpCountdownTimer = null;
+
+function showOTPStep(email) {
+  _otpEmail = email;
+  document.getElementById('form-login').style.display = 'none';
+  document.getElementById('form-register').style.display = 'none';
+  document.getElementById('form-verify-otp').style.display = 'block';
+  document.getElementById('otp-email-display').innerText = email;
+
+  const title = document.getElementById('auth-form-title');
+  const subtitle = document.getElementById('auth-form-subtitle');
+  if (title) title.innerText = 'Verify your email';
+  if (subtitle) subtitle.innerHTML = 'Enter the 6-digit code we sent to your inbox.';
+
+  // Clear all digit inputs
+  ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.className = 'otp-digit'; }
+  });
+
+  // Setup digit auto-advance
+  initOTPDigitBehaviour();
+
+  // Start 60-second countdown before resend is enabled
+  startOTPCountdown(60);
+
+  // Focus first digit
+  setTimeout(() => document.getElementById('otp-d1')?.focus(), 100);
+}
+
+function initOTPDigitBehaviour() {
+  const ids = ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'];
+  ids.forEach((id, idx) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.addEventListener('input', () => {
+      // Only allow digits
+      el.value = el.value.replace(/[^0-9]/g, '').slice(-1);
+      el.classList.toggle('otp-filled', el.value !== '');
+      if (el.value && idx < ids.length - 1) {
+        document.getElementById(ids[idx + 1])?.focus();
+      }
+    });
+
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !el.value && idx > 0) {
+        const prev = document.getElementById(ids[idx - 1]);
+        if (prev) { prev.value = ''; prev.classList.remove('otp-filled'); prev.focus(); }
+      }
+    });
+
+    el.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+      ids.forEach((did, di) => {
+        const d = document.getElementById(did);
+        if (d) { d.value = text[di] || ''; d.classList.toggle('otp-filled', !!d.value); }
+      });
+      const lastFilled = Math.min(text.length, ids.length) - 1;
+      if (lastFilled >= 0) document.getElementById(ids[lastFilled])?.focus();
+    });
+  });
+}
+
+function startOTPCountdown(seconds) {
+  if (_otpCountdownTimer) clearInterval(_otpCountdownTimer);
+  const resendBtn = document.getElementById('otp-resend-btn');
+  const countdownEl = document.getElementById('otp-countdown');
+  if (resendBtn) resendBtn.disabled = true;
+  let remaining = seconds;
+
+  function updateDisplay() {
+    if (countdownEl) countdownEl.innerText = remaining > 0 ? `Resend in ${remaining}s` : '';
+    if (remaining <= 0) {
+      if (resendBtn) resendBtn.disabled = false;
+      clearInterval(_otpCountdownTimer);
+    }
+    remaining--;
+  }
+  updateDisplay();
+  _otpCountdownTimer = setInterval(updateDisplay, 1000);
+}
+
+function getOTPValue() {
+  return ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6']
+    .map(id => (document.getElementById(id)?.value || '')).join('');
+}
+
+function setOTPDigitState(state) {
+  ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = `otp-digit${state ? ` ${state}` : ''}`;
+  });
 }
 
 async function handleLogin(e) {
@@ -679,17 +778,85 @@ async function handleRegister(e) {
   const username = document.getElementById('reg-username').value;
   const email = document.getElementById('reg-email').value;
   const password = document.getElementById('reg-password').value;
+  const password2 = document.getElementById('reg-password2').value;
   const referral_code = document.getElementById('reg-refcode').value;
 
+  if (password !== password2) {
+    showToast('Passwords do not match.', true);
+    return;
+  }
+
+  const submitBtn = document.getElementById('reg-submit-btn');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Creating account…'; }
+
   try {
+    // 1. Register the user
     await apiCall('/auth/register/', 'POST', {
-      email, username, first_name, last_name, password, password2: password, referral_code
+      email, username, first_name, last_name, password, password2, referral_code
     });
-    showToast('Registration successful! Please sign in with your email & password.');
-    switchAuthTab('login');
-    document.getElementById('login-email').value = email;
+
+    // 2. Silently log in to obtain a token (needed by verify-email endpoint)
+    const loginData = await apiCall('/auth/login/', 'POST', { email, password });
+    if (loginData && loginData.access) {
+      state.token = loginData.access;
+      localStorage.setItem('finovo_token', loginData.access);
+    }
+
+    // 3. Show OTP verification step
+    showToast('Account created! Check your email for the verification code.');
+    showOTPStep(email);
   } catch (err) {
     showToast(err.message, true);
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Create Account'; }
+  }
+}
+
+async function handleVerifyOTP(e) {
+  e.preventDefault();
+  const otp = getOTPValue();
+  if (otp.length !== 6) {
+    showToast('Please enter the complete 6-digit code.', true);
+    return;
+  }
+
+  const submitBtn = document.getElementById('otp-submit-btn');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Verifying…'; }
+
+  try {
+    await apiCall('/auth/verify-email/', 'POST', { otp });
+    setOTPDigitState('otp-success');
+    showToast('Email verified! Welcome to FINOVO 🎉');
+    // Short delay so user sees the success state, then load dashboard
+    setTimeout(() => loadAllAPIData(), 900);
+  } catch (err) {
+    setOTPDigitState('otp-error');
+    showToast(err.message || 'Invalid or expired OTP.', true);
+    // Reset error state after animation
+    setTimeout(() => {
+      ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = `otp-digit${el.value ? ' otp-filled' : ''}`;
+      });
+    }, 600);
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Verify Email'; }
+  }
+}
+
+async function handleResendOTP() {
+  try {
+    await apiCall('/auth/resend-otp/', 'POST', { email: _otpEmail });
+    showToast('A new code has been sent to your email.');
+    startOTPCountdown(60);
+    // Clear digit inputs
+    ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.value = ''; el.className = 'otp-digit'; }
+    });
+    setTimeout(() => document.getElementById('otp-d1')?.focus(), 50);
+  } catch (err) {
+    showToast(err.message || 'Failed to resend OTP.', true);
   }
 }
 
@@ -698,6 +865,7 @@ function handleLogout() {
   state.token = null;
   state.user = null;
   showAuthOverlay();
+  switchAuthTab('login');
   showToast('Signed out of session.');
 }
 
