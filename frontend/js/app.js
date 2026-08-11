@@ -517,15 +517,97 @@ function renderSupportTicketsTable() {
 
   state.tickets.forEach(t => {
     const dateStr = t.created_at ? new Date(t.created_at).toLocaleDateString() : 'N/A';
+    const statusLower = (t.status || 'OPEN').toLowerCase();
     tbody.innerHTML += `
-      <tr>
-        <td><b>${t.subject}</b></td>
-        <td>${t.category}</td>
-        <td><span class="badge badge-pending">${t.status || 'OPEN'}</span></td>
+      <tr style="cursor: pointer;" onclick="openTicketThreadModal('${t.id}')">
+        <td><b style="color: var(--gold-soft);">${t.subject}</b> <span style="font-size: 11px; color: var(--mute);">(Click to view thread)</span></td>
+        <td>${t.category || 'General'}</td>
+        <td><span class="badge badge-${statusLower}">${t.status || 'OPEN'}</span></td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
       </tr>
     `;
   });
+}
+
+// Support Ticket Thread Modal Functions
+async function openTicketThreadModal(ticketId) {
+  openModal('modal-ticket-thread');
+  document.getElementById('thread-ticket-id').value = ticketId;
+  const listContainer = document.getElementById('thread-messages-list');
+  listContainer.innerHTML = '<div style="text-align: center; color: var(--mute); padding: 20px;">Loading ticket thread...</div>';
+  
+  try {
+    const ticket = await apiCall(`/support/tickets/${ticketId}/`);
+    document.getElementById('thread-ticket-subject').innerText = ticket.subject || 'Ticket Thread';
+    const statusLower = (ticket.status || 'OPEN').toLowerCase();
+    const statusBadge = document.getElementById('thread-ticket-status');
+    statusBadge.className = `badge badge-${statusLower}`;
+    statusBadge.innerText = ticket.status || 'OPEN';
+    document.getElementById('thread-ticket-date').innerText = ticket.created_at ? new Date(ticket.created_at).toLocaleString() : '';
+
+    renderTicketThreadMessages(ticket);
+  } catch (err) {
+    listContainer.innerHTML = `<div style="color: var(--accent-danger); padding: 20px;">${err.message}</div>`;
+  }
+}
+
+function renderTicketThreadMessages(ticket) {
+  const listContainer = document.getElementById('thread-messages-list');
+  listContainer.innerHTML = '';
+
+  const replies = ticket.replies || [];
+  if (replies.length === 0) {
+    listContainer.innerHTML = '<div style="text-align: center; color: var(--mute); padding: 20px;">No replies in this thread yet.</div>';
+    return;
+  }
+
+  replies.forEach(r => {
+    const isStaff = r.is_staff_reply;
+    const sender = isStaff ? 'Support Team (Staff)' : (r.user_email || 'You');
+    const dateStr = r.created_at ? new Date(r.created_at).toLocaleString() : '';
+    const bg = isStaff ? 'rgba(79, 142, 247, 0.1)' : 'var(--field)';
+    const border = isStaff ? '1px solid var(--gold)' : '1px solid var(--line)';
+    const nameColor = isStaff ? 'var(--gold-soft)' : 'var(--text)';
+    
+    listContainer.innerHTML += `
+      <div style="background: ${bg}; border: ${border}; padding: 12px 14px; border-radius: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-weight: 600; font-size: 13px; color: ${nameColor};">${sender}</span>
+          <span style="font-size: 11px; color: var(--mute);">${dateStr}</span>
+        </div>
+        <div style="font-size: 14px; color: var(--text); white-space: pre-wrap; line-height: 1.5;">${escapeHtml(r.message || '')}</div>
+      </div>
+    `;
+  });
+
+  listContainer.scrollTop = listContainer.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.innerText = text;
+  return div.innerHTML;
+}
+
+async function handleSendReply(e) {
+  e.preventDefault();
+  const ticketId = document.getElementById('thread-ticket-id').value;
+  const messageInput = document.getElementById('thread-reply-message');
+  const message = messageInput.value.trim();
+  if (!message) return;
+
+  try {
+    await apiCall(`/support/tickets/${ticketId}/reply/`, 'POST', { message });
+    messageInput.value = '';
+    showToast('Reply sent successfully!');
+    // Refresh thread modal
+    const ticket = await apiCall(`/support/tickets/${ticketId}/`);
+    renderTicketThreadMessages(ticket);
+    // Refresh tickets list
+    await loadAllAPIData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
 }
 
 // Navigation Tab Switcher

@@ -25,7 +25,11 @@ class TicketSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
-        return super().create(validated_data)
+        ticket = super().create(validated_data)
+        message = self.initial_data.get('message')
+        if message:
+            TicketReply.objects.create(ticket=ticket, user=validated_data['user'], message=message)
+        return ticket
 
 
 class TicketListSerializer(serializers.ModelSerializer):
