@@ -1,41 +1,37 @@
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Deposit, Withdrawal
 from .serializers import DepositSerializer, WithdrawalSerializer
 
 
-class DepositListCreateView(generics.ListCreateAPIView):
+class DepositListView(generics.ListAPIView):
     """
-    GET  /api/v1/deposits/ — My deposit history.
-    POST /api/v1/deposits/ — Submit a new deposit for admin approval.
+    GET /api/v1/deposits/ — Admin-only: list all manual deposits.
+
+    User-facing deposits are now embedded in the investment flow.
+    Users create investments with deposit proof via POST /api/v1/investments/.
     """
     serializer_class = DepositSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
     filterset_fields = ['status', 'network']
     ordering_fields = ['created_at', 'amount']
     ordering = ['-created_at']
 
     def get_queryset(self):
-        return self.request.user.deposits.all()
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        return Deposit.objects.all()
 
 
 class DepositDetailView(generics.RetrieveAPIView):
-    """GET /api/v1/deposits/{id}/ — Single deposit detail."""
+    """GET /api/v1/deposits/{id}/ — Admin-only: single deposit detail."""
     serializer_class = DepositSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return self.request.user.deposits.all()
+    permission_classes = [IsAdminUser]
+    queryset = Deposit.objects.all()
 
 
 class WithdrawalListCreateView(generics.ListCreateAPIView):
     """
     GET  /api/v1/withdrawals/ — My withdrawal history.
-    POST /api/v1/withdrawals/ — Request a withdrawal.
+    POST /api/v1/withdrawals/ — Request a withdrawal from earned wallet balance.
     """
     serializer_class = WithdrawalSerializer
     permission_classes = [IsAuthenticated]

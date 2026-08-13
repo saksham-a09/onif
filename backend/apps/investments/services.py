@@ -1,8 +1,13 @@
 """
-ROI Engine Service Layer
-=========================
-Pure Python business logic for investment income distribution.
-These functions are called by Celery tasks and admin actions.
+ROI Engine + Investment Activation Service Layer
+=================================================
+Pure Python business logic for:
+  - activate_investment()         — called when admin approves a deposit
+  - distribute_direct_income()    — 2% per level to upline's OLDEST active plan
+  - distribute_roi_for_investment() — weekly ROI to investor wallet + upline plan credits
+  - credit_oldest_active_plan()   — core helper: credits a user's oldest ACTIVE investment
+  - update_user_active_level()    — recalculate sponsor tree level
+
 All DB operations are atomic.
 """
 from decimal import Decimal, ROUND_DOWN
@@ -13,7 +18,7 @@ from django.contrib.auth import get_user_model
 from apps.core.models import PlatformSettings
 from apps.investments.models import Investment
 from apps.referrals.models import ReferralCommission
-from apps.wallet.models import WalletTransaction
+from apps.wallet.models import Wallet, WalletTransaction
 from apps.wallet.services import credit_wallet
 
 User = get_user_model()
@@ -61,10 +66,142 @@ def update_user_active_level(user) -> int:
 
 
 @transaction.atomic
+def activate_investment(investment: Investment, admin_user) -> None:
+    """
+    Activate a DEPOSIT_PENDING (or PENDING) investment after admin verifies the deposit.
+
+    Actions:
+      1. Set investment status → ACTIVE, record approval metadata.
+      2. Update wallet accumulators (total_deposited + total_invested).
+         Note: wallet.balance is NOT changed — the user funded this investment
+         directly with on-chain crypto; the balance is only for earned income.
+      3. Create an immutable WalletTransaction audit record (balance unchanged).
+      4. Send in-app notification to the investor.
+    """
+    investment.status = Investment.Status.ACTIVE
+    investment.approved_by = admin_user
+    investment.approved_at = timezone.now()
+    investment.start_date = timezone.now().date()
+    investment.save(update_fields=['status', 'approved_by', 'approved_at', 'start_date', 'updated_at'])
+
+    # Update wallet accumulators without changing spendable balance
+    wallet = Wallet.objects.select_for_update().get_or_create(user=investment.user)[0]
+    wallet.total_deposited += investment.amount
+    wallet.total_invested += investment.amount
+    wallet.save(update_fields=['total_deposited', 'total_invested', 'updated_at'])
+
+    # Audit trail — balance_before == balance_after (no spendable change)
+    WalletTransaction.objects.create(
+        wallet=wallet,
+        transaction_type=WalletTransaction.TransactionType.CREDIT,
+        category=WalletTransaction.Category.DEPOSIT,
+        amount=investment.amount,
+        balance_before=wallet.balance,
+        balance_after=wallet.balance,
+        description=f'Investment deposit verified for {investment.plan.name} plan',
+        reference_id=str(investment.id),
+    )
+
+    # In-app notification
+    from apps.notifications.models import Notification
+    Notification.objects.create(
+        user=investment.user,
+        title='Investment Approved',
+        message=(
+            f'Your deposit of ${investment.amount} has been verified. '
+            f'Your {investment.plan.name} investment is now active and earning ROI.'
+        ),
+        notification_type=Notification.NotificationType.INVESTMENT,
+        reference_id=str(investment.id),
+    )
+
+
+@transaction.atomic
+def credit_oldest_active_plan(
+    user,
+    amount: Decimal,
+    category: str,
+    description: str = '',
+    reference_id: str = '',
+) -> Decimal:
+    """
+    Credit `amount` toward the OLDEST active investment plan of `user` AND to their wallet balance.
+
+    This is used for referral/direct income so that sponsor income
+    accelerates the fill-up of their earliest investment plan toward its
+    max_return cap.
+
+    - If the oldest plan is filled, the remaining amount spills over to the NEXT oldest active plan.
+    - Any amount that cannot fit into an active plan is discarded, because income requires an active plan.
+    - Credits the exact amount to the user's wallet balance via `credit_wallet`.
+    """
+    amount_remaining_to_distribute = amount
+    total_credited_across_plans = Decimal('0.00')
+
+    active_investments = Investment.objects.select_for_update().filter(
+        user=user, status=Investment.Status.ACTIVE
+    ).order_by('start_date', 'created_at')
+
+    for inv in active_investments:
+        if amount_remaining_to_distribute <= Decimal('0.00'):
+            break
+
+        remaining_capacity = inv.remaining_return
+        if remaining_capacity <= Decimal('0.00'):
+            continue
+
+        credited = min(amount_remaining_to_distribute, remaining_capacity).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+
+        if credited > Decimal('0.00'):
+            # Apply credit to this investment
+            inv.total_credited += credited
+            inv.last_roi_date = timezone.now().date()
+            
+            completed = inv.total_credited >= inv.max_return
+            if completed:
+                inv.status = Investment.Status.COMPLETED
+                inv.end_date = timezone.now().date()
+                
+            inv.save(update_fields=['total_credited', 'last_roi_date', 'status', 'end_date', 'updated_at'])
+            
+            # Credit the actual wallet balance
+            credit_wallet(
+                user=user,
+                amount=credited,
+                category=category,
+                description=f"{description} → plan #{str(inv.id)[:8]}",
+                reference_id=reference_id,
+            )
+            
+            amount_remaining_to_distribute -= credited
+            total_credited_across_plans += credited
+
+            if completed:
+                # Notify on plan completion
+                from apps.notifications.models import Notification
+                Notification.objects.create(
+                    user=user,
+                    title='Investment Completed',
+                    message=(
+                        f'Your investment of ${inv.amount} in {inv.plan.name} '
+                        f'has reached its maximum return of ${inv.max_return}. '
+                        f'Congratulations!'
+                    ),
+                    notification_type=Notification.NotificationType.INVESTMENT,
+                    reference_id=str(inv.id),
+                )
+
+    return total_credited_across_plans
+
+
+@transaction.atomic
 def distribute_direct_income(investment: Investment) -> list:
     """
     Distribute direct income (2% per level, up to 5 levels) upline
     when a new investment is APPROVED.
+
+    Each level's commission is credited to the sponsor's OLDEST active
+    investment plan (via credit_oldest_active_plan), not to free wallet balance.
 
     Returns a list of ReferralCommission objects created.
     """
@@ -92,8 +229,8 @@ def distribute_direct_income(investment: Investment) -> list:
             current_user = sponsor
             continue
 
-        # Credit wallet
-        credit_wallet(
+        # Credit sponsor's OLDEST active plan
+        credited_amount = credit_oldest_active_plan(
             user=sponsor,
             amount=commission_amount,
             category=WalletTransaction.Category.DIRECT_INCOME,
@@ -102,16 +239,17 @@ def distribute_direct_income(investment: Investment) -> list:
         )
 
         # Record commission
-        comm = ReferralCommission.objects.create(
-            user=sponsor,
-            from_user=investment.user,
-            investment=investment,
-            amount=commission_amount,
-            level=level,
-            commission_type=ReferralCommission.CommissionType.DIRECT,
-            is_paid=True,
-        )
-        commissions_created.append(comm)
+        if credited_amount > Decimal('0.00'):
+            comm = ReferralCommission.objects.create(
+                user=sponsor,
+                from_user=investment.user,
+                investment=investment,
+                amount=credited_amount,
+                level=level,
+                commission_type=ReferralCommission.CommissionType.DIRECT,
+                is_paid=True,
+            )
+            commissions_created.append(comm)
         current_user = sponsor
 
     return commissions_created
@@ -122,11 +260,13 @@ def distribute_roi_for_investment(investment: Investment) -> Decimal:
     """
     Calculate and credit the weekly ROI for a single ACTIVE investment.
 
-    - Credits the investor's wallet (capped at remaining_return).
+    - The investor's ROI is credited to their spendable wallet balance (withdrawable).
+    - investment.total_credited tracks cumulative ROI paid out toward max_return.
     - Marks the investment COMPLETED if max_return is reached.
-    - Distributes ROI-level commissions (1.5% up to 5 levels) to upline.
+    - Distributes ROI-level commissions (1.5% up to 5 levels) to upline sponsors'
+      OLDEST active investment plans (not their wallet balance).
 
-    Returns the actual ROI amount credited (may be less than calculated if capped).
+    Returns the actual ROI amount credited to the investor (may be less if capped).
     """
     if investment.status != Investment.Status.ACTIVE:
         return Decimal('0.00')
@@ -144,7 +284,7 @@ def distribute_roi_for_investment(investment: Investment) -> Decimal:
     if roi_amount <= Decimal('0.00'):
         return Decimal('0.00')
 
-    # Credit investor wallet
+    # Credit investor's spendable wallet balance
     credit_wallet(
         user=investment.user,
         amount=roi_amount,
@@ -153,7 +293,7 @@ def distribute_roi_for_investment(investment: Investment) -> Decimal:
         reference_id=str(investment.id),
     )
 
-    # Update investment
+    # Update investment progress
     investment.total_credited += roi_amount
     investment.last_roi_date = timezone.now().date()
 
@@ -161,16 +301,20 @@ def distribute_roi_for_investment(investment: Investment) -> Decimal:
         investment.status = Investment.Status.COMPLETED
         investment.end_date = timezone.now().date()
 
-    investment.save(update_fields=['total_credited', 'last_roi_date', 'status', 'end_date'])
+    investment.save(update_fields=['total_credited', 'last_roi_date', 'status', 'end_date', 'updated_at'])
 
-    # Distribute ROI-level commissions upline (1.5% per level, 5 levels)
+    # Distribute ROI-level commissions to upline's oldest active plans
     _distribute_roi_commissions(investment, roi_amount)
 
     return roi_amount
 
 
 def _distribute_roi_commissions(investment: Investment, roi_amount: Decimal) -> None:
-    """Distribute ROI income commissions up the sponsor chain (5 levels, 1.5%)."""
+    """
+    Distribute ROI income commissions up the sponsor chain (5 levels, 1.5%).
+
+    Each sponsor's commission fills their OLDEST active investment plan.
+    """
     rate = _get_setting('ROI_INCOME_RATE', '1.50') / Decimal('100')
     max_levels = int(PlatformSettings.get('MAX_REFERRAL_LEVELS', '5'))
 
@@ -194,7 +338,8 @@ def _distribute_roi_commissions(investment: Investment, roi_amount: Decimal) -> 
             current_user = sponsor
             continue
 
-        credit_wallet(
+        # Credit sponsor's OLDEST active plan
+        credited_amount = credit_oldest_active_plan(
             user=sponsor,
             amount=commission_amount,
             category=WalletTransaction.Category.REFERRAL_INCOME,
@@ -202,13 +347,14 @@ def _distribute_roi_commissions(investment: Investment, roi_amount: Decimal) -> 
             reference_id=str(investment.id),
         )
 
-        ReferralCommission.objects.create(
-            user=sponsor,
-            from_user=investment.user,
-            investment=investment,
-            amount=commission_amount,
-            level=level,
-            commission_type=ReferralCommission.CommissionType.ROI,
-            is_paid=True,
-        )
+        if credited_amount > Decimal('0.00'):
+            ReferralCommission.objects.create(
+                user=sponsor,
+                from_user=investment.user,
+                investment=investment,
+                amount=credited_amount,
+                level=level,
+                commission_type=ReferralCommission.CommissionType.ROI,
+                is_paid=True,
+            )
         current_user = sponsor

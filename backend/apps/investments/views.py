@@ -1,5 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from .models import Plan, Investment
 from .serializers import PlanSerializer, InvestmentSerializer, InvestmentCreateSerializer
@@ -15,9 +16,14 @@ class PlanListView(generics.ListAPIView):
 class InvestmentListCreateView(generics.ListCreateAPIView):
     """
     GET  /api/v1/investments/ — My investments (filtered by status).
-    POST /api/v1/investments/ — Submit a new investment for admin approval.
+    POST /api/v1/investments/ — Submit a new investment with deposit proof.
+
+    Accepts both multipart/form-data (for file proof uploads) and JSON.
+    Creates the investment with status=DEPOSIT_PENDING. Admin approval
+    transitions it to ACTIVE.
     """
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     filterset_fields = ['status', 'plan']
     ordering_fields = ['created_at', 'amount']
     ordering = ['-created_at']
@@ -31,12 +37,15 @@ class InvestmentListCreateView(generics.ListCreateAPIView):
         return self.request.user.investments.select_related('plan').all()
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer = self.get_serializer(
+            data=request.data,
+            context={'request': request},
+        )
         serializer.is_valid(raise_exception=True)
         investment = serializer.save()
         return Response(
             InvestmentSerializer(investment).data,
-            status=status.HTTP_201_CREATED
+            status=status.HTTP_201_CREATED,
         )
 
 

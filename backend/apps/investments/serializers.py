@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.utils import timezone
 from rest_framework import serializers
 from .models import Plan, Investment
 
@@ -22,19 +23,39 @@ class InvestmentSerializer(serializers.ModelSerializer):
         model = Investment
         fields = [
             'id', 'plan', 'plan_name', 'amount', 'max_return', 'total_credited',
-            'remaining_return', 'profit', 'status', 'start_date', 'end_date',
-            'last_roi_date', 'created_at',
+            'remaining_return', 'profit', 'status',
+            'deposit_network', 'deposit_txn_hash', 'deposit_sender_address',
+            'deposit_submitted_at',
+            'start_date', 'end_date', 'last_roi_date', 'created_at',
         ]
         read_only_fields = [
             'id', 'plan_name', 'max_return', 'total_credited', 'remaining_return',
-            'profit', 'status', 'start_date', 'end_date', 'last_roi_date', 'created_at',
+            'profit', 'status', 'deposit_submitted_at',
+            'start_date', 'end_date', 'last_roi_date', 'created_at',
         ]
 
 
 class InvestmentCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating a new investment.
+
+    The user picks a plan + amount and provides deposit proof (crypto payment
+    details) in the same request. The investment is created with status
+    DEPOSIT_PENDING until an admin approves the deposit.
+    """
+
     class Meta:
         model = Investment
-        fields = ['plan', 'amount']
+        fields = [
+            'plan', 'amount',
+            'deposit_network', 'deposit_txn_hash',
+            'deposit_sender_address', 'deposit_proof',
+        ]
+
+    def validate_deposit_network(self, value):
+        if not value:
+            raise serializers.ValidationError('Deposit network is required.')
+        return value
 
     def validate(self, attrs):
         plan = attrs['plan']
@@ -51,6 +72,12 @@ class InvestmentCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'amount': f'Maximum investment for this plan is ${plan.maximum_amount}.'}
             )
+
+        if not attrs.get('deposit_txn_hash') and not attrs.get('deposit_proof'):
+            raise serializers.ValidationError(
+                'Please provide either a transaction hash or a deposit proof screenshot.'
+            )
+
         return attrs
 
     def create(self, validated_data):
@@ -61,4 +88,10 @@ class InvestmentCreateSerializer(serializers.ModelSerializer):
             plan=plan,
             amount=validated_data['amount'],
             max_return=plan.max_total_return,
+            status=Investment.Status.DEPOSIT_PENDING,
+            deposit_network=validated_data.get('deposit_network', ''),
+            deposit_txn_hash=validated_data.get('deposit_txn_hash', ''),
+            deposit_sender_address=validated_data.get('deposit_sender_address', ''),
+            deposit_proof=validated_data.get('deposit_proof'),
+            deposit_submitted_at=timezone.now(),
         )

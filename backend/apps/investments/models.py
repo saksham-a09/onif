@@ -6,6 +6,12 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 
 
+class NetworkChoices(models.TextChoices):
+    """Supported crypto deposit networks."""
+    BEP20 = 'BEP20', _('BEP20 (BSC)')
+    TRC20 = 'TRC20', _('TRC20 (TRON)')
+
+
 class Plan(models.Model):
     """
     Investment plan created by admin.
@@ -70,13 +76,24 @@ class Investment(models.Model):
     """
     A user's investment in a Plan.
 
-    Lifecycle: PENDING → ACTIVE (admin approves) → COMPLETED (max return reached).
-    total_credited tracks sum of all ROI payments. When total_credited >= max_return,
-    the investment is marked COMPLETED.
+    Lifecycle:
+      DEPOSIT_PENDING → user submits investment + crypto deposit proof
+      ACTIVE          → admin verifies deposit; ROI engine starts
+      COMPLETED       → total_credited >= max_return
+
+    Deposit proof fields are stored directly on the investment to tie the
+    on-chain payment to the specific plan purchase.
+
+    ROI returns fill total_credited on THIS investment until max_return is
+    reached, at which point the investment is marked COMPLETED.
+
+    Referral/direct commissions received by a user fill the credited amount
+    of their OLDEST active investment (handled in services.py).
     """
 
     class Status(models.TextChoices):
-        PENDING = 'PENDING', _('Pending')
+        DEPOSIT_PENDING = 'DEPOSIT_PENDING', _('Deposit Pending')
+        PENDING = 'PENDING', _('Pending')          # kept for admin-created investments
         ACTIVE = 'ACTIVE', _('Active')
         COMPLETED = 'COMPLETED', _('Completed')
         REJECTED = 'REJECTED', _('Rejected')
@@ -117,14 +134,17 @@ class Investment(models.Model):
         decimal_places=2,
         default=Decimal('0.00'),
         verbose_name=_('Total Credited ($)'),
-        help_text=_('Running sum of all ROI payments made. Investment closes when this reaches max_return.'),
+        help_text=_(
+            'Running sum of all ROI payments + referral income credited to this plan. '
+            'Investment closes when this reaches max_return.'
+        ),
     )
 
     # Status & Approval
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
-        default=Status.PENDING,
+        default=Status.DEPOSIT_PENDING,
         db_index=True,
         verbose_name=_('Status'),
     )
@@ -147,6 +167,30 @@ class Investment(models.Model):
         help_text=_('Date of the last weekly ROI distribution'),
     )
 
+    # Deposit proof — crypto payment linked to this specific investment
+    deposit_network = models.CharField(
+        max_length=10,
+        choices=NetworkChoices.choices,
+        blank=True,
+        verbose_name=_('Deposit Network'),
+    )
+    deposit_txn_hash = models.CharField(
+        max_length=200, blank=True, db_index=True,
+        verbose_name=_('Deposit Transaction Hash'),
+    )
+    deposit_sender_address = models.CharField(
+        max_length=200, blank=True,
+        verbose_name=_('Sender Wallet Address'),
+    )
+    deposit_proof = models.FileField(
+        upload_to='investment_deposits/', blank=True, null=True,
+        verbose_name=_('Deposit Proof Screenshot'),
+    )
+    deposit_submitted_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_('Deposit Submitted At'),
+    )
+
     class Meta:
         verbose_name = _('Investment')
         verbose_name_plural = _('Investments')
@@ -154,6 +198,7 @@ class Investment(models.Model):
         indexes = [
             models.Index(fields=['user', 'status']),
             models.Index(fields=['status', 'created_at']),
+            models.Index(fields=['user', 'start_date']),      # for oldest-active-plan queries
         ]
 
     def __str__(self) -> str:
