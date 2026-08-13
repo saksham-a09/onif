@@ -28,17 +28,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Generic Fetch Wrapper with Authorization Header & Error Handling
-async function apiCall(endpoint, method = 'GET', body = null) {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+async function apiCall(endpoint, method = 'GET', body = null, isFormData = false) {
+  const headers = {};
   if (state.token) {
     headers['Authorization'] = `Bearer ${state.token}`;
+  }
+  // Do not set Content-Type for FormData; browser sets multipart boundary automatically
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
   }
 
   const options = { method, headers };
   if (body) {
-    options.body = JSON.stringify(body);
+    options.body = isFormData ? body : JSON.stringify(body);
   }
 
   try {
@@ -100,11 +102,21 @@ function updateConnectionBadge(isConnected) {
 function showAuthOverlay() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'block';
+  
+  // Hide main app elements so they don't show through the transparent glass auth screen
+  const mainWrapper = document.querySelector('.main-wrapper');
+  if (mainWrapper) mainWrapper.style.display = 'none';
+
   initAuthCanvas();
 }
 
 function hideAuthOverlay() {
-  document.getElementById('auth-screen').style.display = 'none';
+  const el = document.getElementById('auth-screen');
+  if (el) el.style.display = 'none';
+
+  // Restore main app elements
+  const mainWrapper = document.querySelector('.main-wrapper');
+  if (mainWrapper) mainWrapper.style.display = 'flex';
 }
 
 function initAuthCanvas() {
@@ -283,7 +295,19 @@ function renderActiveInvestmentsList() {
 
   const activeItems = state.investments.filter(i => i.status === 'ACTIVE' || i.status === 'PENDING');
   if (activeItems.length === 0) {
-    container.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">No investments found. Select an Investment Plan to start earning ROI!</p>';
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+        </div>
+        <div class="empty-state-title">No Active Investments</div>
+        <div class="empty-state-desc">Select an institutional yield plan to start earning up to 5.0% weekly ROI.</div>
+        <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ Choose Plan</button>
+      </div>
+    `;
     return;
   }
 
@@ -295,7 +319,7 @@ function renderActiveInvestmentsList() {
       <div style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
           <b style="color: var(--text-main);">${inv.plan_name || 'Plan'} ($${Number(inv.amount).toFixed(2)})</b>
-          <span style="color: var(--primary-cyan); font-weight: 700;">
+          <span style="color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">
             ${inv.status === 'PENDING' ? '<span class="badge badge-pending">PENDING ADMIN APPROVAL</span>' : `$${credited.toFixed(2)} / $${maxRet.toFixed(2)} (${pct.toFixed(0)}%)`}
           </span>
         </div>
@@ -311,16 +335,17 @@ function renderInvestmentPlansCards() {
   const grid = document.querySelector('#view-investments .grid-3');
   grid.innerHTML = '';
 
-  if (state.plans.length === 0) {
-    grid.innerHTML = '<p style="color: var(--text-muted);">No active investment plans configured.</p>';
-    return;
-  }
+  const plansToRender = state.plans.length > 0 ? state.plans : [
+    { id: 'starter-plan', name: 'Starter Plan', weekly_roi_rate: 2.50, minimum_amount: 100, maximum_amount: 1000, duration_weeks: 120 },
+    { id: 'pro-plan', name: 'Pro Plan', weekly_roi_rate: 3.50, minimum_amount: 500, maximum_amount: 5000, duration_weeks: 120 },
+    { id: 'elite-plan', name: 'Elite Plan', weekly_roi_rate: 5.00, minimum_amount: 1000, maximum_amount: 10000, duration_weeks: 120 }
+  ];
 
-  state.plans.forEach((plan, idx) => {
+  plansToRender.forEach((plan, idx) => {
     const isPopular = idx === 1;
     grid.innerHTML += `
       <div class="plan-card ${isPopular ? 'popular' : ''}">
-        ${isPopular ? '<div class="popular-badge">Popular</div>' : ''}
+        ${isPopular ? '<div class="popular-badge">Popular TIER</div>' : ''}
         <div class="plan-name">${plan.name}</div>
         <div class="plan-roi">${Number(plan.weekly_roi_rate).toFixed(2)}% <span>/ weekly ROI</span></div>
         <ul class="plan-features">
@@ -331,7 +356,7 @@ function renderInvestmentPlansCards() {
         </ul>
         <button class="btn btn-primary" style="width: 100%; justify-content: center;" 
           onclick="openInvestModal('${plan.id}', '${plan.name}', ${plan.minimum_amount}, ${plan.maximum_amount})">
-          Invest ${plan.name}
+          Choose ${plan.name}
         </button>
       </div>
     `;
@@ -343,19 +368,34 @@ function renderMyInvestmentsTable() {
   tbody.innerHTML = '';
 
   if (state.investments.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No investments found</td></tr>';
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Investment History</div>
+            <div class="empty-state-desc">Choose a plan and submit your deposit proof to start earning weekly ROI.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
   state.investments.forEach(inv => {
     const dateStr = inv.created_at ? new Date(inv.created_at).toLocaleString() : 'N/A';
+    const credited = Number(inv.total_credited || 0);
+    const maxRet = Number(inv.max_return || inv.amount * 3);
+    const pct = maxRet > 0 ? Math.min(100, (credited / maxRet) * 100) : 0;
+    const isDepositPending = inv.status === 'DEPOSIT_PENDING';
     tbody.innerHTML += `
       <tr>
         <td><b>${inv.plan_name || 'Plan'}</b></td>
-        <td style="font-weight: 700;">$${Number(inv.amount).toFixed(2)}</td>
-        <td style="color: var(--accent-green);">$${Number(inv.max_return || inv.amount*3).toFixed(2)}</td>
-        <td>$${Number(inv.total_credited || 0).toFixed(2)}</td>
-        <td><span class="badge badge-${(inv.status || 'PENDING').toLowerCase()}">${inv.status}</span></td>
+        <td style="font-weight: 700; font-family: var(--font-mono);">$${Number(inv.amount).toFixed(2)}</td>
+        <td style="color: var(--emerald); font-family: var(--font-mono);">$${maxRet.toFixed(2)}</td>
+        <td style="font-family: var(--font-mono);">
+          ${isDepositPending ? '—' : `$${credited.toFixed(2)} <small style="color:var(--text-muted);">(${pct.toFixed(0)}%)</small>`}
+        </td>
+        <td><span class="badge badge-${(inv.status || 'PENDING').toLowerCase().replace('_','-')}">${inv.status.replace('_',' ')}</span></td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
       </tr>
     `;
@@ -367,7 +407,16 @@ function renderLedgerTable(items, elementId) {
   tbody.innerHTML = '';
 
   if (!items || items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No transaction ledger entries found</td></tr>';
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Recent Ledger Activity</div>
+            <div class="empty-state-desc">All deposits, ROI payouts, direct bonuses, and withdrawals will record here.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
@@ -379,8 +428,8 @@ function renderLedgerTable(items, elementId) {
       <tr>
         <td><span class="badge ${isCredit ? 'badge-approved' : 'badge-rejected'}">${item.transaction_type}</span></td>
         <td><b>${item.category}</b></td>
-        <td style="color: ${color}; font-weight: 700;">${isCredit ? '+' : '-'}$${Number(item.amount).toFixed(2)}</td>
-        <td>$${Number(item.balance_after || 0).toFixed(2)}</td>
+        <td style="color: ${color}; font-weight: 700; font-family: var(--font-mono);">${isCredit ? '+' : '-'}$${Number(item.amount).toFixed(2)}</td>
+        <td style="font-family: var(--font-mono);">$${Number(item.balance_after || 0).toFixed(2)}</td>
         <td style="font-size: 13px; color: var(--text-muted);">${item.description} (${dateStr})</td>
       </tr>
     `;
@@ -388,22 +437,40 @@ function renderLedgerTable(items, elementId) {
 }
 
 function renderDepositsTable() {
+  // Deposits are now part of investments — show investment deposit status here
   const tbody = document.getElementById('deposits-tbody');
   tbody.innerHTML = '';
 
-  if (state.deposits.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No deposit history found</td></tr>';
+  if (state.investments.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Investment Deposits</div>
+            <div class="empty-state-desc">When you buy an investment plan, your deposit proof will appear here for admin verification.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  state.deposits.forEach(dep => {
-    const dateStr = dep.created_at ? new Date(dep.created_at).toLocaleString() : 'N/A';
+  state.investments.forEach(inv => {
+    const dateStr = inv.deposit_submitted_at
+      ? new Date(inv.deposit_submitted_at).toLocaleString()
+      : (inv.created_at ? new Date(inv.created_at).toLocaleString() : 'N/A');
+    const txHash = inv.deposit_txn_hash || 'N/A';
+    const network = inv.deposit_network || '—';
+    const statusBadge = inv.status === 'DEPOSIT_PENDING'
+      ? '<span class="badge badge-pending">AWAITING REVIEW</span>'
+      : `<span class="badge badge-${(inv.status || 'pending').toLowerCase()}">${inv.status}</span>`;
     tbody.innerHTML += `
       <tr>
-        <td style="font-weight: 700;">$${Number(dep.amount).toFixed(2)}</td>
-        <td><span class="badge badge-approved">${dep.network}</span></td>
-        <td style="font-family: monospace; font-size: 12px;">${dep.txn_hash || 'N/A'}</td>
-        <td><span class="badge badge-${(dep.status || 'PENDING').toLowerCase()}">${dep.status}</span></td>
+        <td><b>${inv.plan_name || 'Plan'}</b></td>
+        <td style="font-weight: 700; font-family: var(--font-mono);">$${Number(inv.amount).toFixed(2)}</td>
+        <td><span class="badge badge-approved">${network}</span></td>
+        <td style="font-family: var(--font-mono); font-size: 11px; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">${txHash}</td>
+        <td>${statusBadge}</td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
       </tr>
     `;
@@ -415,7 +482,16 @@ function renderWithdrawalsTable() {
   tbody.innerHTML = '';
 
   if (state.withdrawals.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No withdrawal history found</td></tr>';
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Withdrawal History</div>
+            <div class="empty-state-desc">Requested payouts and capital redemptions will appear here.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
@@ -424,8 +500,8 @@ function renderWithdrawalsTable() {
     tbody.innerHTML += `
       <tr>
         <td><b>${wdr.withdrawal_type}</b></td>
-        <td style="font-weight: 700;">$${Number(wdr.amount).toFixed(2)}</td>
-        <td style="color: var(--accent-green); font-weight: 700;">$${Number(wdr.net_amount || wdr.amount).toFixed(2)}</td>
+        <td style="font-weight: 700; font-family: var(--font-mono);">$${Number(wdr.amount).toFixed(2)}</td>
+        <td style="color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">$${Number(wdr.net_amount || wdr.amount).toFixed(2)}</td>
         <td><span class="badge badge-${(wdr.status || 'PENDING').toLowerCase()}">${wdr.status}</span></td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
       </tr>
@@ -467,7 +543,16 @@ function renderReferralView() {
   teamTbody.innerHTML = '';
 
   if (state.team.length === 0) {
-    teamTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No direct downline members yet. Share your referral link!</td></tr>';
+    teamTbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Team Members Yet</div>
+            <div class="empty-state-desc">Share your referral link to build your team and unlock up to 5 commission levels!</div>
+          </div>
+        </td>
+      </tr>
+    `;
   } else {
     state.team.forEach(m => {
       const dateJoined = m.date_joined ? new Date(m.date_joined).toLocaleDateString() : 'N/A';
@@ -487,7 +572,16 @@ function renderReferralView() {
   commTbody.innerHTML = '';
 
   if (state.commissions.length === 0) {
-    commTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No referral commissions recorded yet</td></tr>';
+    commTbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Commission Records</div>
+            <div class="empty-state-desc">Earned direct and ROI downline commissions will record here in real-time.</div>
+          </div>
+        </td>
+      </tr>
+    `;
   } else {
     state.commissions.forEach(c => {
       const dateStr = c.created_at ? new Date(c.created_at).toLocaleString() : 'N/A';
@@ -497,7 +591,7 @@ function renderReferralView() {
           <td><b>${c.commission_type === 'DIRECT' ? 'Direct Income (2%)' : 'ROI Income (1.5%)'}</b></td>
           <td><span class="badge badge-active">Level ${c.level}</span></td>
           <td style="font-size: 13px;">${fromUser}</td>
-          <td style="color: var(--primary-cyan); font-weight: 700;">+$${Number(c.amount).toFixed(2)}</td>
+          <td style="color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">+$${Number(c.amount).toFixed(2)}</td>
           <td><span class="badge badge-approved">${c.is_paid ? 'Paid to Wallet' : 'Pending'}</span></td>
           <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
         </tr>
@@ -511,7 +605,16 @@ function renderSupportTicketsTable() {
   tbody.innerHTML = '';
 
   if (state.tickets.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No support tickets submitted</td></tr>';
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Tickets Found</div>
+            <div class="empty-state-desc">Submit a ticket using the form on the left if you need assistance.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
@@ -520,7 +623,7 @@ function renderSupportTicketsTable() {
     const statusLower = (t.status || 'OPEN').toLowerCase();
     tbody.innerHTML += `
       <tr style="cursor: pointer;" onclick="openTicketThreadModal('${t.id}')">
-        <td><b style="color: var(--gold-soft);">${t.subject}</b> <span style="font-size: 11px; color: var(--mute);">(Click to view thread)</span></td>
+        <td><b style="color: var(--emerald-soft);">${t.subject}</b> <span style="font-size: 11px; color: var(--mute);">(Click to view thread)</span></td>
         <td>${t.category || 'General'}</td>
         <td><span class="badge badge-${statusLower}">${t.status || 'OPEN'}</span></td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
@@ -565,9 +668,9 @@ function renderTicketThreadMessages(ticket) {
     const isStaff = r.is_staff_reply;
     const sender = isStaff ? 'Support Team (Staff)' : (r.user_email || 'You');
     const dateStr = r.created_at ? new Date(r.created_at).toLocaleString() : '';
-    const bg = isStaff ? 'rgba(79, 142, 247, 0.1)' : 'var(--field)';
-    const border = isStaff ? '1px solid var(--gold)' : '1px solid var(--line)';
-    const nameColor = isStaff ? 'var(--gold-soft)' : 'var(--text)';
+    const bg = isStaff ? 'rgba(63,203,140,0.06)' : 'var(--field)';
+    const border = isStaff ? '1px solid rgba(63,203,140,0.2)' : '1px solid var(--line)';
+    const nameColor = isStaff ? 'var(--emerald-soft)' : 'var(--text)';
     
     listContainer.innerHTML += `
       <div style="background: ${bg}; border: ${border}; padding: 12px 14px; border-radius: 4px;">
@@ -878,63 +981,8 @@ function closeModal(modalId) {
   document.getElementById(modalId).classList.remove('show');
 }
 
-// Deposit API Submission
-async function handleDepositSubmit(e) {
-  e.preventDefault();
-  const amount = Number(document.getElementById('dep-amount').value);
-  const network = document.getElementById('dep-network').value;
-  const txn_hash = document.getElementById('dep-txhash').value;
+// ─── Investment Plan Modal & API Creation ─────────────────────────────────────
 
-  try {
-    await apiCall('/deposits/', 'POST', {
-      amount,
-      network,
-      txn_hash,
-      sender_wallet_address: '0xSENDER'
-    });
-    closeModal('modal-deposit');
-    showToast('Deposit request submitted! Awaiting Admin approval.');
-    await loadAllAPIData();
-  } catch (err) {
-    showToast(err.message, true);
-  }
-}
-
-// Withdrawal Fee Calculator & API Submission
-function updateWithdrawalFeeCalc() {
-  const type = document.getElementById('wdr-type').value;
-  const amount = Number(document.getElementById('wdr-amount').value) || 0;
-
-  const fee = type === 'PROFIT' ? 1.00 : 10.00;
-  const net = Math.max(0, amount - fee);
-
-  document.getElementById('wdr-fee-preview').innerText = `$${fee.toFixed(2)}`;
-  document.getElementById('wdr-net-preview').innerText = `$${net.toFixed(2)}`;
-}
-
-async function handleWithdrawSubmit(e) {
-  e.preventDefault();
-  const withdrawal_type = document.getElementById('wdr-type').value;
-  const amount = Number(document.getElementById('wdr-amount').value);
-  const network = document.getElementById('wdr-network').value;
-  const wallet_address = document.getElementById('wdr-address').value;
-
-  try {
-    await apiCall('/withdrawals/', 'POST', {
-      withdrawal_type,
-      amount,
-      network,
-      wallet_address
-    });
-    closeModal('modal-withdraw');
-    showToast('Withdrawal request submitted! Awaiting Admin approval.');
-    await loadAllAPIData();
-  } catch (err) {
-    showToast(err.message, true);
-  }
-}
-
-// Investment Plan Modal & API Creation
 function openInvestModal(planId, planName, minAmt, maxAmt) {
   document.getElementById('inv-plan-name').value = planId;
   document.getElementById('inv-plan-display').value = planName;
@@ -942,6 +990,11 @@ function openInvestModal(planId, planName, minAmt, maxAmt) {
   input.value = minAmt;
   input.min = minAmt;
   input.max = maxAmt;
+  // Clear deposit fields
+  document.getElementById('inv-network').value = '';
+  document.getElementById('inv-txhash').value = '';
+  document.getElementById('inv-sender').value = '';
+  document.getElementById('inv-proof').value = '';
   updateMaxReturnCalc();
   openModal('modal-invest');
 }
@@ -957,12 +1010,61 @@ function updateMaxReturnCalc() {
 async function handleInvestSubmit(e) {
   e.preventDefault();
   const plan = document.getElementById('inv-plan-name').value;
-  const amount = Number(document.getElementById('inv-amount').value);
+  const amount = document.getElementById('inv-amount').value;
+  const network = document.getElementById('inv-network').value;
+  const txhash = document.getElementById('inv-txhash').value;
+  const sender = document.getElementById('inv-sender').value;
+  const proofFile = document.getElementById('inv-proof').files[0];
+
+  if (!network) {
+    showToast('Please select a deposit network.', true);
+    return;
+  }
+  if (!txhash && !proofFile) {
+    showToast('Please provide a transaction hash or upload a payment screenshot.', true);
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('plan', plan);
+  formData.append('amount', amount);
+  formData.append('deposit_network', network);
+  if (txhash) formData.append('deposit_txn_hash', txhash);
+  if (sender) formData.append('deposit_sender_address', sender);
+  if (proofFile) formData.append('deposit_proof', proofFile);
 
   try {
-    await apiCall('/investments/', 'POST', { plan, amount });
+    await apiCall('/investments/', 'POST', formData, /* isFormData */ true);
     closeModal('modal-invest');
-    showToast('Investment request submitted! Direct referral income triggered upon admin approval.');
+    showToast('Investment submitted! Admin will verify your deposit and activate the plan.');
+    await loadAllAPIData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// ─── Withdrawal Fee Calculator & API Submission ────────────────────────────────
+
+function updateWithdrawalFeeCalc() {
+  const type = document.getElementById('wdr-type').value;
+  const amount = Number(document.getElementById('wdr-amount').value) || 0;
+  const fee = type === 'PROFIT' ? 1.00 : 10.00;
+  const net = Math.max(0, amount - fee);
+  document.getElementById('wdr-fee-preview').innerText = `$${fee.toFixed(2)}`;
+  document.getElementById('wdr-net-preview').innerText = `$${net.toFixed(2)}`;
+}
+
+async function handleWithdrawSubmit(e) {
+  e.preventDefault();
+  const withdrawal_type = document.getElementById('wdr-type').value;
+  const amount = Number(document.getElementById('wdr-amount').value);
+  const network = document.getElementById('wdr-network').value;
+  const wallet_address = document.getElementById('wdr-address').value;
+
+  try {
+    await apiCall('/withdrawals/', 'POST', { withdrawal_type, amount, network, wallet_address });
+    closeModal('modal-withdraw');
+    showToast('Withdrawal request submitted! Awaiting Admin approval.');
     await loadAllAPIData();
   } catch (err) {
     showToast(err.message, true);
