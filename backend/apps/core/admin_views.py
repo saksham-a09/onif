@@ -1,0 +1,673 @@
+import uuid
+from decimal import Decimal
+from django.contrib.auth import get_user_model
+from django.db import transaction as db_transaction
+from django.db.models import Sum, Q, Count
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from apps.investments.models import Investment, Plan
+from apps.investments.services import (
+    activate_investment,
+    distribute_direct_income,
+    distribute_roi_for_investment,
+    update_user_active_level,
+)
+from apps.transactions.models import Withdrawal, Deposit
+from apps.wallet.models import Wallet, WalletTransaction
+from apps.wallet.services import credit_wallet, debit_wallet
+from apps.support.models import Ticket, TicketReply
+from apps.core.models import PlatformSettings, AuditLog
+from apps.core.permissions import IsAdminRoleOrStaff, IsSuperAdminOnly
+from apps.core.admin_serializers import (
+    AdminUserListSerializer,
+    AdminUserUpdateSerializer,
+    AdminBalanceAdjustmentSerializer,
+    AdminInvestmentSerializer,
+    AdminWithdrawalSerializer,
+    AdminTicketSerializer,
+    AdminTicketReplySerializer,
+    AdminPlatformSettingSerializer,
+    AdminPlanSerializer,
+)
+
+User = get_user_model()
+
+
+class AdminOverviewView(APIView):
+    """
+    GET /api/v1/admin-panel/overview/
+    Returns platform-wide metrics, counts, liabilities, and pending action queues.
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def get(self, request):
+        # Users
+        total_users = User.objects.count()
+        verified_users = User.objects.filter(is_email_verified=True).count()
+        pending_kyc_count = User.objects.filter(kyc_status=User.KYCStatus.PENDING).count()
+        active_users_count = User.objects.filter(
+            investments__status=Investment.Status.ACTIVE
+        ).distinct().count()
+
+        # Investments
+        active_investments_qs = Investment.objects.filter(status=Investment.Status.ACTIVE)
+        active_investments_count = active_investments_qs.count()
+        active_investments_total = active_investments_qs.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+        pending_investments_qs = Investment.objects.filter(
+            status__in=[Investment.Status.DEPOSIT_PENDING, Investment.Status.PENDING]
+        )
+        pending_investments_count = pending_investments_qs.count()
+        pending_investments_total = pending_investments_qs.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+        total_investments_total = Investment.objects.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+        # Withdrawals
+        pending_withdrawals_qs = Withdrawal.objects.filter(status=Withdrawal.Status.PENDING)
+        pending_withdrawals_count = pending_withdrawals_qs.count()
+        pending_withdrawals_total = pending_withdrawals_qs.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+        approved_withdrawals_qs = Withdrawal.objects.filter(status=Withdrawal.Status.APPROVED)
+        approved_withdrawals_count = approved_withdrawals_qs.count()
+        approved_withdrawals_total = approved_withdrawals_qs.aggregate(total=Sum('net_amount'))['total'] or Decimal('0.00')
+
+        # Wallets & Liabilities
+        total_system_balance = Wallet.objects.aggregate(total=Sum('balance'))['total'] or Decimal('0.00')
+        total_system_deposited = Wallet.objects.aggregate(total=Sum('total_deposited'))['total'] or Decimal('0.00')
+        total_roi_earned = Wallet.objects.aggregate(total=Sum('total_roi_earned'))['total'] or Decimal('0.00')
+        total_direct_income = Wallet.objects.aggregate(total=Sum('total_direct_income'))['total'] or Decimal('0.00')
+
+        # Support Tickets
+        open_tickets_count = Ticket.objects.filter(status=Ticket.Status.OPEN).count()
+        in_progress_tickets_count = Ticket.objects.filter(status=Ticket.Status.IN_PROGRESS).count()
+
+        # Action Queues
+        recent_pending_investments = AdminInvestmentSerializer(
+            pending_investments_qs.select_related('user', 'plan')[:6],
+            many=True,
+            context={'request': request},
+        ).data
+
+        recent_pending_withdrawals = AdminWithdrawalSerializer(
+            pending_withdrawals_qs.select_related('user')[:6],
+            many=True,
+            context={'request': request},
+        ).data
+
+        recent_tickets = AdminTicketSerializer(
+            Ticket.objects.select_related('user').prefetch_related('replies')[:6],
+            many=True,
+        ).data
+
+        return Response({
+            'users': {
+                'total': total_users,
+                'verified': verified_users,
+                'active': active_users_count,
+                'pending_kyc': pending_kyc_count,
+            },
+            'investments': {
+                'active_count': active_investments_count,
+                'active_total': float(active_investments_total),
+                'pending_count': pending_investments_count,
+                'pending_total': float(pending_investments_total),
+                'all_time_total': float(total_investments_total),
+            },
+            'withdrawals': {
+                'pending_count': pending_withdrawals_count,
+                'pending_total': float(pending_withdrawals_total),
+                'approved_count': approved_withdrawals_count,
+                'approved_total': float(approved_withdrawals_total),
+            },
+            'finances': {
+                'total_system_balance': float(total_system_balance),
+                'total_system_deposited': float(total_system_deposited),
+                'total_roi_earned': float(total_roi_earned),
+                'total_direct_income': float(total_direct_income),
+            },
+            'support': {
+                'open_tickets': open_tickets_count,
+                'in_progress_tickets': in_progress_tickets_count,
+            },
+            'queues': {
+                'pending_investments': recent_pending_investments,
+                'pending_withdrawals': recent_pending_withdrawals,
+                'recent_tickets': recent_tickets,
+            },
+        })
+
+
+class AdminInvestmentListView(generics.ListAPIView):
+    """
+    GET /api/v1/admin-panel/investments/
+    Query parameters:
+      - ?status=DEPOSIT_PENDING (or ACTIVE, REJECTED, COMPLETED, all)
+      - ?search=... (email, username, txn hash)
+    """
+    serializer_class = AdminInvestmentSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def get_queryset(self):
+        qs = Investment.objects.select_related('user', 'plan', 'approved_by').order_by('-created_at')
+        status_param = self.request.query_params.get('status')
+        if status_param and status_param != 'all':
+            qs = qs.filter(status=status_param.upper())
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                Q(user__email__icontains=search) |
+                Q(user__username__icontains=search) |
+                Q(deposit_txn_hash__icontains=search) |
+                Q(id__icontains=search)
+            )
+        return qs
+
+
+class AdminInvestmentDetailView(generics.RetrieveAPIView):
+    """GET /api/v1/admin-panel/investments/{id}/"""
+    serializer_class = AdminInvestmentSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+    queryset = Investment.objects.select_related('user', 'plan', 'approved_by').all()
+
+
+class AdminInvestmentApproveView(APIView):
+    """
+    POST /api/v1/admin-panel/investments/{id}/approve/
+    Approves deposit and activates investment.
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def post(self, request, pk):
+        investment = get_object_or_404(
+            Investment.objects.select_related('user', 'plan'),
+            pk=pk
+        )
+
+        if investment.status not in [Investment.Status.DEPOSIT_PENDING, Investment.Status.PENDING]:
+            return Response(
+                {'detail': f"Investment cannot be approved from status '{investment.status}'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        with db_transaction.atomic():
+            # 1. Activate investment
+            activate_investment(investment, request.user)
+
+            # 2. Distribute direct commission to upline
+            commissions = distribute_direct_income(investment)
+
+            # 3. Update sponsor active levels
+            curr = investment.user.parent
+            while curr:
+                update_user_active_level(curr)
+                curr = curr.parent
+
+            # 4. Audit Log
+            AuditLog.objects.create(
+                user=request.user,
+                action=AuditLog.Action.INVESTMENT_APPROVED,
+                ip_address=request.META.get('REMOTE_ADDR'),
+                new_value={
+                    'investment_id': str(investment.id),
+                    'user': investment.user.email,
+                    'amount': str(investment.amount),
+                    'plan': investment.plan.name,
+                    'commissions_count': len(commissions),
+                }
+            )
+
+        return Response({
+            'detail': f"Investment #{str(investment.id)[:8]} approved and activated successfully.",
+            'investment': AdminInvestmentSerializer(investment, context={'request': request}).data,
+        }, status=status.HTTP_200_OK)
+
+
+class AdminInvestmentRejectView(APIView):
+    """
+    POST /api/v1/admin-panel/investments/{id}/reject/
+    Rejects deposit proof and marks investment REJECTED.
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def post(self, request, pk):
+        investment = get_object_or_404(Investment, pk=pk)
+        if investment.status not in [Investment.Status.DEPOSIT_PENDING, Investment.Status.PENDING]:
+            return Response(
+                {'detail': f"Investment cannot be rejected from status '{investment.status}'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        reason = request.data.get('reason', 'Deposit verification rejected by administrator.')
+        investment.status = Investment.Status.REJECTED
+        investment.rejection_reason = reason
+        investment.approved_by = request.user
+        investment.approved_at = timezone.now()
+        investment.save(update_fields=['status', 'rejection_reason', 'approved_by', 'approved_at', 'updated_at'])
+
+        # Audit Log
+        AuditLog.objects.create(
+            user=request.user,
+            action=AuditLog.Action.INVESTMENT_REJECTED,
+            ip_address=request.META.get('REMOTE_ADDR'),
+            new_value={'investment_id': str(investment.id), 'reason': reason}
+        )
+
+        return Response({
+            'detail': f"Investment #{str(investment.id)[:8]} rejected.",
+            'investment': AdminInvestmentSerializer(investment, context={'request': request}).data,
+        })
+
+
+class AdminWithdrawalListView(generics.ListAPIView):
+    """
+    GET /api/v1/admin-panel/withdrawals/
+    Query parameters:
+      - ?status=PENDING (or APPROVED, REJECTED, all)
+      - ?search=... (email, username, wallet address, tx hash)
+    """
+    serializer_class = AdminWithdrawalSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def get_queryset(self):
+        qs = Withdrawal.objects.select_related('user', 'reviewed_by').order_by('-created_at')
+        status_param = self.request.query_params.get('status')
+        if status_param and status_param != 'all':
+            qs = qs.filter(status=status_param.upper())
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                Q(user__email__icontains=search) |
+                Q(user__username__icontains=search) |
+                Q(wallet_address__icontains=search) |
+                Q(txn_hash__icontains=search) |
+                Q(id__icontains=search)
+            )
+        return qs
+
+
+class AdminWithdrawalDetailView(generics.RetrieveAPIView):
+    """GET /api/v1/admin-panel/withdrawals/{id}/"""
+    serializer_class = AdminWithdrawalSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+    queryset = Withdrawal.objects.select_related('user', 'reviewed_by').all()
+
+
+class AdminWithdrawalApproveView(APIView):
+    """
+    POST /api/v1/admin-panel/withdrawals/{id}/approve/
+    Approves withdrawal and debits user wallet.
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def post(self, request, pk):
+        withdrawal = get_object_or_404(Withdrawal.objects.select_related('user'), pk=pk)
+        if withdrawal.status != Withdrawal.Status.PENDING:
+            return Response(
+                {'detail': f"Withdrawal is already in '{withdrawal.status}' status."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        txn_hash = request.data.get('txn_hash', '')
+
+        with db_transaction.atomic():
+            category = (
+                WalletTransaction.Category.CAPITAL_WITHDRAWAL
+                if withdrawal.withdrawal_type == Withdrawal.WithdrawalType.CAPITAL
+                else WalletTransaction.Category.WITHDRAWAL
+            )
+
+            # Debit wallet balance
+            debit_wallet(
+                user=withdrawal.user,
+                amount=withdrawal.amount,
+                category=category,
+                description=f"{withdrawal.withdrawal_type} withdrawal to {withdrawal.wallet_address[:12]}...",
+                reference_id=str(withdrawal.id),
+            )
+
+            withdrawal.status = Withdrawal.Status.APPROVED
+            withdrawal.reviewed_by = request.user
+            withdrawal.reviewed_at = timezone.now()
+            if txn_hash:
+                withdrawal.txn_hash = txn_hash
+            withdrawal.save(update_fields=['status', 'reviewed_by', 'reviewed_at', 'txn_hash', 'updated_at'])
+
+            # Audit Log
+            AuditLog.objects.create(
+                user=request.user,
+                action=AuditLog.Action.WITHDRAWAL_APPROVED,
+                ip_address=request.META.get('REMOTE_ADDR'),
+                new_value={
+                    'withdrawal_id': str(withdrawal.id),
+                    'user': withdrawal.user.email,
+                    'amount': str(withdrawal.amount),
+                    'net_amount': str(withdrawal.net_amount),
+                    'txn_hash': txn_hash,
+                }
+            )
+
+        return Response({
+            'detail': f"Withdrawal #{str(withdrawal.id)[:8]} approved and wallet debited.",
+            'withdrawal': AdminWithdrawalSerializer(withdrawal).data,
+        })
+
+
+class AdminWithdrawalRejectView(APIView):
+    """
+    POST /api/v1/admin-panel/withdrawals/{id}/reject/
+    Rejects withdrawal request.
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def post(self, request, pk):
+        withdrawal = get_object_or_404(Withdrawal, pk=pk)
+        if withdrawal.status != Withdrawal.Status.PENDING:
+            return Response(
+                {'detail': f"Withdrawal is already in '{withdrawal.status}' status."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        reason = request.data.get('reason', 'Withdrawal rejected by administrator.')
+        withdrawal.status = Withdrawal.Status.REJECTED
+        withdrawal.notes = reason
+        withdrawal.reviewed_by = request.user
+        withdrawal.reviewed_at = timezone.now()
+        withdrawal.save(update_fields=['status', 'notes', 'reviewed_by', 'reviewed_at', 'updated_at'])
+
+        # Audit Log
+        AuditLog.objects.create(
+            user=request.user,
+            action=AuditLog.Action.WITHDRAWAL_REJECTED,
+            ip_address=request.META.get('REMOTE_ADDR'),
+            new_value={'withdrawal_id': str(withdrawal.id), 'reason': reason}
+        )
+
+        return Response({
+            'detail': f"Withdrawal #{str(withdrawal.id)[:8]} rejected.",
+            'withdrawal': AdminWithdrawalSerializer(withdrawal).data,
+        })
+
+
+class AdminUserListView(generics.ListAPIView):
+    """
+    GET /api/v1/admin-panel/users/
+    Query parameters:
+      - ?search=... (email, username, referral code)
+      - ?role=... (ADMIN, USER, SUPPORT, FINANCE)
+      - ?kyc_status=... (APPROVED, PENDING, UNVERIFIED, REJECTED)
+    """
+    serializer_class = AdminUserListSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def get_queryset(self):
+        qs = User.objects.select_related('parent', 'wallet').prefetch_related('investments').order_by('-created_at')
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                Q(email__icontains=search) |
+                Q(username__icontains=search) |
+                Q(referral_code__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search)
+            )
+        role = self.request.query_params.get('role')
+        if role:
+            qs = qs.filter(role=role.upper())
+        kyc = self.request.query_params.get('kyc_status')
+        if kyc:
+            qs = qs.filter(kyc_status=kyc.upper())
+        return qs
+
+
+class AdminUserDetailView(generics.RetrieveUpdateAPIView):
+    """
+    GET   /api/v1/admin-panel/users/{id}/
+    PATCH /api/v1/admin-panel/users/{id}/ (Update role, kyc_status, is_staff, is_active)
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+    queryset = User.objects.select_related('parent', 'wallet').prefetch_related('investments').all()
+
+    def get_serializer_class(self):
+        if self.request.method in ['PATCH', 'PUT']:
+            return AdminUserUpdateSerializer
+        return AdminUserListSerializer
+
+
+class AdminUserBalanceAdjustView(APIView):
+    """
+    POST /api/v1/admin-panel/users/{id}/adjust-balance/
+    Body:
+      {
+        "action": "CREDIT" | "DEBIT",
+        "amount": 100.00,
+        "reason": "Administrative adjustment / promotion"
+      }
+    """
+    permission_classes = [IsSuperAdminOnly]
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = AdminBalanceAdjustmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        action = serializer.validated_data['action']
+        amount = serializer.validated_data['amount']
+        reason = serializer.validated_data['reason']
+
+        with db_transaction.atomic():
+            ref_id = f"ADM-{uuid.uuid4().hex[:8].upper()}"
+            if action == 'CREDIT':
+                txn = credit_wallet(
+                    user=user,
+                    amount=amount,
+                    category=WalletTransaction.Category.ADJUSTMENT,
+                    description=f"Admin Manual Credit: {reason}",
+                    reference_id=ref_id,
+                )
+            else:
+                txn = debit_wallet(
+                    user=user,
+                    amount=amount,
+                    category=WalletTransaction.Category.ADJUSTMENT,
+                    description=f"Admin Manual Debit: {reason}",
+                    reference_id=ref_id,
+                )
+
+            # Audit Log
+            AuditLog.objects.create(
+                user=request.user,
+                action=AuditLog.Action.WALLET_CREDITED if action == 'CREDIT' else AuditLog.Action.WALLET_DEBITED,
+                ip_address=request.META.get('REMOTE_ADDR'),
+                new_value={
+                    'target_user': user.email,
+                    'action': action,
+                    'amount': str(amount),
+                    'reason': reason,
+                    'balance_after': str(txn.balance_after),
+                }
+            )
+
+        return Response({
+            'detail': f"Successfully {action.lower()}ed ${amount} to {user.email}.",
+            'balance_after': float(txn.balance_after),
+            'reference_id': ref_id,
+        })
+
+
+class AdminTicketListView(generics.ListAPIView):
+    """
+    GET /api/v1/admin-panel/tickets/
+    Query parameters:
+      - ?status=OPEN (or IN_PROGRESS, RESOLVED, CLOSED, all)
+      - ?search=... (subject, user email)
+    """
+    serializer_class = AdminTicketSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def get_queryset(self):
+        qs = Ticket.objects.select_related('user').prefetch_related('replies__user').order_by('-updated_at')
+        status_param = self.request.query_params.get('status')
+        if status_param and status_param != 'all':
+            qs = qs.filter(status=status_param.upper())
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                Q(subject__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(user__username__icontains=search)
+            )
+        return qs
+
+
+class AdminTicketDetailView(generics.RetrieveAPIView):
+    """GET /api/v1/admin-panel/tickets/{id}/"""
+    serializer_class = AdminTicketSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+    queryset = Ticket.objects.select_related('user').prefetch_related('replies__user').all()
+
+
+class AdminTicketReplyView(APIView):
+    """
+    POST /api/v1/admin-panel/tickets/{id}/reply/
+    Body:
+      {
+        "message": "Hello, your deposit has been verified!",
+        "status": "IN_PROGRESS" | "RESOLVED" | "CLOSED" (optional)
+      }
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def post(self, request, pk):
+        ticket = get_object_or_404(Ticket, pk=pk)
+        message = request.data.get('message', '').strip()
+        if not message:
+            return Response({'message': 'Reply message cannot be blank.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        with db_transaction.atomic():
+            reply = TicketReply.objects.create(
+                ticket=ticket,
+                user=request.user,
+                message=message,
+            )
+
+            new_status = request.data.get('status')
+            if new_status and new_status.upper() in Ticket.Status.values:
+                ticket.status = new_status.upper()
+            elif ticket.status == Ticket.Status.OPEN:
+                ticket.status = Ticket.Status.IN_PROGRESS
+            ticket.save(update_fields=['status', 'updated_at'])
+
+        return Response({
+            'detail': 'Reply posted successfully.',
+            'reply': AdminTicketReplySerializer(reply).data,
+            'ticket_status': ticket.status,
+        }, status=status.HTTP_201_CREATED)
+
+
+class AdminTicketStatusView(APIView):
+    """
+    PATCH /api/v1/admin-panel/tickets/{id}/status/
+    Body: { "status": "RESOLVED" }
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def patch(self, request, pk):
+        ticket = get_object_or_404(Ticket, pk=pk)
+        new_status = request.data.get('status', '').upper()
+        if new_status not in Ticket.Status.values:
+            return Response({'status': f"Invalid status. Must be one of {Ticket.Status.values}."}, status=status.HTTP_400_BAD_REQUEST)
+
+        ticket.status = new_status
+        ticket.save(update_fields=['status', 'updated_at'])
+        return Response({'detail': f"Ticket status updated to {ticket.status}."})
+
+
+class AdminPlatformSettingsListView(generics.ListAPIView):
+    """GET /api/v1/admin-panel/settings/"""
+    serializer_class = AdminPlatformSettingSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+    queryset = PlatformSettings.objects.select_related('updated_by').all()
+
+
+class AdminPlatformSettingUpdateView(APIView):
+    """
+    PATCH /api/v1/admin-panel/settings/{key}/
+    Body: { "value": "150.00" }
+    """
+    permission_classes = [IsSuperAdminOnly]
+
+    def patch(self, request, key):
+        setting, _ = PlatformSettings.objects.get_or_create(key=key)
+        new_value = request.data.get('value')
+        if new_value is None:
+            return Response({'value': 'Setting value is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        old_val = setting.value
+        setting.value = str(new_value)
+        setting.updated_by = request.user
+        setting.save(update_fields=['value', 'updated_by', 'updated_at'])
+
+        return Response({
+            'detail': f"Setting '{key}' updated from '{old_val}' to '{setting.value}'.",
+            'setting': AdminPlatformSettingSerializer(setting).data,
+        })
+
+
+class AdminPlanListCreateView(generics.ListCreateAPIView):
+    """
+    GET  /api/v1/admin-panel/plans/
+    POST /api/v1/admin-panel/plans/
+    """
+    serializer_class = AdminPlanSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+    queryset = Plan.objects.all().order_by('minimum_amount')
+
+
+class AdminPlanDetailView(generics.RetrieveUpdateAPIView):
+    """
+    GET   /api/v1/admin-panel/plans/{id}/
+    PATCH /api/v1/admin-panel/plans/{id}/
+    """
+    serializer_class = AdminPlanSerializer
+    permission_classes = [IsAdminRoleOrStaff]
+    queryset = Plan.objects.all()
+
+
+class AdminTriggerROIEngineView(APIView):
+    """
+    POST /api/v1/admin-panel/actions/trigger-roi/
+    Manually calculates and distributes weekly ROI to all ACTIVE investments.
+    """
+    permission_classes = [IsSuperAdminOnly]
+
+    def post(self, request):
+        active_investments = Investment.objects.filter(status=Investment.Status.ACTIVE).select_related('user', 'plan')
+        total_investments_processed = 0
+        total_roi_distributed = Decimal('0.00')
+
+        with db_transaction.atomic():
+            for inv in active_investments:
+                roi_paid = distribute_roi_for_investment(inv)
+                if roi_paid > Decimal('0.00'):
+                    total_roi_distributed += roi_paid
+                    total_investments_processed += 1
+
+            AuditLog.objects.create(
+                user=request.user,
+                action=AuditLog.Action.ROI_DISTRIBUTED,
+                ip_address=request.META.get('REMOTE_ADDR'),
+                new_value={
+                    'investments_processed': total_investments_processed,
+                    'total_roi_distributed': str(total_roi_distributed),
+                }
+            )
+
+        return Response({
+            'detail': f"Weekly ROI distribution executed successfully.",
+            'investments_processed': total_investments_processed,
+            'total_roi_distributed': float(total_roi_distributed),
+        })

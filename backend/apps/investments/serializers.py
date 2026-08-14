@@ -18,6 +18,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     plan_name = serializers.CharField(source='plan.name', read_only=True)
     remaining_return = serializers.DecimalField(max_digits=18, decimal_places=2, read_only=True)
     profit = serializers.DecimalField(max_digits=18, decimal_places=2, read_only=True)
+    deposit_proof_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Investment
@@ -25,14 +26,22 @@ class InvestmentSerializer(serializers.ModelSerializer):
             'id', 'plan', 'plan_name', 'amount', 'max_return', 'total_credited',
             'remaining_return', 'profit', 'status',
             'deposit_network', 'deposit_txn_hash', 'deposit_sender_address',
-            'deposit_submitted_at',
+            'deposit_proof', 'deposit_proof_url', 'deposit_submitted_at',
             'start_date', 'end_date', 'last_roi_date', 'created_at',
         ]
         read_only_fields = [
             'id', 'plan_name', 'max_return', 'total_credited', 'remaining_return',
-            'profit', 'status', 'deposit_submitted_at',
+            'profit', 'status', 'deposit_proof_url', 'deposit_submitted_at',
             'start_date', 'end_date', 'last_roi_date', 'created_at',
         ]
+
+    def get_deposit_proof_url(self, obj) -> str | None:
+        if obj.deposit_proof:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.deposit_proof.url)
+            return obj.deposit_proof.url
+        return None
 
 
 class InvestmentCreateSerializer(serializers.ModelSerializer):

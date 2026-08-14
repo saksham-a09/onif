@@ -224,7 +224,8 @@
         <img src="img/logo-title.png" alt="FINOVO" style="height: 110px; object-fit: contain;">
       </div>
 
-      <nav class="top-nav">
+      <!-- 1. Regular User Navigation Bar (Default for Non-Admins) -->
+      <nav class="top-nav" id="top-nav-user">
         <a class="nav-item active" onclick="switchNav('dashboard')" id="nav-dashboard">
           <span>Dashboard</span>
         </a>
@@ -242,9 +243,85 @@
         </a>
       </nav>
 
+      <!-- 2. Admin Action Menu Navigation Bar (Primary Default for Admins) -->
+      <nav class="top-nav" id="top-nav-admin" style="display: none;">
+        <a class="nav-item active" onclick="switchAdminNav('overview')" id="nav-adm-overview">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Overview</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('investments')" id="nav-adm-investments">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          <span>Investments & Deposits</span>
+          <span class="tab-badge" id="top-badge-inv" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('withdrawals')" id="nav-adm-withdrawals">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <span>Withdrawals Queue</span>
+          <span class="tab-badge" id="top-badge-wdr" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('users')" id="nav-adm-users">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Users</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('support')" id="nav-adm-support">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Support Desk</span>
+          <span class="tab-badge" id="top-badge-tkt" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('settings')" id="nav-adm-settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Rules & Plans</span>
+        </a>
+
+        <!-- Sub-Menu Dropdown for User Views -->
+        <div class="nav-dropdown-wrapper" id="adm-user-dropdown-wrap">
+          <div class="nav-item nav-dropdown-btn" id="nav-adm-investor-sub">
+            <span style="display:flex; align-items:center; gap:5px; color: var(--gold);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              Investor Views ▾
+            </span>
+          </div>
+          <div class="nav-dropdown-menu" id="adm-user-dropdown-menu">
+            <div style="padding: 6px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mute); font-family: var(--font-mono);">
+              User Member Portals
+            </div>
+            <a class="nav-dropdown-item" onclick="switchNav('dashboard')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              <span>Member Dashboard</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('investments')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
+              <span>Investment Plans</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('wallet')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
+              <span>Wallet & Ledger</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('referrals')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              <span>Referral Network</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('support')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span>Support Ticket Center</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+
       <div class="topbar-actions">
-        <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ Invest</button>
-        <button class="btn btn-sm btn-secondary" onclick="openModal('modal-withdraw')">Withdraw</button>
+        <!-- User Actions (shown when not admin) -->
+        <div id="user-topbar-actions" style="display: flex; gap: 8px;">
+          <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ Invest</button>
+          <button class="btn btn-sm btn-secondary" onclick="openModal('modal-withdraw')">Withdraw</button>
+        </div>
+
+        <!-- Admin Quick Action (shown when admin) -->
+        <div id="admin-topbar-actions" style="display: none;">
+          <button class="btn btn-sm btn-gold" onclick="openModal('modal-admin-trigger-roi')" style="font-size: 12px; padding: 6px 12px;">
+            ⚡ Trigger ROI
+          </button>
+        </div>
 
         <div class="topbar-user" style="margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line);">
           <div class="user-avatar" id="sidebar-avatar">U</div>
@@ -265,6 +342,20 @@
 
     <!-- Main Content Views Container -->
     <main class="content-body">
+
+      <!-- Administrator Preview Banner (Shown when admin is viewing user/investor pages) -->
+      <div class="admin-mode-banner" id="admin-investor-mode-banner" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">👑</span>
+          <div>
+            <b style="color: var(--gold);">Investor Preview Mode</b>
+            <div style="font-size: 11px; color: var(--mute);">You are previewing the member experience as an Administrator.</div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-gold" onclick="switchAdminNav('overview')">
+          ← Return to Admin Console
+        </button>
+      </div>
 
       <!-- ================= 1. DASHBOARD VIEW ================= -->
       <section id="view-dashboard" class="page-view active">
@@ -757,6 +848,463 @@
           </div>
         </div>
       </section>
+ 
+      <!-- ================= 6. ADMIN PORTAL VIEW ================= -->
+      <section id="view-admin" class="page-view">
+        <div class="admin-header-panel">
+          <div class="admin-header-title">
+            <div class="admin-badge-pill">
+              <span class="pulse-dot"></span>
+              FINOVO CORE OPERATIONS HUB
+            </div>
+            <h1 class="admin-main-title">Administrative Command Center</h1>
+            <p class="admin-main-subtitle">Manage deposits, execute withdrawals, inspect users, and configure live system rules.</p>
+          </div>
+          <div class="admin-header-actions">
+            <button class="btn btn-sm btn-secondary" onclick="loadAdminData(true)" title="Refresh all admin telemetry">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Refresh Telemetry
+            </button>
+            <button class="btn btn-sm btn-gold" onclick="openModal('modal-admin-trigger-roi')">
+              ⚡ Trigger Weekly ROI
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Sub Navigation Tabs -->
+        <div class="admin-subnav-container">
+          <button class="admin-tab-btn active" onclick="switchAdminTab('overview')" id="adm-tab-overview">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Overview
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('investments')" id="adm-tab-investments">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+            Investments & Deposits
+            <span class="tab-badge" id="adm-badge-investments">0</span>
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('withdrawals')" id="adm-tab-withdrawals">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            Withdrawals Queue
+            <span class="tab-badge" id="adm-badge-withdrawals">0</span>
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('users')" id="adm-tab-users">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            User Management
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('support')" id="adm-tab-support">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            Support Console
+            <span class="tab-badge" id="adm-badge-tickets">0</span>
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('settings')" id="adm-tab-settings">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            System Rules & Plans
+          </button>
+        </div>
+
+        <!-- 1. ADMIN OVERVIEW SUB-PAGE -->
+        <div id="adm-content-overview" class="admin-subpage active">
+          <div class="grid-4" style="margin-bottom: 24px;">
+            <div class="card stat-card admin-stat-card">
+              <div>
+                <div class="stat-title">Platform Registered Users</div>
+                <div class="stat-value" id="adm-stat-users">0</div>
+                <div class="stat-subtext" id="adm-stat-users-sub">0 verified • 0 active</div>
+              </div>
+              <div class="stat-icon icon-users">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+            </div>
+
+            <div class="card stat-card admin-stat-card">
+              <div>
+                <div class="stat-title">Active Investment Capital</div>
+                <div class="stat-value" id="adm-stat-active-inv" style="color: var(--emerald);">$0.00</div>
+                <div class="stat-subtext" id="adm-stat-inv-sub">0 active plans</div>
+              </div>
+              <div class="stat-icon icon-invest">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="card stat-card admin-stat-card highlight-gold">
+              <div>
+                <div class="stat-title">Pending Deposit Approvals</div>
+                <div class="stat-value" id="adm-stat-pending-dep" style="color: var(--gold);">$0.00</div>
+                <div class="stat-subtext" id="adm-stat-pending-dep-sub">0 deposits awaiting proof check</div>
+              </div>
+              <div class="stat-icon icon-pending">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="card stat-card admin-stat-card highlight-danger">
+              <div>
+                <div class="stat-title">Pending Withdrawals</div>
+                <div class="stat-value" id="adm-stat-pending-wdr" style="color: #F87171;">$0.00</div>
+                <div class="stat-subtext" id="adm-stat-pending-wdr-sub">0 payouts queued</div>
+              </div>
+              <div class="stat-icon icon-wdr">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Pending Deposits Queue -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Action Queue</div>
+                  <h2 class="section-title">Pending Investment Deposits</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="switchAdminTab('investments')">View All</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Plan & Amount</th>
+                      <th>Tx Hash & Proof</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-overview-deposits-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Pending Withdrawals Queue -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Action Queue</div>
+                  <h2 class="section-title">Pending Payout Requests</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="switchAdminTab('withdrawals')">View All</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Amount & Fee</th>
+                      <th>Destination</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-overview-withdrawals-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Secondary Overview Grid: Financial Liabilities & Tickets -->
+          <div class="grid-2" style="margin-top: 24px;">
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">System Balances</div>
+                  <h2 class="section-title">Platform Financial Liabilities</h2>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total User Spendable Balances</span>
+                  <b class="liability-val" id="adm-fin-balance">$0.00</b>
+                </div>
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total Lifetime Platform Deposits</span>
+                  <b class="liability-val" id="adm-fin-deposits">$0.00</b>
+                </div>
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total ROI Payouts Generated</span>
+                  <b class="liability-val" id="adm-fin-roi" style="color:var(--emerald);">$0.00</b>
+                </div>
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total Direct & Level Commissions Paid</span>
+                  <b class="liability-val" id="adm-fin-comm" style="color:var(--emerald);">$0.00</b>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Support Queue</div>
+                  <h2 class="section-title">Recent Support Tickets</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="switchAdminTab('support')">Open Desk</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Subject</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-overview-tickets-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ADMIN INVESTMENTS & DEPOSIT PROOFS SUB-PAGE -->
+        <div id="adm-content-investments" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">Deposit Verification</div>
+                <h2 class="section-title">Investment Plan Deposits & Verifications</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-inv-filter-status" class="form-control admin-filter-select" onchange="filterAdminInvestments()">
+                  <option value="all">All Statuses</option>
+                  <option value="DEPOSIT_PENDING" selected>Pending Approval</option>
+                  <option value="ACTIVE">Active Plans</option>
+                  <option value="COMPLETED">Completed Plans</option>
+                  <option value="REJECTED">Rejected Deposits</option>
+                </select>
+                <input type="text" id="adm-inv-search" class="form-control admin-search-input" placeholder="Search by email, TxID, or ID..." oninput="debounceAdminSearch('investments')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminInvestments()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Investor</th>
+                    <th>Plan</th>
+                    <th>Amount</th>
+                    <th>Network</th>
+                    <th>Tx Hash / Proof</th>
+                    <th>Status</th>
+                    <th>Submitted At</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-investments-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. ADMIN WITHDRAWALS SUB-PAGE -->
+        <div id="adm-content-withdrawals" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">Payouts Processing</div>
+                <h2 class="section-title">Platform Withdrawals Queue</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-wdr-filter-status" class="form-control admin-filter-select" onchange="filterAdminWithdrawals()">
+                  <option value="all">All Statuses</option>
+                  <option value="PENDING" selected>Pending Review</option>
+                  <option value="APPROVED">Approved & Paid</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+                <input type="text" id="adm-wdr-search" class="form-control admin-search-input" placeholder="Search by email, wallet address..." oninput="debounceAdminSearch('withdrawals')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminWithdrawals()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Fee</th>
+                    <th>Net Payout</th>
+                    <th>Network & Address</th>
+                    <th>Status</th>
+                    <th>Requested Date</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-withdrawals-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ADMIN USER MANAGEMENT SUB-PAGE -->
+        <div id="adm-content-users" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">User Directory</div>
+                <h2 class="section-title">Registered Accounts & Access Control</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-usr-filter-role" class="form-control admin-filter-select" onchange="filterAdminUsers()">
+                  <option value="">All Roles</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="USER">User</option>
+                  <option value="SUPPORT">Support</option>
+                  <option value="FINANCE">Finance</option>
+                </select>
+                <select id="adm-usr-filter-kyc" class="form-control admin-filter-select" onchange="filterAdminUsers()">
+                  <option value="">All KYC</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="UNVERIFIED">Unverified</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+                <input type="text" id="adm-usr-search" class="form-control admin-search-input" placeholder="Search name, email, ref code..." oninput="debounceAdminSearch('users')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminUsers()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User / Full Name</th>
+                    <th>Role</th>
+                    <th>KYC Status</th>
+                    <th>Wallet Balance</th>
+                    <th>Total Invested</th>
+                    <th>Level</th>
+                    <th>Sponsor</th>
+                    <th>Joined Date</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-users-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. ADMIN SUPPORT TICKETS SUB-PAGE -->
+        <div id="adm-content-support" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">Helpdesk Console</div>
+                <h2 class="section-title">Support Ticket Management</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-tkt-filter-status" class="form-control admin-filter-select" onchange="filterAdminTickets()">
+                  <option value="all">All Tickets</option>
+                  <option value="OPEN" selected>Open</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="RESOLVED">Resolved</option>
+                  <option value="CLOSED">Closed</option>
+                </select>
+                <input type="text" id="adm-tkt-search" class="form-control admin-search-input" placeholder="Search ticket subject, user email..." oninput="debounceAdminSearch('tickets')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminTickets()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Replies</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-tickets-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. ADMIN SYSTEM SETTINGS & PLANS SUB-PAGE -->
+        <div id="adm-content-settings" class="admin-subpage">
+          <div class="grid-2">
+            <!-- Global Business Parameters -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Business Rules</div>
+                  <h2 class="section-title">Platform Global Settings</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminSettings()">Refresh</button>
+              </div>
+              <p style="font-size: 13px; color: var(--mute); margin-bottom: 16px;">
+                Adjust business constants dynamically without restarting services.
+              </p>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Key</th>
+                      <th>Value</th>
+                      <th>Description</th>
+                      <th style="text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-settings-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Investment Plans Management -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Tier Architecture</div>
+                  <h2 class="section-title">Investment Plans Manager</h2>
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="openPlanModal()">+ Add New Plan</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Plan Name</th>
+                      <th>Weekly ROI</th>
+                      <th>Min / Max ($)</th>
+                      <th>Duration</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-plans-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
     </main>
   </div>
@@ -919,6 +1467,594 @@
           <button type="submit" class="btn btn-primary" style="padding: 8px 18px; font-size: 13px;">Send Reply</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN ACTION MODALS ================= -->
+
+  <!-- ================= ADMIN ACTION MODALS ================= -->
+
+  <!-- A1. Full Deposit & Investment Dossier Modal -->
+  <div id="modal-admin-proof" class="modal-backdrop">
+    <div class="modal" style="max-width: 900px; width: 100%; max-height: 92vh; display: flex; flex-direction: column;">
+      <div class="modal-header" style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="stat-icon icon-invest" style="width:36px; height:36px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>
+          <div>
+            <h3 class="modal-title" style="font-size: 18px; margin: 0;">Investment Deposit Dossier</h3>
+            <div style="font-size: 12px; color: var(--mute); font-family: var(--font-mono); margin-top: 2px;" id="adm-proof-inv-id-label"></div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="adm-proof-status-badge" class="badge badge-approved">PENDING</span>
+          <button class="modal-close" onclick="closeModal('modal-admin-proof')">&times;</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Modal Body -->
+      <div style="overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 20px;">
+        <div class="grid-2" style="align-items: start;">
+          <!-- LEFT: Proof Image & Media Previewer -->
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="section-title" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute);">Deposit Payment Proof</div>
+            <div id="adm-proof-image-wrap" class="inspector-proof-container">
+              <img id="adm-proof-img" src="" alt="Deposit Proof" class="inspector-proof-img" onclick="openLightbox(this.src)">
+              <div id="adm-proof-placeholder" class="inspector-proof-placeholder" style="display:none;">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="1.5" style="margin-bottom:8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <div>No Screenshot Uploaded</div>
+                <div style="font-size: 11px; color: var(--mute); margin-top: 4px;">Verified on-chain via TxID Hash</div>
+              </div>
+            </div>
+            
+            <div id="adm-proof-media-actions" style="display: flex; gap: 8px; justify-content: center;">
+              <button type="button" id="adm-proof-btn-view" class="btn btn-sm btn-secondary" onclick="openLightbox(document.getElementById('adm-proof-img').src)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                Zoom Preview
+              </button>
+              <a id="adm-proof-link-full" href="#" target="_blank" class="btn btn-sm btn-secondary" style="text-decoration:none;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Open Full File
+              </a>
+            </div>
+
+            <!-- Blockchain TxID Action Box -->
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                <span>On-Chain Blockchain Verification</span>
+                <span id="adm-proof-network-pill" class="badge badge-approved" style="font-size: 10px;">BEP20</span>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <div style="font-size: 11px; color: var(--mute); margin-bottom: 3px;">Transaction Hash (TxID):</div>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" id="adm-proof-txhash" class="form-control" readonly style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-proof-txhash')" style="padding: 4px 10px;">Copy</button>
+                </div>
+              </div>
+              <div style="margin-bottom: 10px;">
+                <div style="font-size: 11px; color: var(--mute); margin-bottom: 3px;">Investor Sender Wallet Address:</div>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" id="adm-proof-sender" class="form-control" readonly style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-proof-sender')" style="padding: 4px 10px;">Copy</button>
+                </div>
+              </div>
+              <a id="adm-proof-explorer-btn" href="#" target="_blank" class="btn btn-sm btn-secondary" style="width: 100%; justify-content: center; text-decoration: none; font-size: 12px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                Verify on Blockchain Explorer ↗
+              </a>
+            </div>
+          </div>
+
+          <!-- RIGHT: Detailed Breakdown -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <!-- Investor Dossier Card -->
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin-bottom: 10px;">
+                Investor Profile
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Full Name / Email:</span>
+                  <b id="adm-proof-investor-name" style="color: var(--text);"></b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Username / ID:</span>
+                  <span id="adm-proof-investor-id" style="font-family: var(--font-mono); color: var(--mute); font-size: 11px;"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Sponsor / Parent:</span>
+                  <span id="adm-proof-sponsor" style="color: var(--text);"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Sponsor Unlock Level:</span>
+                  <span id="adm-proof-user-level" class="badge badge-approved" style="font-size: 10px;">Level 0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Investment Plan & Numbers Card -->
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--emerald); margin-bottom: 10px;">
+                Investment Capital &amp; Returns
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Plan Tier:</span>
+                  <b id="adm-proof-plan-name" style="color: var(--text);"></b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Weekly ROI Rate:</span>
+                  <b id="adm-proof-plan-roi" style="color: var(--emerald); font-family: var(--font-mono);"></b>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+                  <span style="color: var(--mute);">Invested Principal Amount:</span>
+                  <b id="adm-proof-amount" style="color: var(--text); font-family: var(--font-mono); font-size: 16px;">$0.00</b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Max Total Return (300% Cap):</span>
+                  <b id="adm-proof-max-return" style="color: var(--emerald); font-family: var(--font-mono);">$0.00</b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Credited ROI + Direct Commissions:</span>
+                  <span id="adm-proof-credited" style="font-family: var(--font-mono);">$0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Remaining Capacity to Fill:</span>
+                  <span id="adm-proof-remaining" style="font-family: var(--font-mono); color: var(--gold);">$0.00</span>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--mute); margin-bottom: 3px;">
+                    <span>Fill Progress</span>
+                    <span id="adm-proof-progress-pct">0%</span>
+                  </div>
+                  <div class="progress-bar-bg" style="height: 6px;"><div id="adm-proof-progress-bar" class="progress-bar-fill" style="width: 0%;"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline & Status Details -->
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mute); margin-bottom: 8px;">
+                Timeline &amp; Audit Trail
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--mute);">
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Submitted At:</span>
+                  <span id="adm-proof-time-submitted" style="color: var(--text); font-family: var(--font-mono);"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Reviewed / Approved At:</span>
+                  <span id="adm-proof-time-approved" style="color: var(--text); font-family: var(--font-mono);"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Reviewed By Administrator:</span>
+                  <span id="adm-proof-admin-reviewer" style="color: var(--text);"></span>
+                </div>
+                <div id="adm-proof-rejection-row" style="display: none; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); padding: 8px; border-radius: 4px; margin-top: 4px;">
+                  <span style="color: #F87171; font-weight: 600;">Rejection Reason: </span>
+                  <span id="adm-proof-rejection-reason" style="color: var(--text);"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" id="adm-proof-inv-id">
+        <!-- Action Buttons Footer -->
+        <div id="adm-proof-actions-bar" style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-proof')">Close Details</button>
+          <button type="button" id="adm-proof-btn-reject" class="btn btn-danger" onclick="openRejectInvestmentModal(document.getElementById('adm-proof-inv-id').value)">Reject Deposit</button>
+          <button type="button" id="adm-proof-btn-approve" class="btn btn-primary" onclick="submitApproveInvestment(document.getElementById('adm-proof-inv-id').value)">Approve & Activate Plan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A1.1 Full Withdrawal Details Inspector Modal -->
+  <div id="modal-admin-wdr-detail" class="modal-backdrop">
+    <div class="modal" style="max-width: 750px; width: 100%; max-height: 92vh; display: flex; flex-direction: column;">
+      <div class="modal-header" style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="stat-icon icon-wdr" style="width:36px; height:36px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+          <div>
+            <h3 class="modal-title" style="font-size: 18px; margin: 0;">Withdrawal Payout Inspector</h3>
+            <div style="font-size: 12px; color: var(--mute); font-family: var(--font-mono); margin-top: 2px;" id="adm-wdr-id-label"></div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="adm-wdr-status-badge" class="badge badge-approved">PENDING</span>
+          <button class="modal-close" onclick="closeModal('modal-admin-wdr-detail')">&times;</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div style="overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 16px;">
+        <!-- Financial Calculation Banner -->
+        <div style="background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(0,0,0,0.4) 100%); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-sm); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+              <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute);">Net Payout Amount to Send</div>
+              <div id="adm-wdr-net-display" style="font-size: 26px; font-family: var(--font-mono); font-weight: 700; color: var(--emerald);">$0.00</div>
+            </div>
+            <span id="adm-wdr-type-badge" class="badge badge-approved" style="font-size: 12px; padding: 6px 12px;">PROFIT WITHDRAWAL</span>
+          </div>
+
+          <div class="grid-3" style="font-size: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+            <div>
+              <span style="color: var(--mute);">Requested Amount:</span>
+              <div id="adm-wdr-gross-display" style="font-family: var(--font-mono); font-weight: 600; color: var(--text); font-size: 14px;">$0.00</div>
+            </div>
+            <div>
+              <span style="color: var(--mute);">Transaction Fee:</span>
+              <div id="adm-wdr-fee-display" style="font-family: var(--font-mono); color: var(--mute); font-size: 14px;">$1.00</div>
+            </div>
+            <div>
+              <span style="color: var(--mute);">Capital Charge ($10):</span>
+              <div id="adm-wdr-charge-display" style="font-family: var(--font-mono); color: var(--mute); font-size: 14px;">$0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- User Profile & Balance -->
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin-bottom: 10px;">
+              User Dossier
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--mute);">Email Address:</span>
+                <b id="adm-wdr-user-email" style="color: var(--text);"></b>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--mute);">Full Name:</span>
+                <span id="adm-wdr-user-name" style="color: var(--text);"></span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--mute);">Username:</span>
+                <span id="adm-wdr-user-username" style="font-family: var(--font-mono); color: var(--mute);"></span>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+                <span style="color: var(--mute);">Current Wallet Balance:</span>
+                <b id="adm-wdr-user-balance" style="color: var(--emerald); font-family: var(--font-mono);">$0.00</b>
+              </div>
+            </div>
+          </div>
+
+          <!-- Destination & On-Chain Address -->
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text); margin-bottom: 10px; display: flex; justify-content: space-between;">
+              <span>Crypto Destination</span>
+              <span id="adm-wdr-network-badge" class="badge badge-approved" style="font-size: 10px;">BEP20</span>
+            </div>
+            <div style="font-size: 11px; color: var(--mute); margin-bottom: 3px;">Destination USDT Wallet Address:</div>
+            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+              <input type="text" id="adm-wdr-address-input" class="form-control" readonly style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+              <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-wdr-address-input')" style="padding: 4px 10px;">Copy</button>
+            </div>
+            <a id="adm-wdr-address-explorer-btn" href="#" target="_blank" class="btn btn-sm btn-secondary" style="width: 100%; justify-content: center; text-decoration: none; font-size: 11px;">
+              Inspect Wallet Address on Explorer ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Payout TxID & Audit History -->
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+          <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mute); margin-bottom: 8px;">
+            Audit &amp; Processing History
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--mute);">
+            <div style="display: flex; justify-content: space-between;">
+              <span>Requested Date:</span>
+              <span id="adm-wdr-time-requested" style="color: var(--text); font-family: var(--font-mono);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Processed / Reviewed Date:</span>
+              <span id="adm-wdr-time-reviewed" style="color: var(--text); font-family: var(--font-mono);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Reviewed By:</span>
+              <span id="adm-wdr-reviewer" style="color: var(--text);"></span>
+            </div>
+            <div id="adm-wdr-txhash-row" style="display: none; margin-top: 4px;">
+              <div style="font-size: 11px; color: var(--mute); margin-bottom: 2px;">Payout Transaction Hash:</div>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="adm-wdr-txhash-input" class="form-control" readonly style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-wdr-txhash-input')" style="padding: 4px 10px;">Copy</button>
+              </div>
+            </div>
+            <div id="adm-wdr-notes-row" style="display: none; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); padding: 8px; border-radius: 4px; margin-top: 4px;">
+              <span style="color: #F87171; font-weight: 600;">Rejection / Notes: </span>
+              <span id="adm-wdr-notes" style="color: var(--text);"></span>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" id="adm-wdr-detail-id">
+        <!-- Action Buttons Footer -->
+        <div id="adm-wdr-actions-bar" style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-wdr-detail')">Close</button>
+          <button type="button" id="adm-wdr-btn-reject" class="btn btn-danger" onclick="openRejectWithdrawalModal(document.getElementById('adm-wdr-detail-id').value)">Reject Withdrawal</button>
+          <button type="button" id="adm-wdr-btn-approve" class="btn btn-primary" onclick="submitApproveWithdrawal(document.getElementById('adm-wdr-detail-id').value)">Approve &amp; Pay Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A1.2 Full Image Lightbox Modal -->
+  <div id="modal-admin-lightbox" class="modal-backdrop" onclick="closeModal('modal-admin-lightbox')" style="background: rgba(0,0,0,0.85); z-index: 10000;">
+    <div style="max-width: 90vw; max-height: 90vh; position: relative; display: flex; align-items: center; justify-content: center;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal('modal-admin-lightbox')" style="position: absolute; top: -40px; right: 0; font-size: 32px; color: #FFF;">&times;</button>
+      <img id="adm-lightbox-img" src="" alt="Proof Full Image" style="max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: var(--radius-sm); box-shadow: 0 20px 60px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.2);">
+    </div>
+  </div>
+
+  <!-- A2. Reject Investment Modal -->
+  <div id="modal-admin-reject-inv" class="modal-backdrop">
+    <div class="modal" style="max-width: 460px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--accent-danger, #EF4444);">Reject Deposit Verification</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-reject-inv')">&times;</button>
+      </div>
+      <form onsubmit="handleRejectInvestmentSubmit(event)">
+        <input type="hidden" id="adm-reject-inv-id">
+        <p style="font-size: 13px; color: var(--mute); margin-bottom: 14px;">
+          Provide an optional reason why this deposit could not be verified (e.g. invalid hash, wrong amount, unconfirmed on-chain).
+        </p>
+        <div class="form-group">
+          <label class="form-label">Rejection Reason</label>
+          <textarea id="adm-reject-inv-reason" class="form-control" rows="3" placeholder="Reason for rejection..." required></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-reject-inv')">Cancel</button>
+          <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A3. Reject Withdrawal Modal -->
+  <div id="modal-admin-reject-wdr" class="modal-backdrop">
+    <div class="modal" style="max-width: 460px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--accent-danger, #EF4444);">Reject Withdrawal Request</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-reject-wdr')">&times;</button>
+      </div>
+      <form onsubmit="handleRejectWithdrawalSubmit(event)">
+        <input type="hidden" id="adm-reject-wdr-id">
+        <p style="font-size: 13px; color: var(--mute); margin-bottom: 14px;">
+          Provide the reason for rejecting this payout request.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Rejection Reason</label>
+          <textarea id="adm-reject-wdr-reason" class="form-control" rows="3" placeholder="Reason for rejection..." required></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-reject-wdr')">Cancel</button>
+          <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A4. Manage User Modal -->
+  <div id="modal-admin-manage-user" class="modal-backdrop">
+    <div class="modal" style="max-width: 580px; width: 100%;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="adm-usr-modal-name">Manage User Account</h3>
+          <div style="font-size: 12px; color: var(--mute); margin-top: 2px;" id="adm-usr-modal-email"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-admin-manage-user')">&times;</button>
+      </div>
+
+      <!-- User Status & Role Form -->
+      <form onsubmit="handleUpdateUserSubmit(event)" style="border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 18px;">
+        <input type="hidden" id="adm-usr-id">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Platform Role</label>
+            <select id="adm-usr-role" class="form-control">
+              <option value="USER">Regular User</option>
+              <option value="ADMIN">Platform Administrator</option>
+              <option value="SUPPORT">Support Staff</option>
+              <option value="FINANCE">Finance Auditor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">KYC Verification Status</label>
+            <select id="adm-usr-kyc" class="form-control">
+              <option value="UNVERIFIED">Unverified</option>
+              <option value="PENDING">Pending Review</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" id="adm-usr-verified"> Email Verified
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" id="adm-usr-active"> Account Active
+          </label>
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary">Save Profile Settings</button>
+      </form>
+
+      <!-- Balance Adjustment Section -->
+      <div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Adjust User Wallet Balance</div>
+        <p style="font-size: 12px; color: var(--mute); margin-bottom: 12px;">
+          Manually credit or debit funds to this user's wallet with an immutable audit entry. Current Balance: <b id="adm-usr-curr-balance" style="color:var(--emerald); font-family:var(--font-mono);">$0.00</b>
+        </p>
+        <form onsubmit="handleAdjustBalanceSubmit(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Action</label>
+              <select id="adm-adj-action" class="form-control">
+                <option value="CREDIT">Credit Balance (+)</option>
+                <option value="DEBIT">Debit Balance (-)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount ($)</label>
+              <input type="number" id="adm-adj-amount" class="form-control" min="0.01" step="0.01" placeholder="50.00" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reason for Adjustment</label>
+            <input type="text" id="adm-adj-reason" class="form-control" placeholder="e.g. Promotional credit, deposit recovery, correction" required>
+          </div>
+          <button type="submit" class="btn btn-sm btn-gold">Execute Balance Adjustment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- A5. Admin Ticket Thread Modal -->
+  <div id="modal-admin-ticket-thread" class="modal-backdrop">
+    <div class="modal" style="max-width: 650px; width: 100%;">
+      <div class="modal-header" style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px;">
+        <div>
+          <h3 class="modal-title" id="adm-thread-ticket-subject" style="font-size: 18px;">Ticket Details</h3>
+          <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+            <span id="adm-thread-ticket-user" style="font-size: 12px; color: var(--mute);"></span>
+            <span id="adm-thread-ticket-status" class="badge badge-approved">OPEN</span>
+            <span id="adm-thread-ticket-date" style="font-size: 12px; color: var(--mute);"></span>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-admin-ticket-thread')">&times;</button>
+      </div>
+
+      <!-- Thread Messages List -->
+      <div id="adm-thread-messages-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-right: 6px;">
+        <!-- Populated via JS -->
+      </div>
+
+      <!-- Admin Reply Box -->
+      <form onsubmit="handleAdminSendReply(event)">
+        <input type="hidden" id="adm-thread-ticket-id">
+        <div class="field" style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: var(--mute);">Staff Reply</label>
+          <textarea id="adm-thread-reply-message" rows="3" class="form-control" placeholder="Type your official support response here..." required></textarea>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 12px; color: var(--mute); margin: 0;">Set Status:</label>
+            <select id="adm-thread-new-status" class="form-control admin-filter-select" style="padding: 4px 8px; font-size: 12px;">
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="CLOSED">Closed</option>
+              <option value="OPEN">Open</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="padding: 8px 18px; font-size: 13px;">Send Staff Reply</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A6. Edit Platform Setting Modal -->
+  <div id="modal-admin-edit-setting" class="modal-backdrop">
+    <div class="modal" style="max-width: 480px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Platform Setting</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-edit-setting')">&times;</button>
+      </div>
+      <form onsubmit="handleAdminSaveSetting(event)">
+        <input type="hidden" id="adm-setting-key">
+        <div class="form-group">
+          <label class="form-label">Parameter Key</label>
+          <input type="text" id="adm-setting-key-disp" class="form-control" readonly style="font-family: var(--font-mono); color: var(--gold);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <div id="adm-setting-desc" style="font-size: 12px; color: var(--mute); margin-bottom: 4px;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Setting Value</label>
+          <input type="text" id="adm-setting-value" class="form-control" required style="font-family: var(--font-mono);">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-edit-setting')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Parameter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A7. Create/Edit Investment Plan Modal -->
+  <div id="modal-admin-plan" class="modal-backdrop">
+    <div class="modal" style="max-width: 520px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="adm-plan-modal-title">Create Investment Plan</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-plan')">&times;</button>
+      </div>
+      <form onsubmit="handleAdminSavePlan(event)">
+        <input type="hidden" id="adm-plan-id">
+        <div class="form-group">
+          <label class="form-label">Plan Name</label>
+          <input type="text" id="adm-plan-name" class="form-control" placeholder="e.g. Master Yield Plan" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input type="text" id="adm-plan-desc" class="form-control" placeholder="Plan brief description...">
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Weekly ROI Rate (%)</label>
+            <input type="number" id="adm-plan-roi" class="form-control" min="0.1" step="0.01" placeholder="3.50" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duration (Weeks)</label>
+            <input type="number" id="adm-plan-duration" class="form-control" min="1" step="1" value="120" required>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Min Investment ($)</label>
+            <input type="number" id="adm-plan-min" class="form-control" min="1" step="1" placeholder="100.00" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Investment ($)</label>
+            <input type="number" id="adm-plan-max" class="form-control" min="1" step="1" placeholder="5000.00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" id="adm-plan-active" checked> Plan Is Active & Available for Investors
+          </label>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-plan')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Plan Tier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A8. Trigger ROI Confirmation Modal -->
+  <div id="modal-admin-trigger-roi" class="modal-backdrop">
+    <div class="modal" style="max-width: 480px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--gold);">⚡ Trigger Weekly ROI Distribution</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-trigger-roi')">&times;</button>
+      </div>
+      <div>
+        <p style="font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 14px;">
+          This will execute the Weekly ROI calculation engine for <b>all active investments</b> across the platform:
+        </p>
+        <ul style="font-size: 12px; color: var(--mute); line-height: 1.8; margin-left: 18px; margin-bottom: 16px;">
+          <li>Credits weekly return to each investor's spendable wallet balance</li>
+          <li>Fills up investor plans toward their maximum cap (300%)</li>
+          <li>Distributes 1.5% weekly ROI level commissions up to 5 levels to upline sponsors' oldest active plans</li>
+          <li>Completes fully matured investment plans</li>
+        </ul>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-trigger-roi')">Cancel</button>
+          <button type="button" class="btn btn-gold" onclick="submitTriggerROIEngine()">Execute Distribution Now</button>
+        </div>
+      </div>
     </div>
   </div>
 

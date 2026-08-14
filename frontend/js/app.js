@@ -249,7 +249,34 @@ function renderAllViews() {
   const fullName = `${state.user.first_name || ''} ${state.user.last_name || ''}`.trim() || state.user.username || state.user.email;
   document.getElementById('sidebar-avatar').innerText = (fullName[0] || 'U').toUpperCase();
   document.getElementById('sidebar-username').innerText = fullName;
-  document.getElementById('sidebar-userrole').innerText = `Level ${state.user.active_level || 0} Unlock`;
+
+  // Admin Check & Primary Navigation Setup
+  const isAdmin = state.user && (state.user.role === 'ADMIN' || state.user.is_staff || state.user.is_superuser);
+  state.isAdmin = isAdmin;
+
+  const topNavUser = document.getElementById('top-nav-user');
+  const topNavAdmin = document.getElementById('top-nav-admin');
+  const userActions = document.getElementById('user-topbar-actions');
+  const adminActions = document.getElementById('admin-topbar-actions');
+
+  if (isAdmin) {
+    if (topNavUser) topNavUser.style.display = 'none';
+    if (topNavAdmin) topNavAdmin.style.display = 'flex';
+    if (userActions) userActions.style.display = 'none';
+    if (adminActions) adminActions.style.display = 'flex';
+    document.getElementById('sidebar-userrole').innerHTML = `<span class="badge badge-admin">ADMIN COMMAND</span>`;
+    
+    // Automatically default to Admin Overview on login
+    switchAdminNav('overview');
+  } else {
+    if (topNavUser) topNavUser.style.display = 'flex';
+    if (topNavAdmin) topNavAdmin.style.display = 'none';
+    if (userActions) userActions.style.display = 'flex';
+    if (adminActions) adminActions.style.display = 'none';
+    const banner = document.getElementById('admin-investor-mode-banner');
+    if (banner) banner.style.display = 'none';
+    document.getElementById('sidebar-userrole').innerText = `Level ${state.user.active_level || 0} Unlock`;
+  }
 
   // Dashboard Stats
   document.getElementById('dash-wallet-balance').innerText = `$${Number(state.wallet.balance || 0).toFixed(2)}`;
@@ -459,17 +486,27 @@ function renderDepositsTable() {
     const dateStr = inv.deposit_submitted_at
       ? new Date(inv.deposit_submitted_at).toLocaleString()
       : (inv.created_at ? new Date(inv.created_at).toLocaleString() : 'N/A');
-    const txHash = inv.deposit_txn_hash || 'N/A';
-    const network = inv.deposit_network || '—';
+    const txHash = inv.deposit_txn_hash ? `${inv.deposit_txn_hash.slice(0, 10)}...` : 'N/A';
+    const network = inv.deposit_network || 'BEP20';
     const statusBadge = inv.status === 'DEPOSIT_PENDING'
       ? '<span class="badge badge-pending">AWAITING REVIEW</span>'
       : `<span class="badge badge-${(inv.status || 'pending').toLowerCase()}">${inv.status}</span>`;
+    
+    const proofThumb = inv.deposit_proof_url
+      ? `<img src="${inv.deposit_proof_url}" class="proof-thumbnail" onclick="openLightbox('${inv.deposit_proof_url}')" title="Click to enlarge proof screenshot">`
+      : `<span style="font-size:11px; color:var(--mute);">TxID Only</span>`;
+
     tbody.innerHTML += `
       <tr>
         <td><b>${inv.plan_name || 'Plan'}</b></td>
         <td style="font-weight: 700; font-family: var(--font-mono);">$${Number(inv.amount).toFixed(2)}</td>
         <td><span class="badge badge-approved">${network}</span></td>
-        <td style="font-family: var(--font-mono); font-size: 11px; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">${txHash}</td>
+        <td>
+          <div style="display:flex; align-items:center; gap:6px;">
+            ${proofThumb}
+            <span style="font-family:var(--font-mono); font-size:11px;" title="${inv.deposit_txn_hash || ''}">${txHash}</span>
+          </div>
+        </td>
         <td>${statusBadge}</td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
       </tr>
@@ -713,16 +750,75 @@ async function handleSendReply(e) {
   }
 }
 
-// Navigation Tab Switcher
-function switchNav(viewName) {
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+// Navigation Handlers
+
+// 1. Admin Primary Topbar Navigation Switcher
+function switchAdminNav(tabName) {
+  if (!state.isAdmin) return;
+
+  // Activate #view-admin page
   document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+  const adminView = document.getElementById('view-admin');
+  if (adminView) adminView.classList.add('active');
 
-  const navItem = document.getElementById(`nav-${viewName}`);
+  // Hide Investor Preview Banner
+  const banner = document.getElementById('admin-investor-mode-banner');
+  if (banner) banner.style.display = 'none';
+
+  // Highlight Topbar Admin Nav item
+  document.querySelectorAll('#top-nav-admin .nav-item').forEach(el => el.classList.remove('active'));
+  const topItem = document.getElementById(`nav-adm-${tabName}`);
+  if (topItem) topItem.classList.add('active');
+
+  // Reset dropdown button active state
+  const investorDropdown = document.getElementById('nav-adm-investor-sub');
+  if (investorDropdown) investorDropdown.classList.remove('active');
+
+  // Switch the internal subpage and fetch live data
+  switchAdminTab(tabName);
+
+  const titles = {
+    overview: 'Admin Command Center • Platform Telemetry',
+    investments: 'Deposit & Investment Verifications',
+    withdrawals: 'Withdrawal & Payout Processing',
+    users: 'User Directory & Balance Control',
+    support: 'Support Helpdesk Console',
+    settings: 'System Business Rules & Investment Plans'
+  };
+  const titleEl = document.getElementById('header-page-title');
+  if (titleEl) titleEl.innerText = titles[tabName] || 'FINOVO Command Center';
+}
+
+// 2. User Views / Sub-Menu Switcher
+function switchNav(viewName) {
+  if (viewName === 'admin' && state.isAdmin) {
+    switchAdminNav('overview');
+    return;
+  }
+
+  // Activate view
+  document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
   const viewEl = document.getElementById(`view-${viewName}`);
-
-  if (navItem) navItem.classList.add('active');
   if (viewEl) viewEl.classList.add('active');
+
+  if (state.isAdmin) {
+    // Show investor mode preview banner
+    const banner = document.getElementById('admin-investor-mode-banner');
+    if (banner) banner.style.display = 'flex';
+
+    // Highlight the "Investor Views" dropdown in topbar
+    document.querySelectorAll('#top-nav-admin .nav-item').forEach(el => el.classList.remove('active'));
+    const investorDropdown = document.getElementById('nav-adm-investor-sub');
+    if (investorDropdown) investorDropdown.classList.add('active');
+  } else {
+    // Regular user nav highlight
+    document.querySelectorAll('#top-nav-user .nav-item').forEach(el => el.classList.remove('active'));
+    const navItem = document.getElementById(`nav-${viewName}`);
+    if (navItem) navItem.classList.add('active');
+
+    const banner = document.getElementById('admin-investor-mode-banner');
+    if (banner) banner.style.display = 'none';
+  }
 
   const titles = {
     dashboard: 'Dashboard Overview',
@@ -731,7 +827,8 @@ function switchNav(viewName) {
     referrals: 'Multi-Level Referral Downline',
     support: 'Support Center'
   };
-  document.getElementById('header-page-title').innerText = titles[viewName] || 'FINOVO Portal';
+  const titleEl = document.getElementById('header-page-title');
+  if (titleEl) titleEl.innerText = titles[viewName] || 'FINOVO Portal';
 }
 
 // Auth Handlers
@@ -1114,3 +1211,1025 @@ function showToast(message, isError = false) {
     setTimeout(() => toast.remove(), 300);
   }, 4000);
 }
+
+/* ==========================================================================
+   ADMIN PORTAL OPERATIONS & TELEMETRY HUB
+   ========================================================================== */
+
+state.admin = {
+  overview: null,
+  investments: [],
+  withdrawals: [],
+  users: [],
+  tickets: [],
+  settings: [],
+  plans: [],
+};
+
+let adminSearchDebounceTimer = null;
+
+function debounceAdminSearch(type) {
+  clearTimeout(adminSearchDebounceTimer);
+  adminSearchDebounceTimer = setTimeout(() => {
+    if (type === 'investments') loadAdminInvestments();
+    else if (type === 'withdrawals') loadAdminWithdrawals();
+    else if (type === 'users') loadAdminUsers();
+    else if (type === 'tickets') loadAdminTickets();
+  }, 350);
+}
+
+function copyElementText(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.select();
+  document.execCommand('copy');
+  showToast('Copied to clipboard!');
+}
+
+// ─── Sub-Tab Navigation Switcher ───
+function switchAdminTab(tabName) {
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-subpage').forEach(p => p.classList.remove('active'));
+
+  const btn = document.getElementById(`adm-tab-${tabName}`);
+  const page = document.getElementById(`adm-content-${tabName}`);
+
+  if (btn) btn.classList.add('active');
+  if (page) page.classList.add('active');
+
+  if (tabName === 'overview') loadAdminData();
+  else if (tabName === 'investments') loadAdminInvestments();
+  else if (tabName === 'withdrawals') loadAdminWithdrawals();
+  else if (tabName === 'users') loadAdminUsers();
+  else if (tabName === 'support') loadAdminTickets();
+  else if (tabName === 'settings') loadAdminSettings();
+}
+
+// ─── 1. Admin Overview Telemetry ───
+async function loadAdminData(force = false) {
+  if (!state.isAdmin) return;
+
+  try {
+    const overview = await apiCall('/admin-panel/overview/');
+    state.admin.overview = overview;
+    renderAdminOverview(overview);
+    if (force) showToast('Admin telemetry refreshed live.');
+  } catch (err) {
+    console.error('Failed to load admin overview:', err);
+  }
+}
+
+function renderAdminOverview(ov) {
+  if (!ov) return;
+
+  // Stat Cards
+  document.getElementById('adm-stat-users').innerText = ov.users.total;
+  document.getElementById('adm-stat-users-sub').innerText = `${ov.users.verified} verified • ${ov.users.active} active investors • ${ov.users.pending_kyc} KYC pending`;
+
+  document.getElementById('adm-stat-active-inv').innerText = `$${Number(ov.investments.active_total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('adm-stat-inv-sub').innerText = `${ov.investments.active_count} active plans ($${Number(ov.investments.all_time_total).toFixed(2)} total)`;
+
+  document.getElementById('adm-stat-pending-dep').innerText = `$${Number(ov.investments.pending_total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('adm-stat-pending-dep-sub').innerText = `${ov.investments.pending_count} deposits awaiting review`;
+
+  document.getElementById('adm-stat-pending-wdr').innerText = `$${Number(ov.withdrawals.pending_total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('adm-stat-pending-wdr-sub').innerText = `${ov.withdrawals.pending_count} payouts queued`;
+
+  // Badges (Sub-nav & Topbar)
+  const invBadge = document.getElementById('adm-badge-investments');
+  if (invBadge) invBadge.innerText = ov.investments.pending_count;
+
+  const wdrBadge = document.getElementById('adm-badge-withdrawals');
+  if (wdrBadge) wdrBadge.innerText = ov.withdrawals.pending_count;
+
+  const tktBadge = document.getElementById('adm-badge-tickets');
+  if (tktBadge) tktBadge.innerText = ov.support.open_tickets;
+
+  const topInvBadge = document.getElementById('top-badge-inv');
+  if (topInvBadge) {
+    topInvBadge.innerText = ov.investments.pending_count;
+    topInvBadge.style.display = ov.investments.pending_count > 0 ? 'inline-block' : 'none';
+  }
+
+  const topWdrBadge = document.getElementById('top-badge-wdr');
+  if (topWdrBadge) {
+    topWdrBadge.innerText = ov.withdrawals.pending_count;
+    topWdrBadge.style.display = ov.withdrawals.pending_count > 0 ? 'inline-block' : 'none';
+  }
+
+  const topTktBadge = document.getElementById('top-badge-tkt');
+  if (topTktBadge) {
+    topTktBadge.innerText = ov.support.open_tickets;
+    topTktBadge.style.display = ov.support.open_tickets > 0 ? 'inline-block' : 'none';
+  }
+
+  // System Balances & Liabilities
+  document.getElementById('adm-fin-balance').innerText = `$${Number(ov.finances.total_system_balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('adm-fin-deposits').innerText = `$${Number(ov.finances.total_system_deposited).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('adm-fin-roi').innerText = `$${Number(ov.finances.total_roi_earned).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('adm-fin-comm').innerText = `$${Number(ov.finances.total_direct_income).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Overview Queues
+  renderOverviewDepositsQueue(ov.queues.pending_investments || []);
+  renderOverviewWithdrawalsQueue(ov.queues.pending_withdrawals || []);
+  renderOverviewTicketsQueue(ov.queues.recent_tickets || []);
+}
+
+function renderOverviewDepositsQueue(items) {
+  const tbody = document.getElementById('adm-overview-deposits-tbody');
+  tbody.innerHTML = '';
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--mute); padding:24px;">No pending deposits waiting for review.</td></tr>`;
+    return;
+  }
+
+  items.forEach(inv => {
+    const proofThumb = inv.deposit_proof_url
+      ? `<img src="${inv.deposit_proof_url}" class="proof-thumbnail" onclick="event.stopPropagation(); openLightbox('${inv.deposit_proof_url}')" title="Click to enlarge proof screenshot">`
+      : `<span style="font-size:11px; color:var(--mute);">TxID Only</span>`;
+
+    const txShort = inv.deposit_txn_hash ? `${inv.deposit_txn_hash.slice(0, 10)}...` : 'N/A';
+
+    tbody.innerHTML += `
+      <tr onclick="openProofModal('${inv.id}')" style="cursor:pointer;" title="Click to view full investment dossier & proof">
+        <td>
+          <div style="font-weight:600; color:var(--text);">${inv.user_email}</div>
+          <div style="font-size:11px; color:var(--mute); font-family:var(--font-mono);">${inv.deposit_network || 'BEP20'}</div>
+        </td>
+        <td>
+          <div style="color:var(--text);">${inv.plan_name}</div>
+          <b style="color:var(--emerald); font-family:var(--font-mono);">$${Number(inv.amount).toFixed(2)}</b>
+        </td>
+        <td>
+          <div style="display:flex; align-items:center; gap:8px;">
+            ${proofThumb}
+            <span style="font-family:var(--font-mono); font-size:11px; color:var(--mute);">${txShort}</span>
+          </div>
+        </td>
+        <td style="text-align:right;">
+          <div style="display:flex; gap:6px; justify-content:flex-end;">
+            <button class="btn btn-sm btn-primary" style="padding:4px 8px; font-size:11px;" onclick="event.stopPropagation(); submitApproveInvestment('${inv.id}')">Approve</button>
+            <button class="btn btn-sm btn-danger" style="padding:4px 8px; font-size:11px;" onclick="event.stopPropagation(); openRejectInvestmentModal('${inv.id}')">Reject</button>
+            <button class="btn btn-sm btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="event.stopPropagation(); openProofModal('${inv.id}')">🔍</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function renderOverviewWithdrawalsQueue(items) {
+  const tbody = document.getElementById('adm-overview-withdrawals-tbody');
+  tbody.innerHTML = '';
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--mute); padding:24px;">No pending withdrawals queued.</td></tr>`;
+    return;
+  }
+
+  items.forEach(wdr => {
+    const addrShort = wdr.wallet_address ? `${wdr.wallet_address.slice(0, 8)}...${wdr.wallet_address.slice(-6)}` : 'N/A';
+    tbody.innerHTML += `
+      <tr onclick="openWithdrawalDetailModal('${wdr.id}')" style="cursor:pointer;" title="Click to view full payout inspector">
+        <td>
+          <div style="font-weight:600; color:var(--text);">${wdr.user_email}</div>
+          <div style="font-size:11px; color:var(--mute);">${wdr.withdrawal_type}</div>
+        </td>
+        <td>
+          <b style="color:var(--text); font-family:var(--font-mono);">$${Number(wdr.net_amount).toFixed(2)}</b>
+          <div style="font-size:10px; color:var(--mute);">Fee: $${Number(wdr.fee).toFixed(2)}</div>
+        </td>
+        <td>
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--mute);">${addrShort}</div>
+          <div style="font-size:10px; color:var(--gold);">${wdr.network}</div>
+        </td>
+        <td style="text-align:right;">
+          <div style="display:flex; gap:6px; justify-content:flex-end;">
+            <button class="btn btn-sm btn-primary" style="padding:4px 8px; font-size:11px;" onclick="event.stopPropagation(); submitApproveWithdrawal('${wdr.id}')">Pay</button>
+            <button class="btn btn-sm btn-danger" style="padding:4px 8px; font-size:11px;" onclick="event.stopPropagation(); openRejectWithdrawalModal('${wdr.id}')">Reject</button>
+            <button class="btn btn-sm btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="event.stopPropagation(); openWithdrawalDetailModal('${wdr.id}')">🔍</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function renderOverviewTicketsQueue(items) {
+  const tbody = document.getElementById('adm-overview-tickets-tbody');
+  tbody.innerHTML = '';
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--mute); padding:24px;">No open support tickets.</td></tr>`;
+    return;
+  }
+
+  items.forEach(tkt => {
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-weight:600; color:var(--text);">${tkt.user_email}</td>
+        <td>${tkt.subject}</td>
+        <td><span class="badge badge-${(tkt.status || 'open').toLowerCase().replace('_','-')}">${tkt.status}</span></td>
+        <td>
+          <button class="btn btn-sm btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="openAdminTicketModal('${tkt.id}')">Reply</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// ─── 2. Admin Investments & Deposit Proofs ───
+function filterAdminInvestments() {
+  loadAdminInvestments();
+}
+
+async function loadAdminInvestments() {
+  const statusFilter = document.getElementById('adm-inv-filter-status')?.value || 'DEPOSIT_PENDING';
+  const search = document.getElementById('adm-inv-search')?.value.trim() || '';
+
+  let url = `/admin-panel/investments/?status=${encodeURIComponent(statusFilter)}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+
+  try {
+    const data = await apiCall(url);
+    const investments = Array.isArray(data) ? data : (data.results || []);
+    state.admin.investments = investments;
+    renderAdminInvestments(investments);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+function renderAdminInvestments(investments) {
+  const tbody = document.getElementById('adm-investments-tbody');
+  tbody.innerHTML = '';
+
+  if (investments.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--mute);">No investments found for the selected criteria.</td></tr>`;
+    return;
+  }
+
+  investments.forEach(inv => {
+    const isPending = inv.status === 'DEPOSIT_PENDING' || inv.status === 'PENDING';
+    const proofThumb = inv.deposit_proof_url
+      ? `<img src="${inv.deposit_proof_url}" class="proof-thumbnail" onclick="event.stopPropagation(); openLightbox('${inv.deposit_proof_url}')" title="Click to enlarge proof screenshot">`
+      : `<span style="font-size:11px; color:var(--mute);">—</span>`;
+
+    const txShort = inv.deposit_txn_hash ? `${inv.deposit_txn_hash.slice(0, 10)}...` : 'N/A';
+    const dateStr = inv.created_at ? new Date(inv.created_at).toLocaleString() : 'N/A';
+
+    tbody.innerHTML += `
+      <tr onclick="openProofModal('${inv.id}')" style="cursor:pointer;" title="Click to view complete investment dossier & proof">
+        <td>
+          <div style="font-weight:600; color:var(--text);">${inv.user_email}</div>
+          <div style="font-size:11px; color:var(--mute);">@${inv.user_username || 'user'}</div>
+        </td>
+        <td>
+          <b style="color:var(--text);">${inv.plan_name}</b>
+          <div style="font-size:11px; color:var(--mute);">Max Ret: $${Number(inv.max_return).toFixed(2)}</div>
+        </td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">$${Number(inv.amount).toFixed(2)}</td>
+        <td><span class="badge badge-approved" style="font-size:10px;">${inv.deposit_network || 'BEP20'}</span></td>
+        <td>
+          <div style="display:flex; align-items:center; gap:8px;">
+            ${proofThumb}
+            <span style="font-family:var(--font-mono); font-size:11px; color:var(--text);" title="${inv.deposit_txn_hash || ''}">${txShort}</span>
+          </div>
+        </td>
+        <td><span class="badge badge-${inv.status.toLowerCase().replace('_','-')}">${inv.status.replace('_',' ')}</span></td>
+        <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
+        <td style="text-align:right;">
+          <div style="display:inline-flex; gap:6px;">
+            ${isPending ? `
+              <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); submitApproveInvestment('${inv.id}')">Approve & Activate</button>
+              <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); openRejectInvestmentModal('${inv.id}')">Reject</button>
+            ` : ''}
+            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openProofModal('${inv.id}')">Details</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// ─── 3. Admin Withdrawals Queue ───
+function filterAdminWithdrawals() {
+  loadAdminWithdrawals();
+}
+
+async function loadAdminWithdrawals() {
+  const statusFilter = document.getElementById('adm-wdr-filter-status')?.value || 'PENDING';
+  const search = document.getElementById('adm-wdr-search')?.value.trim() || '';
+
+  let url = `/admin-panel/withdrawals/?status=${encodeURIComponent(statusFilter)}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+
+  try {
+    const data = await apiCall(url);
+    const withdrawals = Array.isArray(data) ? data : (data.results || []);
+    state.admin.withdrawals = withdrawals;
+    renderAdminWithdrawals(withdrawals);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+function renderAdminWithdrawals(withdrawals) {
+  const tbody = document.getElementById('adm-withdrawals-tbody');
+  tbody.innerHTML = '';
+
+  if (withdrawals.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:32px; color:var(--mute);">No withdrawals found for the selected criteria.</td></tr>`;
+    return;
+  }
+
+  withdrawals.forEach(wdr => {
+    const isPending = wdr.status === 'PENDING';
+    const dateStr = wdr.created_at ? new Date(wdr.created_at).toLocaleString() : 'N/A';
+    const addrShort = wdr.wallet_address ? `${wdr.wallet_address.slice(0, 8)}...${wdr.wallet_address.slice(-6)}` : 'N/A';
+
+    tbody.innerHTML += `
+      <tr onclick="openWithdrawalDetailModal('${wdr.id}')" style="cursor:pointer;" title="Click to view full withdrawal inspector">
+        <td>
+          <div style="font-weight:600; color:var(--text);">${wdr.user_email}</div>
+          <div style="font-size:11px; color:var(--mute);">@${wdr.user_username || 'user'}</div>
+        </td>
+        <td><span class="badge ${wdr.withdrawal_type === 'CAPITAL' ? 'badge-pending' : 'badge-approved'}">${wdr.withdrawal_type}</span></td>
+        <td style="font-family:var(--font-mono); font-weight:700;">$${Number(wdr.amount).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); color:var(--mute);">$${Number(wdr.fee).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">$${Number(wdr.net_amount).toFixed(2)}</td>
+        <td>
+          <div style="font-family:var(--font-mono); font-size:12px; color:var(--text);" title="${wdr.wallet_address || ''}">${addrShort}</div>
+          <span class="badge badge-approved" style="font-size:10px;">${wdr.network}</span>
+        </td>
+        <td><span class="badge badge-${wdr.status.toLowerCase().replace('_','-')}">${wdr.status}</span></td>
+        <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
+        <td style="text-align:right;">
+          <div style="display:inline-flex; gap:6px;">
+            ${isPending ? `
+              <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); submitApproveWithdrawal('${wdr.id}')">Approve & Pay</button>
+              <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); openRejectWithdrawalModal('${wdr.id}')">Reject</button>
+            ` : `
+              <span style="font-size:12px; color:var(--mute); align-self:center;">${wdr.reviewed_by_email ? 'By ' + wdr.reviewed_by_email : 'Processed'}</span>
+            `}
+            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openWithdrawalDetailModal('${wdr.id}')">Details</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// ─── 4. Admin User Management ───
+function filterAdminUsers() {
+  loadAdminUsers();
+}
+
+async function loadAdminUsers() {
+  const roleFilter = document.getElementById('adm-usr-filter-role')?.value || '';
+  const kycFilter = document.getElementById('adm-usr-filter-kyc')?.value || '';
+  const search = document.getElementById('adm-usr-search')?.value.trim() || '';
+
+  let url = `/admin-panel/users/?`;
+  if (roleFilter) url += `&role=${encodeURIComponent(roleFilter)}`;
+  if (kycFilter) url += `&kyc_status=${encodeURIComponent(kycFilter)}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+
+  try {
+    const data = await apiCall(url);
+    const users = Array.isArray(data) ? data : (data.results || []);
+    state.admin.users = users;
+    renderAdminUsers(users);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+function renderAdminUsers(users) {
+  const tbody = document.getElementById('adm-users-tbody');
+  tbody.innerHTML = '';
+
+  if (users.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:32px; color:var(--mute);">No users match the search criteria.</td></tr>`;
+    return;
+  }
+
+  users.forEach(u => {
+    const initial = (u.full_name || u.email || 'U')[0].toUpperCase();
+    const roleBadge = u.role === 'ADMIN' ? 'badge-admin' : (u.role === 'SUPPORT' ? 'badge-support' : (u.role === 'FINANCE' ? 'badge-finance' : 'badge-user'));
+    const kycBadge = u.kyc_status === 'APPROVED' ? 'badge-kyc-approved' : (u.kyc_status === 'PENDING' ? 'badge-kyc-pending' : 'badge-kyc-unverified');
+    const dateStr = u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A';
+
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="user-avatar" style="width:32px; height:32px; font-size:13px;">${initial}</div>
+            <div>
+              <div style="font-weight:600; color:var(--text);">${u.full_name || u.email}</div>
+              <div style="font-size:11px; color:var(--mute); font-family:var(--font-mono);">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge ${roleBadge}">${u.role}</span></td>
+        <td><span class="badge ${kycBadge}">${u.kyc_status}</span></td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">$${Number(u.wallet_balance || 0).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono);">$${Number(u.total_invested || 0).toFixed(2)} (${u.active_investments_count || 0})</td>
+        <td><span class="badge badge-approved" style="font-size:10px;">Level ${u.active_level || 0}</span></td>
+        <td style="font-size:12px; color:var(--mute);">${u.parent_email || 'Root (None)'}</td>
+        <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
+        <td style="text-align:right;">
+          <button class="btn btn-sm btn-secondary" onclick="openManageUserModal('${u.id}')">Manage</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// ─── 5. Admin Support Desk ───
+function filterAdminTickets() {
+  loadAdminTickets();
+}
+
+async function loadAdminTickets() {
+  const statusFilter = document.getElementById('adm-tkt-filter-status')?.value || 'OPEN';
+  const search = document.getElementById('adm-tkt-search')?.value.trim() || '';
+
+  let url = `/admin-panel/tickets/?status=${encodeURIComponent(statusFilter)}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+
+  try {
+    const data = await apiCall(url);
+    const tickets = Array.isArray(data) ? data : (data.results || []);
+    state.admin.tickets = tickets;
+    renderAdminTickets(tickets);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+function renderAdminTickets(tickets) {
+  const tbody = document.getElementById('adm-tickets-tbody');
+  tbody.innerHTML = '';
+
+  if (tickets.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--mute);">No tickets found for the selected filter.</td></tr>`;
+    return;
+  }
+
+  tickets.forEach(tkt => {
+    const dateStr = tkt.updated_at ? new Date(tkt.updated_at).toLocaleString() : 'N/A';
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <div style="font-weight:600; color:var(--text);">${tkt.user_email}</div>
+          <div style="font-size:11px; color:var(--mute);">@${tkt.user_username || 'user'}</div>
+        </td>
+        <td><b style="color:var(--text);">${tkt.subject}</b></td>
+        <td><span class="badge badge-approved" style="font-size:10px;">${tkt.category}</span></td>
+        <td style="font-family:var(--font-mono); font-weight:600;">${tkt.replies_count || 0} msgs</td>
+        <td><span class="badge badge-${(tkt.status || 'open').toLowerCase().replace('_','-')}">${tkt.status}</span></td>
+        <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
+        <td style="text-align:right;">
+          <button class="btn btn-sm btn-primary" onclick="openAdminTicketModal('${tkt.id}')">Open Thread</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// ─── 6. Admin Platform Settings & Plans ───
+async function loadAdminSettings() {
+  try {
+    const [settingsData, plansData] = await Promise.all([
+      apiCall('/admin-panel/settings/'),
+      apiCall('/admin-panel/plans/'),
+    ]);
+
+    const settings = Array.isArray(settingsData) ? settingsData : (settingsData.results || []);
+    const plans = Array.isArray(plansData) ? plansData : (plansData.results || []);
+
+    state.admin.settings = settings;
+    state.admin.plans = plans;
+
+    renderAdminSettings(settings);
+    renderAdminPlans(plans);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+function renderAdminSettings(settings) {
+  const tbody = document.getElementById('adm-settings-tbody');
+  tbody.innerHTML = '';
+
+  if (settings.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--mute);">No platform settings configured.</td></tr>`;
+    return;
+  }
+
+  settings.forEach(s => {
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-family:var(--font-mono); font-weight:600; color:var(--gold); font-size:12px;">${s.key}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">${s.value}</td>
+        <td style="font-size:12px; color:var(--mute);">${s.description || '—'}</td>
+        <td style="text-align:right;">
+          <button class="btn btn-sm btn-secondary" onclick="openEditSettingModal('${s.key}', '${s.value}', '${(s.description || '').replace(/'/g, "\\'")}')">Edit</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function renderAdminPlans(plans) {
+  const tbody = document.getElementById('adm-plans-tbody');
+  tbody.innerHTML = '';
+
+  if (plans.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--mute);">No investment tiers created.</td></tr>`;
+    return;
+  }
+
+  plans.forEach(p => {
+    tbody.innerHTML += `
+      <tr>
+        <td><b style="color:var(--text);">${p.name}</b></td>
+        <td style="font-family:var(--font-mono); color:var(--emerald); font-weight:700;">${Number(p.weekly_roi_rate).toFixed(2)}% / wk</td>
+        <td style="font-family:var(--font-mono);">$${Number(p.minimum_amount).toFixed(0)} – $${Number(p.maximum_amount).toFixed(0)}</td>
+        <td style="font-family:var(--font-mono);">${p.duration_weeks || 120} Wks</td>
+        <td><span class="badge ${p.is_active ? 'badge-approved' : 'badge-pending'}">${p.is_active ? 'ACTIVE' : 'INACTIVE'}</span></td>
+        <td style="text-align:right;">
+          <button class="btn btn-sm btn-secondary" onclick="openPlanModal('${p.id}')">Edit Tier</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// ─── ADMIN ACTION HANDLERS & MODALS ───
+
+// Image Lightbox Viewer
+function openLightbox(src) {
+  if (!src) return;
+  const img = document.getElementById('adm-lightbox-img');
+  if (img) img.src = src;
+  openModal('modal-admin-lightbox');
+}
+
+// Deposit Proof & Investment Full Dossier Modal
+async function openProofModal(invId) {
+  let inv = null;
+  try {
+    inv = await apiCall(`/admin-panel/investments/${invId}/`);
+  } catch (e) {
+    inv = (state.admin.investments || []).find(i => i.id === invId) || (state.admin.overview?.queues.pending_investments || []).find(i => i.id === invId);
+  }
+  if (!inv) return;
+
+  // Header & Status
+  document.getElementById('adm-proof-inv-id').value = inv.id;
+  document.getElementById('adm-proof-inv-id-label').innerText = `Record ID: #${inv.id}`;
+
+  const isPending = inv.status === 'DEPOSIT_PENDING' || inv.status === 'PENDING';
+  const statusBadge = document.getElementById('adm-proof-status-badge');
+  statusBadge.innerText = inv.status.replace('_', ' ');
+  statusBadge.className = `badge badge-${inv.status.toLowerCase().replace('_', '-')}`;
+
+  // Media & Proof Image
+  const img = document.getElementById('adm-proof-img');
+  const placeholder = document.getElementById('adm-proof-placeholder');
+  const mediaActions = document.getElementById('adm-proof-media-actions');
+  const fullLink = document.getElementById('adm-proof-link-full');
+
+  if (inv.deposit_proof_url) {
+    img.src = inv.deposit_proof_url;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+    if (mediaActions) mediaActions.style.display = 'flex';
+    if (fullLink) fullLink.href = inv.deposit_proof_url;
+  } else {
+    img.style.display = 'none';
+    placeholder.style.display = 'flex';
+    if (mediaActions) mediaActions.style.display = 'none';
+  }
+
+  // Blockchain On-Chain Details
+  const net = inv.deposit_network || 'BEP20';
+  document.getElementById('adm-proof-network-pill').innerText = net;
+  document.getElementById('adm-proof-txhash').value = inv.deposit_txn_hash || 'No hash submitted';
+  document.getElementById('adm-proof-sender').value = inv.deposit_sender_address || 'Not specified';
+
+  const explorerBtn = document.getElementById('adm-proof-explorer-btn');
+  if (inv.explorer_url || inv.deposit_txn_hash) {
+    const explorerUrl = inv.explorer_url || (net === 'TRC20' ? `https://tronscan.org/#/transaction/${inv.deposit_txn_hash}` : `https://bscscan.com/tx/${inv.deposit_txn_hash}`);
+    explorerBtn.href = explorerUrl;
+    explorerBtn.style.display = 'inline-flex';
+  } else {
+    explorerBtn.style.display = 'none';
+  }
+
+  // Investor Dossier
+  document.getElementById('adm-proof-investor-name').innerText = `${inv.user_full_name ? inv.user_full_name + ' • ' : ''}${inv.user_email}`;
+  document.getElementById('adm-proof-investor-id').innerText = `@${inv.user_username || 'user'} • UID: ${inv.user_id || 'N/A'}`;
+  document.getElementById('adm-proof-sponsor').innerText = inv.user_parent_email || 'Root / Direct (No Sponsor)';
+  document.getElementById('adm-proof-user-level').innerText = `Level ${inv.user_active_level || 0} Sponsor`;
+
+  // Plan & Financial Progress
+  document.getElementById('adm-proof-plan-name').innerText = `${inv.plan_name} (${inv.plan_duration_weeks || 120} Wks)`;
+  document.getElementById('adm-proof-plan-roi').innerText = `${Number(inv.plan_weekly_roi_rate || 3.5).toFixed(2)}% / week`;
+  document.getElementById('adm-proof-amount').innerText = `$${Number(inv.amount).toFixed(2)}`;
+  document.getElementById('adm-proof-max-return').innerText = `$${Number(inv.max_return).toFixed(2)}`;
+  document.getElementById('adm-proof-credited').innerText = `$${Number(inv.total_credited || 0).toFixed(2)}`;
+
+  const remaining = inv.remaining_return !== undefined ? Number(inv.remaining_return) : Math.max(0, Number(inv.max_return) - Number(inv.total_credited || 0));
+  document.getElementById('adm-proof-remaining').innerText = `$${remaining.toFixed(2)}`;
+
+  const pct = inv.progress_percent !== undefined ? inv.progress_percent : (inv.max_return > 0 ? Math.min(100, Math.round((Number(inv.total_credited || 0) / Number(inv.max_return)) * 100)) : 0);
+  document.getElementById('adm-proof-progress-pct').innerText = `${pct}%`;
+  document.getElementById('adm-proof-progress-bar').style.width = `${pct}%`;
+
+  // Timeline & Audit
+  const submitDate = inv.deposit_submitted_at || inv.created_at;
+  document.getElementById('adm-proof-time-submitted').innerText = submitDate ? new Date(submitDate).toLocaleString() : 'N/A';
+  document.getElementById('adm-proof-time-approved').innerText = inv.approved_at ? new Date(inv.approved_at).toLocaleString() : (isPending ? 'Pending Admin Action' : 'N/A');
+  document.getElementById('adm-proof-admin-reviewer').innerText = inv.approved_by_email || (isPending ? 'Awaiting Review' : 'System');
+
+  const rejRow = document.getElementById('adm-proof-rejection-row');
+  if (inv.rejection_reason) {
+    rejRow.style.display = 'block';
+    document.getElementById('adm-proof-rejection-reason').innerText = inv.rejection_reason;
+  } else {
+    rejRow.style.display = 'none';
+  }
+
+  // Action Buttons
+  const btnApprove = document.getElementById('adm-proof-btn-approve');
+  const btnReject = document.getElementById('adm-proof-btn-reject');
+  if (btnApprove) btnApprove.style.display = isPending ? 'inline-flex' : 'none';
+  if (btnReject) btnReject.style.display = isPending ? 'inline-flex' : 'none';
+
+  openModal('modal-admin-proof');
+}
+
+// Withdrawal Full Payout Inspector Modal
+async function openWithdrawalDetailModal(wdrId) {
+  let wdr = null;
+  try {
+    wdr = await apiCall(`/admin-panel/withdrawals/${wdrId}/`);
+  } catch (e) {
+    wdr = (state.admin.withdrawals || []).find(w => w.id === wdrId) || (state.admin.overview?.queues.pending_withdrawals || []).find(w => w.id === wdrId);
+  }
+  if (!wdr) return;
+
+  const isPending = wdr.status === 'PENDING';
+  document.getElementById('adm-wdr-detail-id').value = wdr.id;
+  document.getElementById('adm-wdr-id-label').innerText = `Payout Request: #${wdr.id}`;
+
+  const statusBadge = document.getElementById('adm-wdr-status-badge');
+  statusBadge.innerText = wdr.status;
+  statusBadge.className = `badge badge-${wdr.status.toLowerCase().replace('_', '-')}`;
+
+  // Financial Banner
+  document.getElementById('adm-wdr-net-display').innerText = `$${Number(wdr.net_amount).toFixed(2)}`;
+  document.getElementById('adm-wdr-gross-display').innerText = `$${Number(wdr.amount).toFixed(2)}`;
+  document.getElementById('adm-wdr-fee-display').innerText = `$${Number(wdr.fee).toFixed(2)}`;
+  document.getElementById('adm-wdr-charge-display').innerText = `$${Number(wdr.capital_charge || (wdr.withdrawal_type === 'CAPITAL' ? 10 : 0)).toFixed(2)}`;
+
+  const typeBadge = document.getElementById('adm-wdr-type-badge');
+  typeBadge.innerText = `${wdr.withdrawal_type} WITHDRAWAL`;
+  typeBadge.className = `badge ${wdr.withdrawal_type === 'CAPITAL' ? 'badge-pending' : 'badge-approved'}`;
+
+  // User Profile
+  document.getElementById('adm-wdr-user-email').innerText = wdr.user_email;
+  document.getElementById('adm-wdr-user-name').innerText = wdr.user_full_name || 'N/A';
+  document.getElementById('adm-wdr-user-username').innerText = `@${wdr.user_username || 'user'} • UID: ${wdr.user_id || 'N/A'}`;
+  document.getElementById('adm-wdr-user-balance').innerText = `$${Number(wdr.user_wallet_balance || 0).toFixed(2)}`;
+
+  // Destination & On-Chain Address
+  const net = wdr.network || 'BEP20';
+  document.getElementById('adm-wdr-network-badge').innerText = net;
+  document.getElementById('adm-wdr-address-input').value = wdr.wallet_address || 'No address specified';
+
+  const explorerBtn = document.getElementById('adm-wdr-address-explorer-btn');
+  if (wdr.wallet_address) {
+    const explorerUrl = net === 'TRC20' ? `https://tronscan.org/#/address/${wdr.wallet_address}` : `https://bscscan.com/address/${wdr.wallet_address}`;
+    explorerBtn.href = explorerUrl;
+    explorerBtn.style.display = 'inline-flex';
+  } else {
+    explorerBtn.style.display = 'none';
+  }
+
+  // Timeline & Audit
+  document.getElementById('adm-wdr-time-requested').innerText = wdr.created_at ? new Date(wdr.created_at).toLocaleString() : 'N/A';
+  document.getElementById('adm-wdr-time-reviewed').innerText = wdr.reviewed_at ? new Date(wdr.reviewed_at).toLocaleString() : (isPending ? 'Pending Admin Action' : 'N/A');
+  document.getElementById('adm-wdr-reviewer').innerText = wdr.reviewed_by_email || (isPending ? 'Awaiting Review' : 'System');
+
+  // TxHash Row
+  const txRow = document.getElementById('adm-wdr-txhash-row');
+  if (wdr.txn_hash) {
+    txRow.style.display = 'block';
+    document.getElementById('adm-wdr-txhash-input').value = wdr.txn_hash;
+  } else {
+    txRow.style.display = 'none';
+  }
+
+  // Notes / Rejection Row
+  const notesRow = document.getElementById('adm-wdr-notes-row');
+  const noteText = wdr.notes || wdr.rejection_reason;
+  if (noteText) {
+    notesRow.style.display = 'block';
+    document.getElementById('adm-wdr-notes').innerText = noteText;
+  } else {
+    notesRow.style.display = 'none';
+  }
+
+  // Action Buttons
+  const btnApprove = document.getElementById('adm-wdr-btn-approve');
+  const btnReject = document.getElementById('adm-wdr-btn-reject');
+  if (btnApprove) btnApprove.style.display = isPending ? 'inline-flex' : 'none';
+  if (btnReject) btnReject.style.display = isPending ? 'inline-flex' : 'none';
+
+  openModal('modal-admin-wdr-detail');
+}
+
+// Approve Investment
+async function submitApproveInvestment(invId) {
+  if (!confirm('Are you sure you want to approve this deposit and activate the investment plan? This will credit the investment and distribute upline commissions.')) {
+    return;
+  }
+
+  try {
+    const res = await apiCall(`/admin-panel/investments/${invId}/approve/`, 'POST', {});
+    showToast(res.detail || 'Investment approved and activated!');
+    closeModal('modal-admin-proof');
+    await Promise.all([loadAdminData(), loadAdminInvestments()]);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Reject Investment
+function openRejectInvestmentModal(invId) {
+  document.getElementById('adm-reject-inv-id').value = invId;
+  document.getElementById('adm-reject-inv-reason').value = '';
+  closeModal('modal-admin-proof');
+  openModal('modal-admin-reject-inv');
+}
+
+async function handleRejectInvestmentSubmit(e) {
+  e.preventDefault();
+  const invId = document.getElementById('adm-reject-inv-id').value;
+  const reason = document.getElementById('adm-reject-inv-reason').value;
+
+  try {
+    const res = await apiCall(`/admin-panel/investments/${invId}/reject/`, 'POST', { reason });
+    showToast(res.detail || 'Investment deposit marked as rejected.');
+    closeModal('modal-admin-reject-inv');
+    await Promise.all([loadAdminData(), loadAdminInvestments()]);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Approve Withdrawal
+async function submitApproveWithdrawal(wdrId) {
+  const txnHash = prompt('Enter payment transaction hash (TxID) for this payout (optional):', '') || '';
+
+  try {
+    const res = await apiCall(`/admin-panel/withdrawals/${wdrId}/approve/`, 'POST', { txn_hash: txnHash });
+    showToast(res.detail || 'Withdrawal marked approved and debited.');
+    await Promise.all([loadAdminData(), loadAdminWithdrawals()]);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Reject Withdrawal
+function openRejectWithdrawalModal(wdrId) {
+  document.getElementById('adm-reject-wdr-id').value = wdrId;
+  document.getElementById('adm-reject-wdr-reason').value = '';
+  openModal('modal-admin-reject-wdr');
+}
+
+async function handleRejectWithdrawalSubmit(e) {
+  e.preventDefault();
+  const wdrId = document.getElementById('adm-reject-wdr-id').value;
+  const reason = document.getElementById('adm-reject-wdr-reason').value;
+
+  try {
+    const res = await apiCall(`/admin-panel/withdrawals/${wdrId}/reject/`, 'POST', { reason });
+    showToast(res.detail || 'Withdrawal request rejected.');
+    closeModal('modal-admin-reject-wdr');
+    await Promise.all([loadAdminData(), loadAdminWithdrawals()]);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Manage User
+async function openManageUserModal(userId) {
+  try {
+    const u = await apiCall(`/admin-panel/users/${userId}/`);
+    document.getElementById('adm-usr-id').value = u.id;
+    document.getElementById('adm-usr-modal-name').innerText = `Manage ${u.full_name || u.email}`;
+    document.getElementById('adm-usr-modal-email').innerText = `${u.email} • Level ${u.active_level} Sponsor`;
+    document.getElementById('adm-usr-role').value = u.role || 'USER';
+    document.getElementById('adm-usr-kyc').value = u.kyc_status || 'UNVERIFIED';
+    document.getElementById('adm-usr-verified').checked = !!u.is_email_verified;
+    document.getElementById('adm-usr-active').checked = u.is_active !== false;
+    document.getElementById('adm-usr-curr-balance').innerText = `$${Number(u.wallet_balance || 0).toFixed(2)}`;
+    document.getElementById('adm-adj-amount').value = '';
+    document.getElementById('adm-adj-reason').value = '';
+
+    openModal('modal-admin-manage-user');
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+async function handleUpdateUserSubmit(e) {
+  e.preventDefault();
+  const userId = document.getElementById('adm-usr-id').value;
+  const role = document.getElementById('adm-usr-role').value;
+  const kyc_status = document.getElementById('adm-usr-kyc').value;
+  const is_email_verified = document.getElementById('adm-usr-verified').checked;
+  const is_active = document.getElementById('adm-usr-active').checked;
+
+  try {
+    await apiCall(`/admin-panel/users/${userId}/`, 'PATCH', {
+      role,
+      kyc_status,
+      is_email_verified,
+      is_active,
+    });
+    showToast('User profile updated successfully.');
+    loadAdminUsers();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+async function handleAdjustBalanceSubmit(e) {
+  e.preventDefault();
+  const userId = document.getElementById('adm-usr-id').value;
+  const action = document.getElementById('adm-adj-action').value;
+  const amount = Number(document.getElementById('adm-adj-amount').value);
+  const reason = document.getElementById('adm-adj-reason').value;
+
+  try {
+    const res = await apiCall(`/admin-panel/users/${userId}/adjust-balance/`, 'POST', { action, amount, reason });
+    showToast(res.detail || 'Balance adjusted successfully.');
+    document.getElementById('adm-usr-curr-balance').innerText = `$${Number(res.balance_after).toFixed(2)}`;
+    document.getElementById('adm-adj-amount').value = '';
+    document.getElementById('adm-adj-reason').value = '';
+    loadAdminUsers();
+    loadAdminData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Support Ticket Thread Modal
+async function openAdminTicketModal(ticketId) {
+  try {
+    const tkt = await apiCall(`/admin-panel/tickets/${ticketId}/`);
+    document.getElementById('adm-thread-ticket-id').value = tkt.id;
+    document.getElementById('adm-thread-ticket-subject').innerText = tkt.subject;
+    document.getElementById('adm-thread-ticket-user').innerText = `From: ${tkt.user_email}`;
+    document.getElementById('adm-thread-ticket-status').innerText = tkt.status;
+    document.getElementById('adm-thread-ticket-status').className = `badge badge-${tkt.status.toLowerCase().replace('_','-')}`;
+    document.getElementById('adm-thread-ticket-date').innerText = new Date(tkt.created_at).toLocaleString();
+    document.getElementById('adm-thread-new-status').value = tkt.status;
+    document.getElementById('adm-thread-reply-message').value = '';
+
+    const list = document.getElementById('adm-thread-messages-list');
+    list.innerHTML = '';
+
+    (tkt.replies || []).forEach(r => {
+      const isStaff = r.is_staff;
+      const bubbleClass = isStaff ? 'thread-msg-staff' : 'thread-msg-user';
+      const senderName = isStaff ? 'Staff Support' : (r.user_full_name || r.user_email);
+      const dateStr = new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      list.innerHTML += `
+        <div class="thread-msg-bubble ${bubbleClass}">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11px; color:var(--mute);">
+            <b>${senderName} ${isStaff ? '👑' : ''}</b>
+            <span>${dateStr}</span>
+          </div>
+          <div style="color:var(--text);">${r.message}</div>
+        </div>
+      `;
+    });
+
+    openModal('modal-admin-ticket-thread');
+    setTimeout(() => { list.scrollTop = list.scrollHeight; }, 100);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+async function handleAdminSendReply(e) {
+  e.preventDefault();
+  const ticketId = document.getElementById('adm-thread-ticket-id').value;
+  const message = document.getElementById('adm-thread-reply-message').value;
+  const newStatus = document.getElementById('adm-thread-new-status').value;
+
+  try {
+    const res = await apiCall(`/admin-panel/tickets/${ticketId}/reply/`, 'POST', { message, status: newStatus });
+    showToast('Staff reply sent.');
+    document.getElementById('adm-thread-reply-message').value = '';
+    openAdminTicketModal(ticketId);
+    loadAdminTickets();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Edit Platform Setting
+function openEditSettingModal(key, value, description) {
+  document.getElementById('adm-setting-key').value = key;
+  document.getElementById('adm-setting-key-disp').value = key;
+  document.getElementById('adm-setting-value').value = value;
+  document.getElementById('adm-setting-desc').innerText = description || 'Configure platform business rule.';
+  openModal('modal-admin-edit-setting');
+}
+
+async function handleAdminSaveSetting(e) {
+  e.preventDefault();
+  const key = document.getElementById('adm-setting-key').value;
+  const value = document.getElementById('adm-setting-value').value;
+
+  try {
+    const res = await apiCall(`/admin-panel/settings/${encodeURIComponent(key)}/`, 'PATCH', { value });
+    showToast(res.detail || 'Setting updated successfully.');
+    closeModal('modal-admin-edit-setting');
+    loadAdminSettings();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Create / Edit Plan Modal
+function openPlanModal(planId = null) {
+  const plan = planId ? (state.admin.plans || []).find(p => p.id === planId) : null;
+
+  document.getElementById('adm-plan-id').value = plan ? plan.id : '';
+  document.getElementById('adm-plan-modal-title').innerText = plan ? `Edit ${plan.name}` : 'Create Investment Plan';
+  document.getElementById('adm-plan-name').value = plan ? plan.name : '';
+  document.getElementById('adm-plan-desc').value = plan ? (plan.description || '') : '';
+  document.getElementById('adm-plan-roi').value = plan ? plan.weekly_roi_rate : '3.50';
+  document.getElementById('adm-plan-duration').value = plan ? plan.duration_weeks : '120';
+  document.getElementById('adm-plan-min').value = plan ? plan.minimum_amount : '100';
+  document.getElementById('adm-plan-max').value = plan ? plan.maximum_amount : '5000';
+  document.getElementById('adm-plan-active').checked = plan ? plan.is_active : true;
+
+  openModal('modal-admin-plan');
+}
+
+async function handleAdminSavePlan(e) {
+  e.preventDefault();
+  const planId = document.getElementById('adm-plan-id').value;
+  const name = document.getElementById('adm-plan-name').value;
+  const description = document.getElementById('adm-plan-desc').value;
+  const weekly_roi_rate = Number(document.getElementById('adm-plan-roi').value);
+  const duration_weeks = Number(document.getElementById('adm-plan-duration').value);
+  const minimum_amount = Number(document.getElementById('adm-plan-min').value);
+  const maximum_amount = Number(document.getElementById('adm-plan-max').value);
+  const is_active = document.getElementById('adm-plan-active').checked;
+
+  const payload = {
+    name,
+    description,
+    weekly_roi_rate,
+    duration_weeks,
+    minimum_amount,
+    maximum_amount,
+    is_active,
+  };
+
+  try {
+    if (planId) {
+      await apiCall(`/admin-panel/plans/${planId}/`, 'PATCH', payload);
+      showToast('Plan tier updated.');
+    } else {
+      await apiCall('/admin-panel/plans/', 'POST', payload);
+      showToast('New investment plan created.');
+    }
+    closeModal('modal-admin-plan');
+    loadAdminSettings();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// Trigger Weekly ROI Distribution
+async function submitTriggerROIEngine() {
+  try {
+    const res = await apiCall('/admin-panel/actions/trigger-roi/', 'POST', {});
+    showToast(`ROI Run Complete: ${res.investments_processed} investment(s) processed. Total $${Number(res.total_roi_distributed).toFixed(2)} distributed.`);
+    closeModal('modal-admin-trigger-roi');
+    await loadAdminData();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}

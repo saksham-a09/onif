@@ -25,5 +25,6 @@ urlpatterns = [
         path('',             include('apps.transactions.urls')),   # /deposits/ + /withdrawals/
         path('referrals/',   include('apps.referrals.urls')),
         path('support/',     include('apps.support.urls')),
+        path('admin-panel/', include('apps.core.admin_urls',   namespace='admin_panel')),
     ])),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
