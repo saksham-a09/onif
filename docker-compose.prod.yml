@@ -1,0 +1,128 @@
+version: '3.8'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared environment for all Django-based services
+# ─────────────────────────────────────────────────────────────────────────────
+x-django-env: &django-env
+  # Force production settings
+  DJANGO_SETTINGS_MODULE: config.settings.production
+  DEBUG: "False"
+  # In production, these should ideally be set in a .env file!
+  SECRET_KEY: ${SECRET_KEY:-django-insecure-default-key-change-in-production}
+  DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-investment_db}
+  CELERY_BROKER_URL: redis://redis:6379/0
+  CELERY_RESULT_BACKEND: redis://redis:6379/0
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared volume mount for all Django-based services
+# We do NOT mount .:/app here, because in production we want to use the code
+# baked into the image. We only mount named volumes for persisted data.
+# ─────────────────────────────────────────────────────────────────────────────
+x-django-volumes: &django-volumes
+  - media_data:/app/media
+  - static_data:/app/static
+  - log_data:/app/logs
+
+services:
+
+  # ───────────────────────────────────────────────────────── PostgreSQL ─────
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-investment_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-investment_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────────────────────── Redis ─────
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────── Django Backend (prod) ─────
+  backend:
+    build: ./backend
+    # In production, uses the default CMD from Dockerfile: gunicorn ...
+    volumes: *django-volumes
+    environment:
+      <<: *django-env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────── Celery Worker ─────
+  celery_worker:
+    build: ./backend
+    entrypoint: []
+    command: celery -A config worker --loglevel=info --concurrency=2 -E
+    volumes: *django-volumes
+    environment:
+      <<: *django-env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+  # ────────────────────────────────────────── Celery Beat ─────
+  celery_beat:
+    build: ./backend
+    entrypoint: []
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes: *django-volumes
+    environment:
+      <<: *django-env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+  # ────────────────────────────────────────── Nginx (Reverse Proxy & Frontend) ─────
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      # Mount our central configuration
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Mount the static frontend directly into nginx html folder
+      - ./frontend:/usr/share/nginx/html:ro
+      # Mount backend statics and media so nginx can serve them fast
+      - static_data:/app/static:ro
+      - media_data:/app/media:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+# ─────────────────────────────────────────────────────────── Named Volumes ─────
+volumes:
+  postgres_data:
+  redis_data:
+  media_data:
+  static_data:
+  log_data:
