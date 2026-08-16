@@ -4,7 +4,8 @@ import os
 
 DEBUG = False
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+allowed_hosts_env = os.getenv('ALLOWED_HOSTS')
+ALLOWED_HOSTS = allowed_hosts_env.split(',') if allowed_hosts_env else ['*']
 
 # Database
 DATABASES = {
@@ -14,14 +15,16 @@ DATABASES = {
 }
 
 # Security Settings
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Make sure to set SECURE_SSL_REDIRECT=True in .env once you have HTTPS (SSL) configured!
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
+SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT
+CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # CORS Settings
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+cors_origins_env = os.getenv('CORS_ALLOWED_ORIGINS')
+CORS_ALLOWED_ORIGINS = cors_origins_env.split(',') if cors_origins_env else []
 
 # Whitenoise for serving static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
