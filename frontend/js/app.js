@@ -1,6 +1,6 @@
 /* FINOVO - Pure API Integrated Frontend Application */
 
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
+const API_BASE = '/api/v1';
 
 // Global Application State
 let state = {
