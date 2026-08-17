@@ -30,6 +30,11 @@ DEFAULT_SETTINGS = [
     ('ROI_DISTRIBUTION_DAY',     '5',       'Weekday for ROI distribution: 0=Mon … 5=Sat, 6=Sun'),
     # Supported networks
     ('SUPPORTED_NETWORKS',       'BEP20,TRC20', 'Comma-separated list of supported crypto networks'),
+    # Company Deposit Wallets & QR Codes
+    ('COMPANY_WALLET_BEP20',     '0x71C8bf7B67295F2797e883FffFa7617bFF524b08', 'Company USDT (BEP20 BSC) deposit wallet address'),
+    ('COMPANY_WALLET_TRC20',     'TYDzsYUE288J1EX9732B8kG89kEGY82kL9',         'Company USDT (TRC20 TRON) deposit wallet address'),
+    ('COMPANY_WALLET_BEP20_QR',  '',                                           'Custom QR code image or data URL for BEP20 deposit (leave empty for auto-generated)'),
+    ('COMPANY_WALLET_TRC20_QR',  '',                                           'Custom QR code image or data URL for TRC20 deposit (leave empty for auto-generated)'),
 ]
 
 

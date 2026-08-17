@@ -1259,6 +1259,300 @@ body {
   text-decoration: underline;
 }
 
+/* ─── OTP Verification Layout & Styles ────────────────────────── */
+.otp-verify-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--emerald-soft);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+.otp-verify-desc {
+  text-align: center;
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+.otp-verify-desc strong {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.otp-input-group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0 22px;
+  width: 100%;
+}
+
+.otp-digit {
+  width: 48px;
+  height: 54px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  padding: 0;
+}
+
+.otp-digit:focus {
+  border-color: var(--emerald);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.otp-digit.otp-filled {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.06);
+  color: var(--emerald-soft);
+}
+
+.otp-digit.otp-success {
+  border-color: var(--emerald) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #3fcb8c !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4) !important;
+}
+
+.otp-digit.otp-error {
+  border-color: var(--danger, #ef4444) !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3) !important;
+  animation: otpShake 0.4s ease;
+}
+
+@keyframes otpShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.otp-resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  font-size: 13px;
+}
+
+.otp-countdown-text {
+  color: var(--mute);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.otp-resend-btn {
+  background: none;
+  border: none;
+  color: var(--emerald-soft);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.otp-resend-btn:hover:not(:disabled) {
+  text-decoration: underline;
+  color: var(--emerald);
+}
+
+.otp-resend-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: none;
+  color: var(--mute);
+}
+
+@media (max-width: 420px) {
+  .otp-input-group {
+    gap: 6px;
+  }
+  .otp-digit {
+    width: 38px;
+    height: 46px;
+    font-size: 18px;
+  }
+}
+
+/* ─── Company Deposit Wallet Card Styles ──────────────────────── */
+.company-wallet-card {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-sm, 6px);
+  padding: 14px;
+  margin-bottom: 18px;
+  animation: fadeIn 0.2s ease;
+}
+
+.company-wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.company-wallet-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--emerald-soft);
+}
+
+.wallet-addr-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.wallet-addr-input {
+  flex: 1;
+  background: var(--bg-dark, #06090e);
+  border: 1px solid var(--line, #1f2839);
+  color: var(--gold, #f59e0b);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm, 4px);
+  outline: none;
+  letter-spacing: 0.02em;
+}
+
+.copy-addr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.company-wallet-notice {
+  font-size: 11px;
+  color: var(--mute, #9ca3af);
+  line-height: 1.5;
+}
+
+.company-wallet-notice strong {
+  color: var(--text, #ffffff);
+}
+
+.company-qr-layout {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.company-qr-container {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  background: #ffffff;
+  border-radius: var(--radius-sm, 6px);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+}
+
+.company-qr-container:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+}
+
+.company-deposit-qr-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.qr-scan-hint {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9.5px;
+  color: var(--mute, #9ca3af);
+  white-space: nowrap;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.company-addr-col {
+  flex: 1;
+  min-width: 220px;
+}
+
+.admin-qr-preview-box {
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.admin-qr-preview-box:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 480px) {
+  .company-qr-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .company-qr-container {
+    margin: 0 auto 12px;
+  }
+}
+
+
+
 @media (max-width: 880px) {
   .shell { grid-template-columns: 1fr; }
   .brand-panel { display: none; }

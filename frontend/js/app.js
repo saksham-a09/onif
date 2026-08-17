@@ -15,6 +15,12 @@ let state = {
   team: [],
   commissions: [],
   tickets: [],
+  depositWallets: {
+    BEP20: '0x71C8bf7B67295F2797e883FffFa7617bFF524b08',
+    TRC20: 'TYDzsYUE288J1EX9732B8kG89kEGY82kL9',
+    BEP20_QR: '',
+    TRC20_QR: '',
+  },
   apiConnected: false,
 };
 
@@ -222,6 +228,9 @@ async function loadAllAPIData() {
       };
       if (overviewData.active_level !== undefined) {
         state.user.active_level = overviewData.active_level;
+      }
+      if (overviewData.deposit_wallets) {
+        state.depositWallets = overviewData.deposit_wallets;
       }
     }
 
@@ -1092,8 +1101,77 @@ function openInvestModal(planId, planName, minAmt, maxAmt) {
   document.getElementById('inv-txhash').value = '';
   document.getElementById('inv-sender').value = '';
   document.getElementById('inv-proof').value = '';
+  const depBox = document.getElementById('company-deposit-box');
+  if (depBox) depBox.style.display = 'none';
   updateMaxReturnCalc();
   openModal('modal-invest');
+}
+
+function getQRUrl(address, customQr = '') {
+  if (customQr && customQr.trim()) {
+    return customQr.trim();
+  }
+  if (!address || address === 'Address not configured') {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=4&data=FINOVO';
+  }
+  return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=4&data=${encodeURIComponent(address)}`;
+}
+
+function handleDepositNetworkChange() {
+  const net = document.getElementById('inv-network').value;
+  const box = document.getElementById('company-deposit-box');
+  if (!box) return;
+
+  if (!net) {
+    box.style.display = 'none';
+    return;
+  }
+
+  const wallets = state.depositWallets || {
+    BEP20: '0x71C8bf7B67295F2797e883FffFa7617bFF524b08',
+    TRC20: 'TYDzsYUE288J1EX9732B8kG89kEGY82kL9',
+    BEP20_QR: '',
+    TRC20_QR: '',
+  };
+
+  const address = wallets[net] || 'Address not configured';
+  const customQr = net === 'BEP20' ? (wallets.BEP20_QR || '') : (wallets.TRC20_QR || '');
+
+  const addrInput = document.getElementById('company-wallet-addr');
+  if (addrInput) addrInput.value = address;
+
+  const qrImg = document.getElementById('company-deposit-qr-img');
+  if (qrImg) qrImg.src = getQRUrl(address, customQr);
+
+  const labelEl = document.getElementById('dep-network-label');
+  if (labelEl) labelEl.innerText = net === 'BEP20' ? 'BEP20 (BSC)' : 'TRC20 (TRON)';
+
+  const badgeEl = document.getElementById('dep-network-badge');
+  if (badgeEl) badgeEl.innerText = `${net} USDT`;
+
+  const noticeEl = document.getElementById('dep-network-notice');
+  if (noticeEl) noticeEl.innerText = net;
+
+  box.style.display = 'block';
+}
+
+function copyCompanyDepositAddress() {
+  const input = document.getElementById('company-wallet-addr');
+  if (!input || !input.value) return;
+
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('btn-copy-deposit-addr');
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = `<span>Copied! ✓</span>`;
+      setTimeout(() => { btn.innerHTML = orig; }, 1500);
+    }
+    showToast('Company deposit address copied to clipboard!');
+  }).catch(() => {
+    input.select();
+    document.execCommand('copy');
+    showToast('Copied to clipboard!');
+  });
 }
 
 document.getElementById('inv-amount')?.addEventListener('input', updateMaxReturnCalc);
@@ -1718,6 +1796,25 @@ async function loadAdminSettings() {
 }
 
 function renderAdminSettings(settings) {
+  // Populate Dedicated Company Wallets & QR Card
+  const bep20Setting = settings.find(s => s.key === 'COMPANY_WALLET_BEP20');
+  const trc20Setting = settings.find(s => s.key === 'COMPANY_WALLET_TRC20');
+  const bep20QrSetting = settings.find(s => s.key === 'COMPANY_WALLET_BEP20_QR');
+  const trc20QrSetting = settings.find(s => s.key === 'COMPANY_WALLET_TRC20_QR');
+
+  const bep20Input = document.getElementById('adm-wallet-bep20');
+  const trc20Input = document.getElementById('adm-wallet-trc20');
+  const bep20QrInput = document.getElementById('adm-wallet-bep20-qr');
+  const trc20QrInput = document.getElementById('adm-wallet-trc20-qr');
+
+  if (bep20Input && bep20Setting) bep20Input.value = bep20Setting.value;
+  if (trc20Input && trc20Setting) trc20Input.value = trc20Setting.value;
+  if (bep20QrInput && bep20QrSetting) bep20QrInput.value = bep20QrSetting.value;
+  if (trc20QrInput && trc20QrSetting) trc20QrInput.value = trc20QrSetting.value;
+
+  updateAdminQRPreview('BEP20');
+  updateAdminQRPreview('TRC20');
+
   const tbody = document.getElementById('adm-settings-tbody');
   tbody.innerHTML = '';
 
@@ -2231,5 +2328,106 @@ async function submitTriggerROIEngine() {
     await loadAdminData();
   } catch (err) {
     showToast(err.message, true);
+  }
+}
+
+// Admin Deposit Wallets & QR Code Management
+function updateAdminQRPreview(network) {
+  const isBep = network === 'BEP20';
+  const addrInput = document.getElementById(isBep ? 'adm-wallet-bep20' : 'adm-wallet-trc20');
+  const qrInput = document.getElementById(isBep ? 'adm-wallet-bep20-qr' : 'adm-wallet-trc20-qr');
+  const qrImg = document.getElementById(isBep ? 'adm-bep20-qr-img' : 'adm-trc20-qr-img');
+  const statusEl = document.getElementById(isBep ? 'adm-bep20-qr-status' : 'adm-trc20-qr-status');
+
+  const addr = (addrInput?.value || '').trim();
+  const customQr = (qrInput?.value || '').trim();
+
+  if (qrImg) {
+    qrImg.src = getQRUrl(addr, customQr);
+  }
+
+  if (statusEl) {
+    if (customQr) {
+      statusEl.innerText = 'Custom Uploaded ✓';
+      statusEl.style.color = 'var(--gold)';
+    } else {
+      statusEl.innerText = 'Auto-Generated';
+      statusEl.style.color = 'var(--emerald-soft)';
+    }
+  }
+}
+
+function handleAdminQRUpload(event, network) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select a valid image file for the QR code.', true);
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    const isBep = network === 'BEP20';
+    const qrInput = document.getElementById(isBep ? 'adm-wallet-bep20-qr' : 'adm-wallet-trc20-qr');
+    if (qrInput) qrInput.value = dataUrl;
+    updateAdminQRPreview(network);
+    showToast(`Custom ${network} QR code loaded. Click "Save Company Deposit Wallets & QR Codes" to apply.`);
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetAdminQR(network) {
+  const isBep = network === 'BEP20';
+  const qrInput = document.getElementById(isBep ? 'adm-wallet-bep20-qr' : 'adm-wallet-trc20-qr');
+  if (qrInput) qrInput.value = '';
+  updateAdminQRPreview(network);
+  showToast(`Reset ${network} to auto-generated QR code.`);
+}
+
+// Save Company Deposit Wallets & QR Codes
+async function handleAdminSaveCompanyWallets(e) {
+  e.preventDefault();
+  const bep20 = (document.getElementById('adm-wallet-bep20')?.value || '').trim();
+  const trc20 = (document.getElementById('adm-wallet-trc20')?.value || '').trim();
+  const bep20Qr = (document.getElementById('adm-wallet-bep20-qr')?.value || '').trim();
+  const trc20Qr = (document.getElementById('adm-wallet-trc20-qr')?.value || '').trim();
+  const btn = document.getElementById('adm-save-wallets-btn');
+
+  if (!bep20 || !trc20) {
+    showToast('Please enter both BEP20 and TRC20 company deposit addresses.', true);
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'Saving Wallets & QR Codes…';
+  }
+
+  try {
+    await Promise.all([
+      apiCall('/admin-panel/settings/COMPANY_WALLET_BEP20/', 'PATCH', { value: bep20 }),
+      apiCall('/admin-panel/settings/COMPANY_WALLET_TRC20/', 'PATCH', { value: trc20 }),
+      apiCall('/admin-panel/settings/COMPANY_WALLET_BEP20_QR/', 'PATCH', { value: bep20Qr }),
+      apiCall('/admin-panel/settings/COMPANY_WALLET_TRC20_QR/', 'PATCH', { value: trc20Qr }),
+    ]);
+
+    state.depositWallets = {
+      BEP20: bep20,
+      TRC20: trc20,
+      BEP20_QR: bep20Qr,
+      TRC20_QR: trc20Qr,
+    };
+
+    showToast('Company deposit wallets & QR codes updated successfully! 🎉');
+    await loadAdminSettings();
+  } catch (err) {
+    showToast(err.message || 'Failed to update company wallets.', true);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Save Company Deposit Wallets &amp; QR Codes`;
+    }
   }
 }

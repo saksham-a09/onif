@@ -7,6 +7,23 @@ from django.db.models import Count, Q
 from apps.wallet.models import Wallet
 from apps.investments.models import Investment
 from apps.referrals.models import ReferralCommission
+from apps.core.models import PlatformSettings
+
+
+class DepositWalletsView(APIView):
+    """
+    GET /api/v1/dashboard/deposit-wallets/
+    Returns platform company deposit wallet addresses for crypto networks.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({
+            'BEP20': PlatformSettings.get('COMPANY_WALLET_BEP20', '0x71C8bf7B67295F2797e883FffFa7617bFF524b08'),
+            'TRC20': PlatformSettings.get('COMPANY_WALLET_TRC20', 'TYDzsYUE288J1EX9732B8kG89kEGY82kL9'),
+            'BEP20_QR': PlatformSettings.get('COMPANY_WALLET_BEP20_QR', ''),
+            'TRC20_QR': PlatformSettings.get('COMPANY_WALLET_TRC20_QR', ''),
+        })
 
 
 class DashboardView(APIView):
@@ -86,4 +103,12 @@ class DashboardView(APIView):
             'total_team': total_team,
             'direct_team': direct_team,
             'active_level': user.active_level,
+
+            # Company Deposit Wallets
+            'deposit_wallets': {
+                'BEP20': PlatformSettings.get('COMPANY_WALLET_BEP20', '0x71C8bf7B67295F2797e883FffFa7617bFF524b08'),
+                'TRC20': PlatformSettings.get('COMPANY_WALLET_TRC20', 'TYDzsYUE288J1EX9732B8kG89kEGY82kL9'),
+                'BEP20_QR': PlatformSettings.get('COMPANY_WALLET_BEP20_QR', ''),
+                'TRC20_QR': PlatformSettings.get('COMPANY_WALLET_TRC20_QR', ''),
+            },
         })

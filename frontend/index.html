@@ -172,7 +172,7 @@
           <!-- OTP Verification Form (shown after registration) -->
           <div id="form-verify-otp" style="display: none;">
             <div class="otp-verify-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
@@ -875,36 +875,6 @@
           </div>
         </div>
 
-        <!-- Admin Sub Navigation Tabs -->
-        <div class="admin-subnav-container">
-          <button class="admin-tab-btn active" onclick="switchAdminTab('overview')" id="adm-tab-overview">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            Overview
-          </button>
-          <button class="admin-tab-btn" onclick="switchAdminTab('investments')" id="adm-tab-investments">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-            Investments & Deposits
-            <span class="tab-badge" id="adm-badge-investments">0</span>
-          </button>
-          <button class="admin-tab-btn" onclick="switchAdminTab('withdrawals')" id="adm-tab-withdrawals">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            Withdrawals Queue
-            <span class="tab-badge" id="adm-badge-withdrawals">0</span>
-          </button>
-          <button class="admin-tab-btn" onclick="switchAdminTab('users')" id="adm-tab-users">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            User Management
-          </button>
-          <button class="admin-tab-btn" onclick="switchAdminTab('support')" id="adm-tab-support">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            Support Console
-            <span class="tab-badge" id="adm-badge-tickets">0</span>
-          </button>
-          <button class="admin-tab-btn" onclick="switchAdminTab('settings')" id="adm-tab-settings">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            System Rules & Plans
-          </button>
-        </div>
 
         <!-- 1. ADMIN OVERVIEW SUB-PAGE -->
         <div id="adm-content-overview" class="admin-subpage active">
@@ -1245,6 +1215,104 @@
 
         <!-- 6. ADMIN SYSTEM SETTINGS & PLANS SUB-PAGE -->
         <div id="adm-content-settings" class="admin-subpage">
+          <!-- Company Deposit Wallets & QR Configuration -->
+          <div class="card" style="margin-bottom: 24px; border: 1px solid rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, rgba(14, 19, 25, 0.6) 100%);">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow" style="color: var(--emerald-soft);">Official Deposit Receiving Channels</div>
+                <h2 class="section-title">Company Deposit Wallets &amp; QR Codes</h2>
+              </div>
+              <div class="badge badge-approved" style="font-size: 11px;">Active on User Buy Modals</div>
+            </div>
+            <p style="font-size: 13px; color: var(--mute); margin-bottom: 20px; line-height: 1.5;">
+              Configure official USDT receiving addresses and payment QR codes for Binance Smart Chain (BEP20) and TRON (TRC20). Users can scan the QR code or copy the address when buying plans.
+            </p>
+            <form onsubmit="handleAdminSaveCompanyWallets(event)">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                
+                <!-- BEP20 Card -->
+                <div style="background: rgba(6, 9, 14, 0.6); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 600; font-size: 13px; color: var(--text);">USDT (BEP20 – BSC)</span>
+                    <span class="badge" style="font-size: 10px; background: rgba(245, 158, 11, 0.15); color: var(--gold);">BSC Network</span>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label" style="font-size: 12px;">Deposit Wallet Address</label>
+                    <input type="text" id="adm-wallet-bep20" class="form-control" placeholder="0x..." style="font-family: var(--font-mono); font-size: 12.5px;" oninput="updateAdminQRPreview('BEP20')" required>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 6px;">
+                    <label class="form-label" style="font-size: 12px; display: flex; justify-content: space-between;">
+                      <span>Deposit QR Code</span>
+                      <span id="adm-bep20-qr-status" style="font-size: 11px; color: var(--emerald-soft); font-weight: normal;">Auto-Generated</span>
+                    </label>
+                    <input type="hidden" id="adm-wallet-bep20-qr">
+                    <div style="display: flex; gap: 14px; align-items: center;">
+                      <div class="admin-qr-preview-box" id="adm-bep20-qr-wrap" title="Click to zoom QR" onclick="openLightbox(document.getElementById('adm-bep20-qr-img').src)">
+                        <img id="adm-bep20-qr-img" src="" alt="BEP20 QR" style="width: 72px; height: 72px; border-radius: 4px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                      </div>
+                      <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <label class="btn btn-sm btn-secondary" style="cursor: pointer; justify-content: center; font-size: 11px; padding: 6px 10px;">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                          Upload Custom QR
+                          <input type="file" accept="image/*" style="display:none;" onchange="handleAdminQRUpload(event, 'BEP20')">
+                        </label>
+                        <button type="button" class="btn btn-sm btn-secondary" style="font-size: 11px; justify-content: center; padding: 6px 10px;" onclick="resetAdminQR('BEP20')">
+                          Auto-Generate QR
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TRC20 Card -->
+                <div style="background: rgba(6, 9, 14, 0.6); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 600; font-size: 13px; color: var(--text);">USDT (TRC20 – TRON)</span>
+                    <span class="badge" style="font-size: 10px; background: rgba(239, 68, 68, 0.15); color: #f87171;">TRON Network</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" style="font-size: 12px;">Deposit Wallet Address</label>
+                    <input type="text" id="adm-wallet-trc20" class="form-control" placeholder="T..." style="font-family: var(--font-mono); font-size: 12.5px;" oninput="updateAdminQRPreview('TRC20')" required>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 6px;">
+                    <label class="form-label" style="font-size: 12px; display: flex; justify-content: space-between;">
+                      <span>Deposit QR Code</span>
+                      <span id="adm-trc20-qr-status" style="font-size: 11px; color: var(--emerald-soft); font-weight: normal;">Auto-Generated</span>
+                    </label>
+                    <input type="hidden" id="adm-wallet-trc20-qr">
+                    <div style="display: flex; gap: 14px; align-items: center;">
+                      <div class="admin-qr-preview-box" id="adm-trc20-qr-wrap" title="Click to zoom QR" onclick="openLightbox(document.getElementById('adm-trc20-qr-img').src)">
+                        <img id="adm-trc20-qr-img" src="" alt="TRC20 QR" style="width: 72px; height: 72px; border-radius: 4px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                      </div>
+                      <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <label class="btn btn-sm btn-secondary" style="cursor: pointer; justify-content: center; font-size: 11px; padding: 6px 10px;">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                          Upload Custom QR
+                          <input type="file" accept="image/*" style="display:none;" onchange="handleAdminQRUpload(event, 'TRC20')">
+                        </label>
+                        <button type="button" class="btn btn-sm btn-secondary" style="font-size: 11px; justify-content: center; padding: 6px 10px;" onclick="resetAdminQR('TRC20')">
+                          Auto-Generate QR
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn btn-primary" id="adm-save-wallets-btn">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  Save Company Deposit Wallets &amp; QR Codes
+                </button>
+              </div>
+            </form>
+          </div>
+
+
           <div class="grid-2">
             <!-- Global Business Parameters -->
             <div class="card">
@@ -1406,12 +1474,43 @@
         </p>
         <div class="form-group">
           <label class="form-label">Deposit Network <span style="color: var(--accent-danger);">*</span></label>
-          <select id="inv-network" class="form-control" required>
+          <select id="inv-network" class="form-control" required onchange="handleDepositNetworkChange()">
             <option value="">— Select Network —</option>
             <option value="BEP20">BEP20 (Binance Smart Chain – USDT)</option>
             <option value="TRC20">TRC20 (TRON – USDT)</option>
           </select>
         </div>
+
+        <!-- Official Company Deposit Address & QR Box -->
+        <div id="company-deposit-box" class="company-wallet-card" style="display: none;">
+          <div class="company-wallet-header">
+            <span class="company-wallet-label">Official Deposit Destination (<span id="dep-network-label">BEP20</span>)</span>
+            <span class="badge badge-approved" id="dep-network-badge">USDT</span>
+          </div>
+          <div class="company-wallet-body">
+            <div class="company-qr-layout">
+              <div class="company-qr-container" title="Click to zoom QR Code" onclick="openLightbox(document.getElementById('company-deposit-qr-img').src)">
+                <img id="company-deposit-qr-img" src="" alt="Deposit QR Code" class="company-deposit-qr-img">
+                <span class="qr-scan-hint">🔍 Tap to Zoom</span>
+              </div>
+              <div class="company-addr-col">
+                <div style="font-size: 11px; color: var(--mute); margin-bottom: 5px; font-weight: 500;">Deposit Wallet Address:</div>
+                <div class="wallet-addr-wrap" style="margin-bottom: 8px;">
+                  <input type="text" id="company-wallet-addr" class="wallet-addr-input" readonly>
+                  <button type="button" class="btn btn-sm btn-primary copy-addr-btn" onclick="copyCompanyDepositAddress()" id="btn-copy-deposit-addr" title="Copy Address">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+                <div class="company-wallet-notice">
+                  ⚠️ Send only <strong>USDT (<span id="dep-network-notice">BEP20</span>)</strong> to this address. Funds are verified by admin before activation.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         <div class="form-group">
           <label class="form-label">Transaction Hash (TxID)</label>
           <input type="text" id="inv-txhash" class="form-control" placeholder="0x... or TRON TxID">
