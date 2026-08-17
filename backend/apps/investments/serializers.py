@@ -67,6 +67,12 @@ class InvestmentCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+        user = self.context['request'].user
+        if user.kyc_status != user.KYCStatus.APPROVED:
+            raise serializers.ValidationError(
+                'KYC verification required. You must submit your identity documents and get your KYC approved before purchasing an investment package.'
+            )
+
         plan = attrs['plan']
         amount = attrs['amount']
 

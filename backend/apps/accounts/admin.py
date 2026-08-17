@@ -14,7 +14,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'username', 'phone_number', 'date_of_birth', 'country', 'profile_picture')}),
-        (_('Role & KYC'), {'fields': ('role', 'kyc_status', 'kyc_document', 'kyc_reviewed_at')}),
+        (_('Role & KYC'), {'fields': ('role', 'kyc_status', 'kyc_document_front', 'kyc_document_back', 'kyc_reviewed_at')}),
         (_('Security & Verification'), {'fields': ('is_email_verified', 'email_otp', 'email_otp_expiry', 'is_2fa_enabled', 'otp_secret')}),
         (_('Referral System'), {'fields': ('referral_code', 'parent', 'active_level')}),
         (_('Permissions'), {

@@ -436,6 +436,13 @@ class AdminUserDetailView(generics.RetrieveUpdateAPIView):
             return AdminUserUpdateSerializer
         return AdminUserListSerializer
 
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if 'kyc_status' in serializer.validated_data:
+            instance.kyc_reviewed_at = timezone.now()
+            instance.save(update_fields=['kyc_reviewed_at'])
+
+
 
 class AdminUserBalanceAdjustView(APIView):
     """

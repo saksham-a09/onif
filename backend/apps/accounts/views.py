@@ -12,6 +12,7 @@ from .serializers import (
     CustomTokenObtainPairSerializer,
     RegisterSerializer,
     UserProfileSerializer,
+    KYCSubmitSerializer,
     ChangePasswordSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
@@ -135,6 +136,35 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class KYCSubmitView(APIView):
+    """
+    GET  /api/v1/auth/kyc/ — get current user's KYC verification status
+    POST /api/v1/auth/kyc/ — submit identity documents for verification
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        user = request.user
+        if user.kyc_status == User.KYCStatus.APPROVED:
+            return Response(
+                {'detail': 'Your KYC is already approved and verified.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = KYCSubmitSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        profile_data = UserProfileSerializer(user, context={'request': request}).data
+        return Response({
+            'detail': 'KYC documents submitted successfully. Our compliance team will review your submission.',
+            'profile': profile_data,
+        })
+
 
 
 class ChangePasswordView(APIView):

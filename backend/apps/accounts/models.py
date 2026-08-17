@@ -99,10 +99,21 @@ class User(AbstractUser):
         db_index=True,
         verbose_name=_('KYC Status'),
     )
-    kyc_document = models.FileField(
-        upload_to='kyc_documents/', blank=True, null=True, verbose_name=_('KYC Document')
+    kyc_document_type = models.CharField(
+        max_length=50, blank=True, null=True, verbose_name=_('KYC Document Type')
     )
+    kyc_document_number = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name=_('KYC Document Number')
+    )
+    kyc_document_front = models.FileField(
+        upload_to='kyc_documents/front/', blank=True, null=True, verbose_name=_('KYC Document Front')
+    )
+    kyc_document_back = models.FileField(
+        upload_to='kyc_documents/back/', blank=True, null=True, verbose_name=_('KYC Document Back')
+    )
+    kyc_submitted_at = models.DateTimeField(blank=True, null=True, verbose_name=_('KYC Submitted At'))
     kyc_reviewed_at = models.DateTimeField(blank=True, null=True, verbose_name=_('KYC Reviewed At'))
+    kyc_rejection_reason = models.TextField(blank=True, null=True, verbose_name=_('KYC Rejection Reason'))
 
     # 2FA
     is_2fa_enabled = models.BooleanField(default=False, verbose_name=_('Is 2FA Enabled'))

@@ -65,19 +65,27 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     full_name = serializers.SerializerMethodField(read_only=True)
     parent_email = serializers.SerializerMethodField(read_only=True)
+    kyc_document_front_url = serializers.SerializerMethodField(read_only=True)
+    kyc_document_back_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
         fields = [
             'id', 'email', 'username', 'first_name', 'last_name', 'full_name',
             'phone_number', 'date_of_birth', 'country', 'profile_picture',
-            'role', 'is_staff', 'is_superuser', 'kyc_status', 'is_email_verified', 'is_2fa_enabled',
+            'role', 'is_staff', 'is_superuser', 'kyc_status', 'kyc_document_type',
+            'kyc_document_number', 'kyc_document_front_url', 'kyc_document_back_url', 'kyc_submitted_at',
+            'kyc_reviewed_at', 'kyc_rejection_reason',
+            'is_email_verified', 'is_2fa_enabled',
             'referral_code', 'parent_email', 'active_level',
             'date_joined', 'created_at',
         ]
         read_only_fields = [
-            'id', 'email', 'role', 'is_staff', 'is_superuser', 'kyc_status', 'is_email_verified',
-            'referral_code', 'active_level', 'date_joined', 'created_at', 'parent_email',
+            'id', 'email', 'role', 'is_staff', 'is_superuser', 'kyc_status',
+            'kyc_document_type', 'kyc_document_number', 'kyc_document_front_url', 'kyc_document_back_url',
+            'kyc_submitted_at', 'kyc_reviewed_at', 'kyc_rejection_reason',
+            'is_email_verified', 'referral_code', 'active_level',
+            'date_joined', 'created_at', 'parent_email',
         ]
 
     def get_full_name(self, obj) -> str:
@@ -85,6 +93,56 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_parent_email(self, obj) -> str | None:
         return obj.parent.email if obj.parent else None
+
+    def get_kyc_document_front_url(self, obj) -> str | None:
+        if obj.kyc_document_front:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.kyc_document_front.url)
+            return obj.kyc_document_front.url
+        return None
+
+    def get_kyc_document_back_url(self, obj) -> str | None:
+        if obj.kyc_document_back:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.kyc_document_back.url)
+            return obj.kyc_document_back.url
+        return None
+
+
+class KYCSubmitSerializer(serializers.ModelSerializer):
+    """Submit document and details for KYC identity verification."""
+    kyc_document_front = serializers.FileField(required=True)
+    kyc_document_back = serializers.FileField(required=True)
+    kyc_document_type = serializers.CharField(required=True)
+    kyc_document_number = serializers.CharField(required=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'kyc_document_type', 'kyc_document_number', 'kyc_document_front', 'kyc_document_back',
+            'country', 'first_name', 'last_name', 'date_of_birth',
+        ]
+
+    def update(self, instance, validated_data):
+        instance.kyc_document_type = validated_data.get('kyc_document_type', instance.kyc_document_type)
+        instance.kyc_document_number = validated_data.get('kyc_document_number', instance.kyc_document_number)
+        instance.kyc_document_front = validated_data.get('kyc_document_front', instance.kyc_document_front)
+        instance.kyc_document_back = validated_data.get('kyc_document_back', instance.kyc_document_back)
+        if 'country' in validated_data:
+            instance.country = validated_data['country']
+        if 'first_name' in validated_data:
+            instance.first_name = validated_data['first_name']
+        if 'last_name' in validated_data:
+            instance.last_name = validated_data['last_name']
+        if 'date_of_birth' in validated_data:
+            instance.date_of_birth = validated_data['date_of_birth']
+        instance.kyc_status = User.KYCStatus.PENDING
+        instance.kyc_submitted_at = timezone.now()
+        instance.kyc_rejection_reason = None
+        instance.save()
+        return instance
 
 
 class ChangePasswordSerializer(serializers.Serializer):

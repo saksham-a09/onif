@@ -18,12 +18,17 @@ class AdminUserListSerializer(serializers.ModelSerializer):
     wallet_balance = serializers.SerializerMethodField()
     total_invested = serializers.SerializerMethodField()
     active_investments_count = serializers.SerializerMethodField()
+    kyc_document_front_url = serializers.SerializerMethodField()
+    kyc_document_back_url = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'email', 'username', 'first_name', 'last_name', 'full_name',
-            'role', 'is_staff', 'is_superuser', 'kyc_status', 'is_email_verified',
+            'role', 'is_staff', 'is_superuser', 'kyc_status', 'kyc_document_type',
+            'kyc_document_number', 'kyc_document_front_url', 'kyc_document_back_url', 'kyc_submitted_at',
+            'kyc_reviewed_at', 'kyc_rejection_reason',
+            'is_email_verified',
             'referral_code', 'parent_email', 'active_level',
             'wallet_balance', 'total_invested', 'active_investments_count',
             'date_joined', 'created_at',
@@ -34,6 +39,22 @@ class AdminUserListSerializer(serializers.ModelSerializer):
 
     def get_parent_email(self, obj) -> str | None:
         return obj.parent.email if obj.parent else None
+
+    def get_kyc_document_front_url(self, obj) -> str | None:
+        if obj.kyc_document_front:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.kyc_document_front.url)
+            return obj.kyc_document_front.url
+        return None
+
+    def get_kyc_document_back_url(self, obj) -> str | None:
+        if obj.kyc_document_back:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.kyc_document_back.url)
+            return obj.kyc_document_back.url
+        return None
 
     def get_wallet_balance(self, obj) -> float:
         wallet = getattr(obj, 'wallet', None)
@@ -51,7 +72,8 @@ class AdminUserUpdateSerializer(serializers.ModelSerializer):
     """Admin role / KYC / status updates."""
     class Meta:
         model = User
-        fields = ['role', 'kyc_status', 'is_email_verified', 'is_staff', 'is_active']
+        fields = ['role', 'kyc_status', 'kyc_rejection_reason', 'is_email_verified', 'is_staff', 'is_active']
+
 
 
 class AdminBalanceAdjustmentSerializer(serializers.Serializer):

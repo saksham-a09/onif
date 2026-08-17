@@ -287,6 +287,54 @@ function renderAllViews() {
     document.getElementById('sidebar-userrole').innerText = `Level ${state.user.active_level || 0} Unlock`;
   }
 
+  // Update Topbar & Sidebar KYC Badges
+  const kycStatus = state.user.kyc_status || 'UNVERIFIED';
+  const sidebarKyc = document.getElementById('sidebar-kyc-badge');
+  const topBadgeKyc = document.getElementById('top-badge-kyc');
+
+  if (sidebarKyc) {
+    if (kycStatus === 'APPROVED') {
+      sidebarKyc.className = 'badge badge-approved';
+      sidebarKyc.innerText = 'KYC Verified';
+    } else if (kycStatus === 'PENDING') {
+      sidebarKyc.className = 'badge badge-pending';
+      sidebarKyc.innerText = 'KYC Pending';
+    } else if (kycStatus === 'REJECTED') {
+      sidebarKyc.className = 'badge badge-rejected';
+      sidebarKyc.innerText = 'KYC Rejected';
+    } else {
+      sidebarKyc.className = 'badge badge-unverified';
+      sidebarKyc.innerText = 'KYC Unverified';
+    }
+  }
+
+  if (topBadgeKyc) {
+    topBadgeKyc.style.display = kycStatus === 'APPROVED' ? 'none' : 'inline-block';
+    topBadgeKyc.innerText = '!';
+  }
+
+  // Update Investments KYC Lock Banner
+  const kycLockBanner = document.getElementById('inv-kyc-lock-banner');
+  if (kycLockBanner) {
+    if (kycStatus === 'APPROVED') {
+      kycLockBanner.style.display = 'none';
+    } else {
+      kycLockBanner.style.display = 'block';
+      const titleEl = document.getElementById('inv-kyc-lock-title');
+      const descEl = document.getElementById('inv-kyc-lock-desc');
+      if (kycStatus === 'PENDING') {
+        if (titleEl) titleEl.innerText = 'KYC Verification Under Review';
+        if (descEl) descEl.innerText = 'Your identity documents are currently being reviewed by compliance. Purchasing will automatically unlock once approved.';
+      } else if (kycStatus === 'REJECTED') {
+        if (titleEl) titleEl.innerText = 'KYC Verification Was Rejected';
+        if (descEl) descEl.innerText = 'Your previous verification was rejected. Please re-submit valid government-issued identity documents on the KYC page.';
+      } else {
+        if (titleEl) titleEl.innerText = 'Identity Verification (KYC) Required to Buy Plans';
+        if (descEl) descEl.innerText = 'You must complete your KYC identity verification before you can invest in packages or activate deposits.';
+      }
+    }
+  }
+
   // Dashboard Stats
   document.getElementById('dash-wallet-balance').innerText = `$${Number(state.wallet.balance || 0).toFixed(2)}`;
   
@@ -829,11 +877,16 @@ function switchNav(viewName) {
     if (banner) banner.style.display = 'none';
   }
 
+  if (viewName === 'kyc') {
+    renderKYCView();
+  }
+
   const titles = {
     dashboard: 'Dashboard Overview',
     investments: 'Investment Plans & Portfolio',
     wallet: 'Wallet & Ledger History',
     referrals: 'Multi-Level Referral Downline',
+    kyc: 'Identity Verification (KYC)',
     support: 'Support Center'
   };
   const titleEl = document.getElementById('header-page-title');
@@ -1090,6 +1143,16 @@ function closeModal(modalId) {
 // ─── Investment Plan Modal & API Creation ─────────────────────────────────────
 
 function openInvestModal(planId, planName, minAmt, maxAmt) {
+  if (state.user && state.user.kyc_status !== 'APPROVED') {
+    const kycSt = state.user.kyc_status;
+    const msg = kycSt === 'PENDING'
+      ? 'Your KYC verification is currently under review by compliance. You will be able to buy packages once approved.'
+      : 'KYC identity verification is required before purchasing an investment package. Please submit your identity documents.';
+    showToast(msg, true);
+    switchNav('kyc');
+    return;
+  }
+
   document.getElementById('inv-plan-name').value = planId;
   document.getElementById('inv-plan-display').value = planName;
   const input = document.getElementById('inv-amount');
@@ -2137,7 +2200,45 @@ async function openManageUserModal(userId) {
     document.getElementById('adm-adj-amount').value = '';
     document.getElementById('adm-adj-reason').value = '';
 
+        // Populate KYC Document review box
+        const docBox = document.getElementById('adm-usr-kyc-doc-box');
+        if (docBox) {
+          if (u.kyc_document_front_url || u.kyc_document_back_url) {
+            docBox.style.display = 'block';
+            const docImgWrap = document.getElementById('adm-usr-kyc-img-wrap');
+            if (docImgWrap) {
+              docImgWrap.innerHTML = '';
+              if (u.kyc_document_front_url) {
+                docImgWrap.innerHTML += `<img src="${u.kyc_document_front_url}" alt="KYC Front" style="width: 100%; height: 100%; object-fit: cover; margin-bottom: 4px;" onclick="openLightbox('${u.kyc_document_front_url}')">`;
+              }
+              if (u.kyc_document_back_url) {
+                docImgWrap.innerHTML += `<img src="${u.kyc_document_back_url}" alt="KYC Back" style="width: 100%; height: 100%; object-fit: cover;" onclick="openLightbox('${u.kyc_document_back_url}')">`;
+              }
+            }
+            document.getElementById('adm-usr-kyc-doctype').innerText = u.kyc_document_type || 'Government ID';
+            document.getElementById('adm-usr-kyc-docnum').innerText = u.kyc_document_number || '—';
+            const docLink = document.getElementById('adm-usr-kyc-doclink');
+            if (docLink) docLink.href = u.kyc_document_front_url || u.kyc_document_back_url || '#';
+          } else {
+            docBox.style.display = 'none';
+          }
+        }
+
     openModal('modal-admin-manage-user');
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+async function adminQuickKYCStatus(status) {
+  const userId = document.getElementById('adm-usr-id').value;
+  if (!userId) return;
+  try {
+    await apiCall(`/admin-panel/users/${userId}/`, 'PATCH', { kyc_status: status });
+    document.getElementById('adm-usr-kyc').value = status;
+    showToast(`KYC status updated to ${status}.`);
+    loadAdminUsers();
+    loadAdminData();
   } catch (err) {
     showToast(err.message, true);
   }
@@ -2420,7 +2521,7 @@ async function handleAdminSaveCompanyWallets(e) {
       TRC20_QR: trc20Qr,
     };
 
-    showToast('Company deposit wallets & QR codes updated successfully! 🎉');
+    showToast('Company deposit wallets & QR codes updated successfully.');
     await loadAdminSettings();
   } catch (err) {
     showToast(err.message || 'Failed to update company wallets.', true);
@@ -2430,4 +2531,190 @@ async function handleAdminSaveCompanyWallets(e) {
       btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Save Company Deposit Wallets &amp; QR Codes`;
     }
   }
-}
+}
+
+// ─── KYC Identity Verification Page Logic ────────────────────────
+function renderKYCView() {
+  if (!state.user) return;
+  const kycStatus = state.user.kyc_status || 'UNVERIFIED';
+
+  const badgeEl = document.getElementById('kyc-header-badge');
+  if (badgeEl) {
+    if (kycStatus === 'APPROVED') {
+      badgeEl.className = 'badge badge-approved';
+      badgeEl.innerText = 'KYC VERIFIED';
+    } else if (kycStatus === 'PENDING') {
+      badgeEl.className = 'badge badge-pending';
+      badgeEl.innerText = 'UNDER REVIEW';
+    } else if (kycStatus === 'REJECTED') {
+      badgeEl.className = 'badge badge-rejected';
+      badgeEl.innerText = 'REJECTED';
+    } else {
+      badgeEl.className = 'badge badge-unverified';
+      badgeEl.innerText = 'UNVERIFIED';
+    }
+  }
+
+  const appView = document.getElementById('kyc-view-approved');
+  const pendView = document.getElementById('kyc-view-pending');
+  const unverView = document.getElementById('kyc-view-unverified');
+
+  if (appView) appView.style.display = 'none';
+  if (pendView) pendView.style.display = 'none';
+  if (unverView) unverView.style.display = 'none';
+
+  if (kycStatus === 'APPROVED') {
+    if (appView) appView.style.display = 'block';
+    const docTypeEl = document.getElementById('kyc-appr-doctype');
+    const docNumEl = document.getElementById('kyc-appr-docnum');
+    const countryEl = document.getElementById('kyc-appr-country');
+
+    const typeLabels = {
+      PASSPORT: 'Passport',
+      NATIONAL_ID: 'National ID Card',
+      DRIVERS_LICENSE: 'Driver\'s License',
+      RESIDENCE_PERMIT: 'Residence Permit',
+    };
+
+    if (docTypeEl) docTypeEl.innerText = typeLabels[state.user.kyc_document_type] || state.user.kyc_document_type || 'Passport / National ID';
+    if (docNumEl) {
+      const num = state.user.kyc_document_number || '';
+      docNumEl.innerText = num.length > 4 ? `•••• •••• ${num.slice(-4)}` : (num || 'Verified');
+    }
+    if (countryEl) countryEl.innerText = state.user.country || 'Verified Country';
+  } else if (kycStatus === 'PENDING') {
+    if (pendView) pendView.style.display = 'block';
+    const docTypeEl = document.getElementById('kyc-pend-doctype');
+    const docNumEl = document.getElementById('kyc-pend-docnum');
+    const dateEl = document.getElementById('kyc-pend-date');
+
+    const typeLabels = {
+      PASSPORT: 'Passport',
+      NATIONAL_ID: 'National ID Card',
+      DRIVERS_LICENSE: 'Driver\'s License',
+      RESIDENCE_PERMIT: 'Residence Permit',
+    };
+
+    if (docTypeEl) docTypeEl.innerText = typeLabels[state.user.kyc_document_type] || state.user.kyc_document_type || 'Government ID';
+    if (docNumEl) docNumEl.innerText = state.user.kyc_document_number || '—';
+    if (dateEl) {
+      dateEl.innerText = state.user.kyc_submitted_at
+        ? new Date(state.user.kyc_submitted_at).toLocaleDateString()
+        : 'Recently Submitted';
+    }
+  } else {
+    // UNVERIFIED or REJECTED
+    if (unverView) unverView.style.display = 'block';
+    const rejAlert = document.getElementById('kyc-rejection-alert');
+    if (rejAlert) {
+      if (kycStatus === 'REJECTED') {
+        rejAlert.style.display = 'block';
+        const msgEl = document.getElementById('kyc-rejection-msg');
+        if (msgEl) {
+          msgEl.innerText = state.user.kyc_rejection_reason || 'Your document could not be verified. Please ensure the document is clear, unexpired, and clearly legible.';
+        }
+      } else {
+        rejAlert.style.display = 'none';
+      }
+    }
+
+    // Prefill form
+    const fn = document.getElementById('kyc-first-name');
+    const ln = document.getElementById('kyc-last-name');
+    const ctry = document.getElementById('kyc-country');
+    const dob = document.getElementById('kyc-dob');
+
+    if (fn && !fn.value) fn.value = state.user.first_name || '';
+    if (ln && !ln.value) ln.value = state.user.last_name || '';
+    if (ctry && !ctry.value) ctry.value = state.user.country || '';
+    if (dob && !dob.value && state.user.date_of_birth) dob.value = state.user.date_of_birth;
+  }
+}
+
+function handleKYCDocTypeChange() {
+  const type = document.getElementById('kyc-doc-type').value;
+  const numInput = document.getElementById('kyc-doc-number');
+  if (!numInput) return;
+
+  const placeholders = {
+    PASSPORT: 'Enter passport number (e.g. A12345678)',
+    NATIONAL_ID: 'Enter national identity card number',
+    DRIVERS_LICENSE: 'Enter driver\'s license number',
+    RESIDENCE_PERMIT: 'Enter residence permit or registration number',
+  };
+  numInput.placeholder = placeholders[type] || 'Enter document identification number';
+}
+
+function handleKYCFileSelect(e, side) {
+  const file = e.target.files && e.target.files[0];
+  const nameEl = document.getElementById(`kyc-file-name-display-${side}`);
+  if (!nameEl) return;
+
+  if (file) {
+    nameEl.innerHTML = `<span style="color: var(--emerald); font-weight: 600;">${file.name}</span> <span style="color: var(--mute); font-size: 11px;">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>`;
+  } else {
+    nameEl.innerText = `Click to upload ${side}`;
+  }
+}
+
+async function handleKYCSubmit(e) {
+  e.preventDefault();
+  const docType = document.getElementById('kyc-doc-type').value;
+  const docNumber = document.getElementById('kyc-doc-number').value.trim();
+  const firstName = document.getElementById('kyc-first-name').value.trim();
+  const lastName = document.getElementById('kyc-last-name').value.trim();
+  const country = document.getElementById('kyc-country').value.trim();
+  const dob = document.getElementById('kyc-dob').value;
+  const fileInputFront = document.getElementById('kyc-file-input-front');
+  const fileFront = fileInputFront.files && fileInputFront.files[0];
+  const fileInputBack = document.getElementById('kyc-file-input-back');
+  const fileBack = fileInputBack.files && fileInputBack.files[0];
+  const submitBtn = document.getElementById('kyc-submit-btn');
+
+  if (!docType) {
+    showToast('Please select your document type.', true);
+    return;
+  }
+  if (!fileFront || !fileBack) {
+    showToast('Please upload both front and back images of the document.', true);
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('kyc_document_type', docType);
+  if (docNumber) formData.append('kyc_document_number', docNumber);
+  formData.append('first_name', firstName);
+  formData.append('last_name', lastName);
+  formData.append('country', country);
+  if (dob) formData.append('date_of_birth', dob);
+  formData.append('kyc_document_front', fileFront);
+  formData.append('kyc_document_back', fileBack);
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Submitting Documents…';
+  }
+
+  try {
+    const res = await apiCall('/auth/kyc/', 'POST', formData, /* isFormData */ true);
+    showToast('KYC documents submitted successfully. Our compliance team is reviewing your verification.');
+    if (res.profile) {
+      state.user = { ...state.user, ...res.profile };
+    } else {
+      state.user.kyc_status = 'PENDING';
+      state.user.kyc_document_type = docType;
+      state.user.kyc_document_number = docNumber;
+      state.user.kyc_submitted_at = new Date().toISOString();
+    }
+    renderAllViews();
+    renderKYCView();
+  } catch (err) {
+    showToast(err.message || 'Failed to submit KYC documents.', true);
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg> Submit Identity Documents for Verification`;
+    }
+  }
+}
+
