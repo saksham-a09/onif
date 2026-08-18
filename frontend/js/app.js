@@ -403,7 +403,7 @@ function renderActiveInvestmentsList() {
       <div style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
           <b style="color: var(--text-main);">${inv.plan_name || 'Plan'} ($${Number(inv.amount).toFixed(2)})</b>
-          <span style="color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">
+          <span style="color: var(--gold); font-weight: 700; font-family: var(--font-mono);">
             ${inv.status === 'PENDING' ? '<span class="badge badge-pending">PENDING ADMIN APPROVAL</span>' : `$${credited.toFixed(2)} / $${maxRet.toFixed(2)} (${pct.toFixed(0)}%)`}
           </span>
         </div>
@@ -475,7 +475,7 @@ function renderMyInvestmentsTable() {
       <tr>
         <td><b>${inv.plan_name || 'Plan'}</b></td>
         <td style="font-weight: 700; font-family: var(--font-mono);">$${Number(inv.amount).toFixed(2)}</td>
-        <td style="color: var(--emerald); font-family: var(--font-mono);">$${maxRet.toFixed(2)}</td>
+        <td style="color: var(--gold); font-family: var(--font-mono);">$${maxRet.toFixed(2)}</td>
         <td style="font-family: var(--font-mono);">
           ${isDepositPending ? '—' : `$${credited.toFixed(2)} <small style="color:var(--text-muted);">(${pct.toFixed(0)}%)</small>`}
         </td>
@@ -595,7 +595,7 @@ function renderWithdrawalsTable() {
       <tr>
         <td><b>${wdr.withdrawal_type}</b></td>
         <td style="font-weight: 700; font-family: var(--font-mono);">$${Number(wdr.amount).toFixed(2)}</td>
-        <td style="color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">$${Number(wdr.net_amount || wdr.amount).toFixed(2)}</td>
+        <td style="color: var(--gold); font-weight: 700; font-family: var(--font-mono);">$${Number(wdr.net_amount || wdr.amount).toFixed(2)}</td>
         <td><span class="badge badge-${(wdr.status || 'PENDING').toLowerCase()}">${wdr.status}</span></td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
       </tr>
@@ -685,7 +685,7 @@ function renderReferralView() {
           <td><b>${c.commission_type === 'DIRECT' ? 'Direct Income (2%)' : 'ROI Income (1.5%)'}</b></td>
           <td><span class="badge badge-active">Level ${c.level}</span></td>
           <td style="font-size: 13px;">${fromUser}</td>
-          <td style="color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">+$${Number(c.amount).toFixed(2)}</td>
+          <td style="color: var(--gold); font-weight: 700; font-family: var(--font-mono);">+$${Number(c.amount).toFixed(2)}</td>
           <td><span class="badge badge-approved">${c.is_paid ? 'Paid to Wallet' : 'Pending'}</span></td>
           <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
         </tr>
@@ -717,7 +717,7 @@ function renderSupportTicketsTable() {
     const statusLower = (t.status || 'OPEN').toLowerCase();
     tbody.innerHTML += `
       <tr style="cursor: pointer;" onclick="openTicketThreadModal('${t.id}')">
-        <td><b style="color: var(--emerald-soft);">${t.subject}</b> <span style="font-size: 11px; color: var(--mute);">(Click to view thread)</span></td>
+        <td><b style="color: var(--gold-soft);">${t.subject}</b> <span style="font-size: 11px; color: var(--mute);">(Click to view thread)</span></td>
         <td>${t.category || 'General'}</td>
         <td><span class="badge badge-${statusLower}">${t.status || 'OPEN'}</span></td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
@@ -764,7 +764,7 @@ function renderTicketThreadMessages(ticket) {
     const dateStr = r.created_at ? new Date(r.created_at).toLocaleString() : '';
     const bg = isStaff ? 'rgba(63,203,140,0.06)' : 'var(--field)';
     const border = isStaff ? '1px solid rgba(63,203,140,0.2)' : '1px solid var(--line)';
-    const nameColor = isStaff ? 'var(--emerald-soft)' : 'var(--text)';
+    const nameColor = isStaff ? 'var(--gold-soft)' : 'var(--text)';
     
     listContainer.innerHTML += `
       <div style="background: ${bg}; border: ${border}; padding: 12px 14px; border-radius: 4px;">
@@ -1499,7 +1499,7 @@ function renderOverviewDepositsQueue(items) {
         </td>
         <td>
           <div style="color:var(--text);">${inv.plan_name}</div>
-          <b style="color:var(--emerald); font-family:var(--font-mono);">$${Number(inv.amount).toFixed(2)}</b>
+          <b style="color:var(--gold); font-family:var(--font-mono);">$${Number(inv.amount).toFixed(2)}</b>
         </td>
         <td>
           <div style="display:flex; align-items:center; gap:8px;">
@@ -1627,7 +1627,7 @@ function renderAdminInvestments(investments) {
           <b style="color:var(--text);">${inv.plan_name}</b>
           <div style="font-size:11px; color:var(--mute);">Max Ret: $${Number(inv.max_return).toFixed(2)}</div>
         </td>
-        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">$${Number(inv.amount).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--gold);">$${Number(inv.amount).toFixed(2)}</td>
         <td><span class="badge badge-approved" style="font-size:10px;">${inv.deposit_network || 'BEP20'}</span></td>
         <td>
           <div style="display:flex; align-items:center; gap:8px;">
@@ -1696,7 +1696,7 @@ function renderAdminWithdrawals(withdrawals) {
         <td><span class="badge ${wdr.withdrawal_type === 'CAPITAL' ? 'badge-pending' : 'badge-approved'}">${wdr.withdrawal_type}</span></td>
         <td style="font-family:var(--font-mono); font-weight:700;">$${Number(wdr.amount).toFixed(2)}</td>
         <td style="font-family:var(--font-mono); color:var(--mute);">$${Number(wdr.fee).toFixed(2)}</td>
-        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">$${Number(wdr.net_amount).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--gold);">$${Number(wdr.net_amount).toFixed(2)}</td>
         <td>
           <div style="font-family:var(--font-mono); font-size:12px; color:var(--text);" title="${wdr.wallet_address || ''}">${addrShort}</div>
           <span class="badge badge-approved" style="font-size:10px;">${wdr.network}</span>
@@ -1772,7 +1772,7 @@ function renderAdminUsers(users) {
         </td>
         <td><span class="badge ${roleBadge}">${u.role}</span></td>
         <td><span class="badge ${kycBadge}">${u.kyc_status}</span></td>
-        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">$${Number(u.wallet_balance || 0).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--gold);">$${Number(u.wallet_balance || 0).toFixed(2)}</td>
         <td style="font-family:var(--font-mono);">$${Number(u.total_invested || 0).toFixed(2)} (${u.active_investments_count || 0})</td>
         <td><span class="badge badge-approved" style="font-size:10px;">Level ${u.active_level || 0}</span></td>
         <td style="font-size:12px; color:var(--mute);">${u.parent_email || 'Root (None)'}</td>
@@ -1890,7 +1890,7 @@ function renderAdminSettings(settings) {
     tbody.innerHTML += `
       <tr>
         <td style="font-family:var(--font-mono); font-weight:600; color:var(--gold); font-size:12px;">${s.key}</td>
-        <td style="font-family:var(--font-mono); font-weight:700; color:var(--emerald);">${s.value}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; color:var(--gold);">${s.value}</td>
         <td style="font-size:12px; color:var(--mute);">${s.description || '—'}</td>
         <td style="text-align:right;">
           <button class="btn btn-sm btn-secondary" onclick="openEditSettingModal('${s.key}', '${s.value}', '${(s.description || '').replace(/'/g, "\\'")}')">Edit</button>
@@ -1913,7 +1913,7 @@ function renderAdminPlans(plans) {
     tbody.innerHTML += `
       <tr>
         <td><b style="color:var(--text);">${p.name}</b></td>
-        <td style="font-family:var(--font-mono); color:var(--emerald); font-weight:700;">${Number(p.weekly_roi_rate).toFixed(2)}% / wk</td>
+        <td style="font-family:var(--font-mono); color:var(--gold); font-weight:700;">${Number(p.weekly_roi_rate).toFixed(2)}% / wk</td>
         <td style="font-family:var(--font-mono);">$${Number(p.minimum_amount).toFixed(0)} – $${Number(p.maximum_amount).toFixed(0)}</td>
         <td style="font-family:var(--font-mono);">${p.duration_weeks || 120} Wks</td>
         <td><span class="badge ${p.is_active ? 'badge-approved' : 'badge-pending'}">${p.is_active ? 'ACTIVE' : 'INACTIVE'}</span></td>
@@ -2453,7 +2453,7 @@ function updateAdminQRPreview(network) {
       statusEl.style.color = 'var(--gold)';
     } else {
       statusEl.innerText = 'Auto-Generated';
-      statusEl.style.color = 'var(--emerald-soft)';
+      statusEl.style.color = 'var(--gold-soft)';
     }
   }
 }
@@ -2651,7 +2651,7 @@ function handleKYCFileSelect(e, side) {
   if (!nameEl) return;
 
   if (file) {
-    nameEl.innerHTML = `<span style="color: var(--emerald); font-weight: 600;">${file.name}</span> <span style="color: var(--mute); font-size: 11px;">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>`;
+    nameEl.innerHTML = `<span style="color: var(--gold); font-weight: 600;">${file.name}</span> <span style="color: var(--mute); font-size: 11px;">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>`;
   } else {
     nameEl.innerText = `Click to upload ${side}`;
   }
@@ -2717,4 +2717,4 @@ async function handleKYCSubmit(e) {
     }
   }
 }
-
+
