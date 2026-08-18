@@ -903,6 +903,10 @@ function switchAuthTab(tab) {
   document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
   document.getElementById('form-verify-otp').style.display = 'none';
+  const forgotForm = document.getElementById('form-forgot-password');
+  if (forgotForm) forgotForm.style.display = tab === 'forgot' ? 'block' : 'none';
+  const resetForm = document.getElementById('form-reset-password');
+  if (resetForm) resetForm.style.display = tab === 'reset' ? 'block' : 'none';
 
   const title = document.getElementById('auth-form-title');
   const subtitle = document.getElementById('auth-form-subtitle');
@@ -910,9 +914,15 @@ function switchAuthTab(tab) {
     if (tab === 'login') {
       title.innerText = 'Sign in to your account';
       subtitle.innerHTML = 'Don\'t have an account? <a href="#" onclick="switchAuthTab(\'register\'); return false;">Register</a>';
-    } else {
+    } else if (tab === 'register') {
       title.innerText = 'Create your account';
       subtitle.innerHTML = 'Already have an account? <a href="#" onclick="switchAuthTab(\'login\'); return false;">Sign in</a>';
+    } else if (tab === 'forgot') {
+      title.innerText = 'Reset your password';
+      subtitle.innerHTML = 'Enter your email or username to receive a reset code.';
+    } else if (tab === 'reset') {
+      title.innerText = 'Set new password';
+      subtitle.innerHTML = 'Enter the 6-digit code and your new password.';
     }
   }
 }
@@ -1119,6 +1129,123 @@ async function handleResendOTP() {
     setTimeout(() => document.getElementById('otp-d1')?.focus(), 50);
   } catch (err) {
     showToast(err.message || 'Failed to resend OTP.', true);
+  }
+}
+
+let _forgotAccount = '';
+let _resetCountdownTimer = null;
+
+function startResetCountdown(seconds) {
+  if (_resetCountdownTimer) clearInterval(_resetCountdownTimer);
+  const resendBtn = document.getElementById('reset-otp-resend-btn');
+  const countdownEl = document.getElementById('reset-otp-countdown');
+  if (resendBtn) resendBtn.disabled = true;
+  let remaining = seconds;
+
+  function updateDisplay() {
+    if (countdownEl) countdownEl.innerText = remaining > 0 ? `Resend in ${remaining}s` : '';
+    if (remaining <= 0) {
+      if (resendBtn) resendBtn.disabled = false;
+      clearInterval(_resetCountdownTimer);
+    }
+    remaining--;
+  }
+  updateDisplay();
+  _resetCountdownTimer = setInterval(updateDisplay, 1000);
+}
+
+async function handleForgotPassword(e) {
+  e.preventDefault();
+  const inputEl = document.getElementById('forgot-email');
+  const email = inputEl ? inputEl.value.trim() : '';
+  if (!email) {
+    showToast('Please enter your email or username.', true);
+    return;
+  }
+
+  const submitBtn = document.getElementById('forgot-submit-btn');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Sending Code…'; }
+
+  try {
+    const res = await apiCall('/auth/forgot-password/', 'POST', { email });
+    _forgotAccount = email;
+    const resetEmailInput = document.getElementById('reset-email');
+    if (resetEmailInput) resetEmailInput.value = email;
+
+    showToast(res.detail || 'Reset code sent! Please check your email.');
+    switchAuthTab('reset');
+    startResetCountdown(60);
+    setTimeout(() => document.getElementById('reset-otp')?.focus(), 100);
+  } catch (err) {
+    showToast(err.message || 'Failed to send reset code.', true);
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Send Reset Code'; }
+  }
+}
+
+async function handleResendForgotOTP() {
+  if (!_forgotAccount) return;
+  const resendBtn = document.getElementById('reset-otp-resend-btn');
+  if (resendBtn) resendBtn.disabled = true;
+  try {
+    await apiCall('/auth/forgot-password/', 'POST', { email: _forgotAccount });
+    showToast('A new reset code has been sent.');
+    startResetCountdown(60);
+  } catch (err) {
+    showToast(err.message || 'Failed to resend code.', true);
+    if (resendBtn) resendBtn.disabled = false;
+  }
+}
+
+async function handleResetPassword(e) {
+  e.preventDefault();
+  const email = document.getElementById('reset-email')?.value.trim() || _forgotAccount;
+  const otp = document.getElementById('reset-otp')?.value.trim() || '';
+  const new_password = document.getElementById('reset-new-password')?.value || '';
+  const new_password2 = document.getElementById('reset-new-password2')?.value || '';
+
+  if (!email) {
+    showToast('Account identifier is required.', true);
+    return;
+  }
+  if (!otp || otp.length !== 6) {
+    showToast('Please enter the complete 6-digit OTP.', true);
+    return;
+  }
+  if (!new_password || new_password.length < 8) {
+    showToast('Password must be at least 8 characters long.', true);
+    return;
+  }
+  if (new_password !== new_password2) {
+    showToast('Passwords do not match.', true);
+    return;
+  }
+
+  const submitBtn = document.getElementById('reset-submit-btn');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Resetting Password…'; }
+
+  try {
+    const res = await apiCall('/auth/reset-password/', 'POST', {
+      email,
+      otp,
+      new_password,
+      new_password2,
+    });
+    showToast(res.detail || 'Password reset successfully! Please sign in.');
+    switchAuthTab('login');
+    // Clear forms
+    const forgotInput = document.getElementById('forgot-email');
+    if (forgotInput) forgotInput.value = '';
+    const resetOtpInput = document.getElementById('reset-otp');
+    if (resetOtpInput) resetOtpInput.value = '';
+    const resetPw = document.getElementById('reset-new-password');
+    if (resetPw) resetPw.value = '';
+    const resetPw2 = document.getElementById('reset-new-password2');
+    if (resetPw2) resetPw2.value = '';
+  } catch (err) {
+    showToast(err.message || 'Failed to reset password. Please verify the OTP.', true);
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Reset Password'; }
   }
 }
 

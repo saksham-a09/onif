@@ -105,7 +105,7 @@
               <label class="remember">
                 <input type="checkbox"> Remember me
               </label>
-              <a href="#" class="forgot">Forgot password?</a>
+              <a href="#" onclick="switchAuthTab('forgot'); return false;" class="forgot">Forgot password?</a>
             </div>
 
             <button type="submit" class="btn btn-primary">Sign In</button>
@@ -212,6 +212,77 @@
                 Back to registration</a>
             </div>
           </div>
+
+          <!-- Forgot Password Form -->
+          <form id="form-forgot-password" onsubmit="handleForgotPassword(event)" style="display: none;">
+            <div class="field">
+              <label>Email Address or Username</label>
+              <div class="input-row">
+                <input type="text" id="forgot-email" placeholder="you@example.com or johndoe" required>
+              </div>
+            </div>
+
+            <button type="submit" id="forgot-submit-btn" class="btn btn-primary"
+              style="width:100%; justify-content:center; margin-top:8px;">Send Reset Code</button>
+
+            <div class="divider">or</div>
+
+            <div class="row-between" style="justify-content: center;">
+              <span>Remember your password? <a href="#" onclick="switchAuthTab('login'); return false;"
+                  class="forgot">Sign in</a></span>
+            </div>
+          </form>
+
+          <!-- Reset Password Form -->
+          <form id="form-reset-password" onsubmit="handleResetPassword(event)" style="display: none;">
+            <div class="field">
+              <label>Account (Email or Username)</label>
+              <div class="input-row">
+                <input type="text" id="reset-email" placeholder="Account identifier" required readonly
+                  style="opacity: 0.8; cursor: not-allowed;">
+              </div>
+            </div>
+
+            <div class="field">
+              <label>6-Digit Verification Code</label>
+              <div class="input-row">
+                <input type="text" id="reset-otp" placeholder="Enter 6-digit OTP" maxlength="6" pattern="[0-9]{6}"
+                  required style="font-family: var(--font-mono); letter-spacing: 3px; font-weight:600;">
+              </div>
+            </div>
+
+            <div class="field">
+              <label>New Password</label>
+              <div class="input-row">
+                <input type="password" id="reset-new-password" placeholder="Minimum 8 characters" required>
+                <button type="button" class="toggle-pw"
+                  onclick="const pw = document.getElementById('reset-new-password'); pw.type = pw.type === 'password' ? 'text' : 'password'; this.innerText = pw.type === 'password' ? 'SHOW' : 'HIDE';">SHOW</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Confirm New Password</label>
+              <div class="input-row">
+                <input type="password" id="reset-new-password2" placeholder="Re-enter new password" required>
+              </div>
+            </div>
+
+            <button type="submit" id="reset-submit-btn" class="btn btn-primary"
+              style="width:100%; justify-content:center; margin-top:8px;">Reset Password</button>
+
+            <div class="otp-resend-row">
+              <span id="reset-otp-countdown" class="otp-countdown-text"></span>
+              <button type="button" id="reset-otp-resend-btn" class="otp-resend-btn" onclick="handleResendForgotOTP()"
+                disabled>Resend Code</button>
+            </div>
+
+            <div style="margin-top: 20px; text-align:center;">
+              <a href="#" onclick="switchAuthTab('forgot'); return false;" class="forgot" style="font-size:13px;">←
+                Change email/username</a> &nbsp;|&nbsp;
+              <a href="#" onclick="switchAuthTab('login'); return false;" class="forgot" style="font-size:13px;">Sign
+                in</a>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -2817,7 +2888,7 @@
   <div id="toast-container"></div>
 
   <!-- Scripts -->
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=2"></script>
 </body>
 
 </html>

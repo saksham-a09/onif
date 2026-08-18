@@ -187,7 +187,7 @@ class ChangePasswordView(APIView):
 class ForgotPasswordView(APIView):
     """
     POST /api/v1/auth/forgot-password/
-    Send password-reset OTP to the given email address.
+    Send password-reset OTP to the given email address or username.
     """
     permission_classes = [AllowAny]
 
@@ -195,19 +195,23 @@ class ForgotPasswordView(APIView):
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        identifier = serializer.validated_data['email']
         try:
-            user = User.objects.get(email=serializer.validated_data['email'])
+            if '@' in identifier:
+                user = User.objects.get(email__iexact=identifier)
+            else:
+                user = User.objects.get(username__iexact=identifier)
             send_otp_email(user, subject='FINOVO Password Reset Code')
         except User.DoesNotExist:
             pass  # Silent — prevent email enumeration
 
-        return Response({'detail': 'If this email is registered, a reset OTP has been sent.'})
+        return Response({'detail': 'If this email or username is registered, a reset OTP has been sent.'})
 
 
 class ResetPasswordView(APIView):
     """
     POST /api/v1/auth/reset-password/
-    Reset password using email + OTP.
+    Reset password using email/username + OTP.
     """
     permission_classes = [AllowAny]
 
@@ -215,10 +219,14 @@ class ResetPasswordView(APIView):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        identifier = serializer.validated_data['email']
         try:
-            user = User.objects.get(email=serializer.validated_data['email'])
+            if '@' in identifier:
+                user = User.objects.get(email__iexact=identifier)
+            else:
+                user = User.objects.get(username__iexact=identifier)
         except User.DoesNotExist:
-            return Response({'detail': 'Invalid email or OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Invalid email/username or OTP.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not verify_otp(user, serializer.validated_data['otp']):
             return Response({'detail': 'Invalid or expired OTP.'}, status=status.HTTP_400_BAD_REQUEST)

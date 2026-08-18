@@ -175,13 +175,13 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ForgotPasswordSerializer(serializers.Serializer):
     """Send OTP to email for password reset."""
 
-    email = serializers.EmailField(required=True)
+    email = serializers.CharField(required=True)
 
 
 class ResetPasswordSerializer(serializers.Serializer):
     """Reset password using OTP."""
 
-    email = serializers.EmailField(required=True)
+    email = serializers.CharField(required=True)
     otp = serializers.CharField(required=True, max_length=6)
     new_password = serializers.CharField(required=True, validators=[validate_password])
     new_password2 = serializers.CharField(required=True, label='Confirm New Password')
