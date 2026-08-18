@@ -13,6 +13,14 @@ User = get_user_model()
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """JWT token serializer with extra user claims."""
 
+    def validate(self, attrs):
+        login_id = attrs.get(self.username_field)
+        if login_id and '@' not in login_id:
+            user = User.objects.filter(username__iexact=login_id).first()
+            if user:
+                attrs[self.username_field] = user.email
+        return super().validate(attrs)
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
