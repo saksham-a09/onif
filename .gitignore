@@ -49,6 +49,7 @@ db.sqlite3
 db.sqlite3-journal
 media/
 static/staticfiles/
+frontend/replace.py
 
 # Environments & Secrets
 .env
@@ -78,3 +79,4 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.bak
