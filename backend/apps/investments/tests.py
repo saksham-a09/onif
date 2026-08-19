@@ -170,3 +170,112 @@ class ActiveLevelTests(TestCase):
             make_active_investment(child, self.plan)
         level = update_user_active_level(self.sponsor)
         self.assertEqual(level, 1)
+
+
+class InvestmentTaskTests(TestCase):
+    def setUp(self):
+        from apps.investments.models import Plan
+        self.plan = Plan.objects.create(
+            name='Task Plan',
+            minimum_amount=Decimal('100.00'),
+            maximum_amount=Decimal('1000.00'),
+            max_total_return=Decimal('200.00'),
+            weekly_roi_rate=Decimal('10.00'),
+        )
+        self.user = make_user('taskuser@test.com', 'taskuser')
+        self.investment = make_active_investment(self.user, self.plan, '100.00')
+
+    def test_distribute_weekly_roi_task(self):
+        from apps.investments.tasks import distribute_weekly_roi_task
+        from apps.wallet.models import Wallet
+
+        result = distribute_weekly_roi_task()
+        self.assertEqual(result['processed'], 1)
+        self.assertEqual(result['completed'], 0)
+        self.assertEqual(result['errors'], 0)
+
+        wallet = Wallet.objects.get(user=self.user)
+        self.assertEqual(wallet.balance, Decimal('10.00'))
+
+
+class InvestmentSerializerTests(TestCase):
+    def setUp(self):
+        from apps.investments.models import Plan
+        self.plan = Plan.objects.create(
+            name='Serializer Plan',
+            minimum_amount=Decimal('100.00'),
+            maximum_amount=Decimal('1000.00'),
+            max_total_return=Decimal('200.00'),
+            weekly_roi_rate=Decimal('10.00'),
+            is_active=True
+        )
+
+    def test_investment_create_validation(self):
+        from apps.investments.serializers import InvestmentCreateSerializer
+        from rest_framework.test import APIRequestFactory
+        
+        user = make_user('seruser@test.com', 'seruser')
+        user.kyc_status = user.KYCStatus.APPROVED
+        user.save()
+        
+        request = APIRequestFactory().post('/')
+        request.user = user
+
+        # Test below minimum amount
+        data = {
+            'plan': self.plan.id,
+            'amount': '50.00',
+            'deposit_network': 'TRC20',
+            'deposit_txn_hash': 'hash123'
+        }
+        serializer = InvestmentCreateSerializer(data=data, context={'request': request})
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('amount', serializer.errors)
+
+        # Test valid data
+        data['amount'] = '150.00'
+        serializer = InvestmentCreateSerializer(data=data, context={'request': request})
+        self.assertTrue(serializer.is_valid())
+
+
+from rest_framework.test import APITestCase
+from rest_framework import status
+from django.urls import reverse
+
+class InvestmentViewTests(APITestCase):
+    def setUp(self):
+        from apps.investments.models import Plan
+        self.user = make_user('viewuser@test.com', 'viewuser')
+        self.user.kyc_status = self.user.KYCStatus.APPROVED
+        self.user.save()
+        self.client.force_authenticate(user=self.user)
+        
+        self.plan = Plan.objects.create(
+            name='View Plan',
+            minimum_amount=Decimal('100.00'),
+            maximum_amount=Decimal('1000.00'),
+            max_total_return=Decimal('200.00'),
+            weekly_roi_rate=Decimal('10.00'),
+            is_active=True
+        )
+
+    def test_list_plans(self):
+        url = reverse('plan_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+
+    def test_create_investment(self):
+        url = reverse('investment_list_create')
+        data = {
+            'plan': self.plan.id,
+            'amount': '200.00',
+            'deposit_network': 'TRC20',
+            'deposit_txn_hash': 'txnhash123'
+        }
+        response = self.client.post(url, data, format='json')
+        if response.status_code != 201:
+            print("Investment 400 error:", response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['amount'], '200.00')
+        self.assertEqual(response.data['status'], 'DEPOSIT_PENDING')
