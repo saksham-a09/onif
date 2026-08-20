@@ -18,16 +18,16 @@
   --mute:        #8A94A4;
 
   /* Primary Accent: Deep Emerald */
-  --emerald-old:      #F59E0B;
-  --emerald-soft-old: #FBBF24;
-  --emerald-deep-old: #D97706;
+  --emerald-old:      #FACC15;
+  --emerald-soft-old: #FDE047;
+  --emerald-deep-old: #EAB308;
 
   /* Secondary Accent: Warm Gold */
-  --gold:        #F59E0B;
-  --gold-soft:   #FBBF24;
+  --gold:        #FACC15;
+  --gold-soft:   #FDE047;
 
   /* Semantic Deltas */
-  --up:          #F59E0B;
+  --up:          #FACC15;
   --down:        #EF4444;
 
   /* Legacy Aliases */
@@ -61,8 +61,8 @@
 
   /* Shadows */
   --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 4px 20px rgba(245, 158, 11, 0.25);
-  --shadow-gold: 0 0 25px rgba(245, 158, 11, 0.18);
+  --shadow-glow: 0 4px 20px rgba(250, 204, 21, 0.25);
+  --shadow-gold: 0 0 25px rgba(250, 204, 21, 0.18);
 }
 
 /* ─── 2. Reset & Atmosphere ─────────────────────────────────────── */
@@ -106,7 +106,7 @@ body {
 .orb-1 {
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.25) 0%, transparent 70%);
   top: -10vw;
   left: -10vw;
 }
@@ -114,7 +114,7 @@ body {
 .orb-2 {
   width: 40vw;
   height: 40vw;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, transparent 70%);
   bottom: -5vw;
   right: -5vw;
   animation-delay: -5s;
@@ -123,7 +123,7 @@ body {
 .orb-3 {
   width: 35vw;
   height: 35vw;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, transparent 70%);
   top: 40%;
   left: 40%;
   animation-delay: -12s;
@@ -178,8 +178,8 @@ body {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05));
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(250, 204, 21, 0.05));
+  border: 1px solid rgba(250, 204, 21, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,7 +187,7 @@ body {
   font-weight: 600;
   font-size: 18px;
   color: var(--gold);
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 15px rgba(250, 204, 21, 0.15);
 }
 
 .brand-text {
@@ -263,7 +263,7 @@ body {
   font-weight: 700;
   font-size: 13px;
   color: #04150F;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
 }
 
 .user-info-text {
@@ -306,15 +306,15 @@ body {
   font-family: var(--font-mono);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(250, 204, 21, 0.1);
   color: var(--gold);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(250, 204, 21, 0.25);
 }
 
 .status-badge.demo {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(250, 204, 21, 0.1);
   color: var(--gold);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(250, 204, 21, 0.25);
 }
 
 .dot {
@@ -375,7 +375,7 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 6px 24px rgba(250, 204, 21, 0.4);
 }
 
 .btn-primary:hover::after {
@@ -395,23 +395,23 @@ body {
 }
 
 .btn-secondary:hover {
-  border-color: rgba(245, 158, 11, 0.4);
+  border-color: rgba(250, 204, 21, 0.4);
   color: var(--gold-soft);
-  background: rgba(245, 158, 11, 0.06);
-  box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.15);
+  background: rgba(250, 204, 21, 0.06);
+  box-shadow: inset 0 0 15px rgba(250, 204, 21, 0.15);
   transform: translateY(-1px);
 }
 
 .btn-outline {
   background: transparent;
   color: var(--gold);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  border: 1px solid rgba(250, 204, 21, 0.35);
 }
 
 .btn-outline:hover {
-  background: rgba(245, 158, 11, 0.08);
+  background: rgba(250, 204, 21, 0.08);
   border-color: var(--gold-soft);
-  box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.2);
+  box-shadow: inset 0 0 20px rgba(250, 204, 21, 0.2);
 }
 
 .btn-sm {
@@ -492,8 +492,8 @@ body {
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: inset 0 0 30px rgba(245, 158, 11, 0.1), inset 0 1px 0 rgba(255,255,255,0.15), 0 20px 50px -15px rgba(0, 0, 0, 0.7);
-  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: inset 0 0 30px rgba(250, 204, 21, 0.1), inset 0 1px 0 rgba(255,255,255,0.15), 0 20px 50px -15px rgba(0, 0, 0, 0.7);
+  border-color: rgba(250, 204, 21, 0.3);
   background: var(--glass-bg-2);
 }
 
@@ -529,8 +529,8 @@ body {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-md);
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.18);
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,8 +539,8 @@ body {
 }
 
 .card:hover .stat-icon {
-  background: rgba(245, 158, 11, 0.14);
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3), inset 0 0 10px rgba(245, 158, 11, 0.2);
+  background: rgba(250, 204, 21, 0.14);
+  box-shadow: 0 0 15px rgba(250, 204, 21, 0.3), inset 0 0 10px rgba(250, 204, 21, 0.2);
   transform: scale(1.05);
 }
 
@@ -594,13 +594,13 @@ body {
 
 /* Featured / Popular Gold Accent Card */
 .plan-card.popular {
-  border-color: rgba(245, 158, 11, 0.5);
-  border-top-color: rgba(245, 158, 11, 0.7);
-  box-shadow: inset 0 1px 0 rgba(245, 158, 11, 0.3), var(--shadow-gold);
+  border-color: rgba(250, 204, 21, 0.5);
+  border-top-color: rgba(250, 204, 21, 0.7);
+  box-shadow: inset 0 1px 0 rgba(250, 204, 21, 0.3), var(--shadow-gold);
 }
 
 .plan-card.popular:hover {
-  box-shadow: inset 0 1px 0 rgba(245, 158, 11, 0.4), 0 15px 40px rgba(245, 158, 11, 0.25);
+  box-shadow: inset 0 1px 0 rgba(250, 204, 21, 0.4), 0 15px 40px rgba(250, 204, 21, 0.25);
 }
 
 .popular-badge {
@@ -616,7 +616,7 @@ body {
   border-radius: var(--radius-sm);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 10px rgba(250, 204, 21, 0.3);
 }
 
 .plan-name {
@@ -724,21 +724,21 @@ body {
 
 .badge-approved,
 .badge-active {
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(250, 204, 21, 0.12);
   color: var(--gold);
-  border: 1px solid rgba(245, 158, 11, 0.28);
+  border: 1px solid rgba(250, 204, 21, 0.28);
 }
 
 .badge-completed {
-  background: rgba(245, 158, 11, 0.22);
-  color: #FBBF24;
-  border: 1px solid rgba(251, 191, 36, 0.45);
+  background: rgba(250, 204, 21, 0.22);
+  color: #FDE047;
+  border: 1px solid rgba(253, 224, 71, 0.45);
 }
 
 .badge-pending {
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(250, 204, 21, 0.12);
   color: var(--gold);
-  border: 1px solid rgba(245, 158, 11, 0.28);
+  border: 1px solid rgba(250, 204, 21, 0.28);
 }
 
 /* DEPOSIT_PENDING — amber-orange, slightly more urgent than gold */
@@ -765,7 +765,7 @@ body {
 /* ─── 13. Referral & Progress Elements ───────────────────────────── */
 .ref-box {
   background: rgba(7, 10, 14, 0.7);
-  border: 1px dashed rgba(245, 158, 11, 0.35);
+  border: 1px dashed rgba(250, 204, 21, 0.35);
   padding: 14px 18px;
   border-radius: var(--radius-md);
   display: flex;
@@ -814,8 +814,8 @@ body {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: rgba(245, 158, 11, 0.06);
-  border: 1px solid rgba(245, 158, 11, 0.18);
+  background: rgba(250, 204, 21, 0.06);
+  border: 1px solid rgba(250, 204, 21, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -944,7 +944,7 @@ body {
 
 .form-control:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.15);
 }
 
 /* ─── 16. Toast Notifications ───────────────────────────────────── */
@@ -996,7 +996,7 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(550px 400px at 15% 0%, rgba(245, 158, 11, 0.14), transparent 65%),
+    radial-gradient(550px 400px at 15% 0%, rgba(250, 204, 21, 0.14), transparent 65%),
     var(--glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -1172,7 +1172,7 @@ body {
 
 .field input:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15), inset 0 0 10px rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.15), inset 0 0 10px rgba(250, 204, 21, 0.1);
 }
 
 .toggle-pw {
@@ -1271,10 +1271,10 @@ body {
   height: 58px;
   margin: 0 auto 16px;
   border-radius: 50%;
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.25);
   color: var(--gold-soft);
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.15);
 }
 
 .otp-verify-desc {
@@ -1325,21 +1325,21 @@ body {
 
 .otp-digit:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2), inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2), inset 0 1px 2px rgba(0, 0, 0, 0.3);
   transform: translateY(-1px);
 }
 
 .otp-digit.otp-filled {
-  border-color: rgba(245, 158, 11, 0.45);
-  background: rgba(245, 158, 11, 0.06);
+  border-color: rgba(250, 204, 21, 0.45);
+  background: rgba(250, 204, 21, 0.06);
   color: var(--gold-soft);
 }
 
 .otp-digit.otp-success {
   border-color: var(--gold) !important;
-  background: rgba(245, 158, 11, 0.15) !important;
+  background: rgba(250, 204, 21, 0.15) !important;
   color: #3fcb8c !important;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.4) !important;
 }
 
 .otp-digit.otp-error {
@@ -1407,8 +1407,8 @@ body {
 
 /* ─── Company Deposit Wallet Card Styles ──────────────────────── */
 .company-wallet-card {
-  background: rgba(245, 158, 11, 0.05);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(250, 204, 21, 0.05);
+  border: 1px solid rgba(250, 204, 21, 0.25);
   border-radius: var(--radius-sm, 6px);
   padding: 14px;
   margin-bottom: 18px;
@@ -1441,7 +1441,7 @@ body {
   flex: 1;
   background: var(--bg-dark, #06090e);
   border: 1px solid var(--line, #1f2839);
-  color: var(--gold, #f59e0b);
+  color: var(--gold, #facc15);
   font-family: var(--font-mono, monospace);
   font-size: 12px;
   font-weight: 600;
@@ -1498,7 +1498,7 @@ body {
 
 .company-qr-container:hover {
   transform: scale(1.04);
-  box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.35);
 }
 
 .company-deposit-qr-img {
@@ -1589,10 +1589,10 @@ body {
   margin-bottom: 24px;
   padding: 24px 28px;
   background: linear-gradient(135deg, rgba(21, 28, 37, 0.7) 0%, rgba(14, 19, 25, 0.5) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(250, 204, 21, 0.25);
   border-radius: var(--radius-lg, 16px);
   backdrop-filter: blur(28px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(245, 158, 11, 0.3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(250, 204, 21, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -1604,7 +1604,7 @@ body {
   right: -50px;
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -1614,8 +1614,8 @@ body {
   align-items: center;
   gap: 8px;
   padding: 4px 12px;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.35);
   border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 11px;
@@ -1663,16 +1663,16 @@ body {
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #FACC15 0%, #EAB308 100%);
   color: #030507;
   font-weight: 600;
-  border: 1px solid rgba(245, 158, 11, 0.5);
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  box-shadow: 0 4px 14px rgba(250, 204, 21, 0.3);
 }
 
 .btn-gold:hover {
-  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+  background: linear-gradient(135deg, #FDE047 0%, #FACC15 100%);
+  box-shadow: 0 6px 20px rgba(250, 204, 21, 0.45);
   transform: translateY(-1px);
 }
 
@@ -1727,21 +1727,21 @@ body {
 }
 
 .admin-tab-btn.active {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.15) 0%, rgba(250, 204, 21, 0.08) 100%);
   color: var(--text);
-  border: 1px solid rgba(245, 158, 11, 0.45);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(250, 204, 21, 0.3);
 }
 
 .tab-badge {
   padding: 2px 7px;
   border-radius: 999px;
-  background: rgba(245, 158, 11, 0.2);
+  background: rgba(250, 204, 21, 0.2);
   color: var(--gold);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(250, 204, 21, 0.4);
 }
 
 .admin-tab-btn.active .tab-badge {
@@ -1770,8 +1770,8 @@ body {
 }
 
 .admin-stat-card.highlight-gold {
-  border-color: rgba(245, 158, 11, 0.3);
-  box-shadow: inset 0 1px 0 rgba(245, 158, 11, 0.25);
+  border-color: rgba(250, 204, 21, 0.3);
+  box-shadow: inset 0 1px 0 rgba(250, 204, 21, 0.25);
 }
 
 .admin-stat-card.highlight-danger {
@@ -1787,8 +1787,8 @@ body {
 }
 
 .icon-users { color: #60A5FA; background: rgba(59, 130, 246, 0.1); }
-.icon-invest { color: var(--gold); background: rgba(245, 158, 11, 0.1); }
-.icon-pending { color: var(--gold); background: rgba(245, 158, 11, 0.1); }
+.icon-invest { color: var(--gold); background: rgba(250, 204, 21, 0.1); }
+.icon-pending { color: var(--gold); background: rgba(250, 204, 21, 0.1); }
 .icon-wdr { color: #F87171; background: rgba(239, 68, 68, 0.1); }
 
 /* ─── Admin Filter Bars ─── */
@@ -1842,9 +1842,9 @@ body {
 
 /* ─── Extra Badges ─── */
 .badge-admin {
-  background: rgba(245, 158, 11, 0.18);
-  color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.45);
+  background: rgba(250, 204, 21, 0.18);
+  color: #FDE047;
+  border: 1px solid rgba(250, 204, 21, 0.45);
 }
 
 .badge-support {
@@ -1866,15 +1866,15 @@ body {
 }
 
 .badge-kyc-approved {
-  background: rgba(245, 158, 11, 0.15);
+  background: rgba(250, 204, 21, 0.15);
   color: var(--gold);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  border: 1px solid rgba(250, 204, 21, 0.35);
 }
 
 .badge-kyc-pending {
-  background: rgba(245, 158, 11, 0.15);
+  background: rgba(250, 204, 21, 0.15);
   color: var(--gold);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  border: 1px solid rgba(250, 204, 21, 0.35);
 }
 
 .badge-kyc-unverified,
@@ -1885,10 +1885,10 @@ body {
 }
 
 .badge-admin-glow {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #FACC15 0%, #EAB308 100%);
   color: #030507;
   font-weight: 700;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
 }
 
 /* Proof image thumbnail */
@@ -1925,8 +1925,8 @@ body {
 
 .thread-msg-staff {
   align-self: flex-end;
-  background: rgba(245, 158, 11, 0.14);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(250, 204, 21, 0.14);
+  border: 1px solid rgba(250, 204, 21, 0.35);
   color: var(--text);
 }
 
@@ -1938,7 +1938,7 @@ body {
   overflow: hidden;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line-light);
-  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.04) 0%, rgba(0, 0, 0, 0.6) 100%);
+  background: radial-gradient(circle at center, rgba(250, 204, 21, 0.04) 0%, rgba(0, 0, 0, 0.6) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2018,7 +2018,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
   padding: 8px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.1);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), 0 0 20px rgba(250, 204, 21, 0.1);
   display: none;
   flex-direction: column;
   gap: 3px;
@@ -2056,13 +2056,13 @@ body {
 
 .nav-dropdown-item.active {
   color: var(--gold);
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(250, 204, 21, 0.12);
 }
 
 /* Admin Banner in Investor Mode */
 .admin-mode-banner {
-  background: linear-gradient(90deg, rgba(245, 158, 11, 0.16) 0%, rgba(14, 19, 25, 0.85) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.38);
+  background: linear-gradient(90deg, rgba(250, 204, 21, 0.16) 0%, rgba(14, 19, 25, 0.85) 100%);
+  border: 1px solid rgba(250, 204, 21, 0.38);
   border-radius: var(--radius-sm);
   padding: 12px 18px;
   margin-bottom: 24px;
@@ -2075,8 +2075,8 @@ body {
 
 /* ─── KYC Identity Verification Styles ───────────────────────── */
 .kyc-dropzone {
-  border: 2px dashed rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.03);
+  border: 2px dashed rgba(250, 204, 21, 0.35);
+  background: rgba(250, 204, 21, 0.03);
   border-radius: var(--radius-sm);
   padding: 24px 16px;
   text-align: center;
@@ -2086,7 +2086,7 @@ body {
 
 .kyc-dropzone:hover {
   border-color: var(--gold);
-  background: rgba(245, 158, 11, 0.08);
+  background: rgba(250, 204, 21, 0.08);
   transform: translateY(-1px);
 }
 
@@ -2094,7 +2094,7 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(250, 204, 21, 0.12);
   color: var(--gold);
   display: flex;
   align-items: center;
@@ -2112,7 +2112,7 @@ body {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(245, 158, 11, 0.15);
+  background: rgba(250, 204, 21, 0.15);
   color: var(--gold);
   display: flex;
   align-items: center;

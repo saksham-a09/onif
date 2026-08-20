@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finovo — Advanced Crypto Analytics & Trading</title>
+  <meta name="description" content="Finovo gives traders access to algorithmic execution, deep technical analysis, and real-time market data — all from one premium dashboard.">
+  <meta name="keywords" content="crypto trading, market analytics, algorithmic execution, finovo, technical analysis, institutional trading">
+  <meta property="og:title" content="Finovo — Master the Crypto Markets">
+  <meta property="og:description" content="Algorithmic execution. Deep analysis. Real-time data. One premium dashboard.">
+  <meta property="og:type" content="website">
+
+  <!-- Preconnect for Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/landing.css">
+
+  <style>
+    /* Mobile menu (supplement) */
+    .nav-mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-mobile-toggle span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--mute);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .nav-mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(3,5,7,0.96);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--line);
+      padding: 20px 24px;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 999;
+    }
+    .nav-mobile-menu.open { display: flex; }
+    .nav-mobile-menu a {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--mute);
+      transition: color 0.25s, background 0.25s;
+    }
+    .nav-mobile-menu a:hover { color: var(--text); background: var(--line); }
+    .nav-mobile-menu .btn { margin-top: 8px; justify-content: center; }
+    @media (max-width: 768px) {
+      .nav-mobile-toggle { display: flex; }
+    }
+
+    /* Hero visual on mobile */
+    @media (max-width: 900px) {
+      .hero-visual { order: -1; }
+    }
+
+    /* Ref tree layout */
+    .ref-tree-level {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Mobile nav hidden */
+    @media (min-width: 769px) {
+      .nav-mobile-menu { display: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 1 — STICKY NAVIGATION                        -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <nav class="lp-nav" id="lp-nav" role="navigation" aria-label="Main navigation">
+      <a href="#hero" class="nav-brand" aria-label="Finovo Home">
+        <img src="img/logo-title.png" alt="FINOVO" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+        <span style="display:none; font-family:'IBM Plex Mono',monospace; font-size:1.3rem; font-weight:600; color:#FACC15; letter-spacing:0.06em;">FINOVO</span>
+      </a>
+
+      <!-- Desktop links -->
+      <ul class="nav-links" role="list">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#plans">Subscription Tiers</a></li>
+        <li><a href="#why">Why Finovo</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+
+      <!-- Desktop CTAs -->
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-ghost" id="nav-signin">Sign In</a>
+        <a href="index.html#register" class="btn btn-primary" id="nav-getstarted">Get Started →</a>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-expanded="false" aria-controls="nav-mobile-menu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <!-- Mobile dropdown menu -->
+    <div class="nav-mobile-menu" id="nav-mobile-menu" role="menu">
+      <a href="#how-it-works" role="menuitem">How It Works</a>
+      <a href="#plans" role="menuitem">Subscription Tiers</a>
+      <a href="#why" role="menuitem">Why Finovo</a>
+      <a href="#faq" role="menuitem">FAQ</a>
+      <a href="index.html" class="btn btn-secondary" role="menuitem">Sign In</a>
+      <a href="index.html" class="btn btn-primary" role="menuitem">Get Started →</a>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 2 — HERO                                     -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="hero" aria-label="Hero">
+      <div class="container">
+        <div class="hero-grid">
+
+          <!-- Left — Copy -->
+          <div class="hero-copy reveal-left">
+            <div class="hero-eyebrow" aria-hidden="true">
+              <span class="hero-eyebrow-dot"></span>
+              Institutional-Grade Analytics
+            </div>
+
+            <h1 class="hero-title">
+              Master the Markets<br>
+              with <em>Algorithmic</em><br>
+              <span class="accent">Execution</span>
+            </h1>
+
+            <p class="hero-desc">
+              Finovo gives crypto traders access to deep technical analysis,
+              real-time market data, and algorithmic execution models — all from one
+              premium, secure dashboard.
+            </p>
+
+            <div class="hero-ctas">
+              <a href="index.html" class="btn btn-primary btn-lg" id="hero-cta-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                Get Started — It's Free
+              </a>
+              <a href="index.html" class="btn btn-secondary btn-lg" id="hero-cta-secondary">
+                Sign In to Dashboard →
+              </a>
+            </div>
+
+            <div class="hero-trust" aria-label="Trust indicators">
+              <div class="hero-trust-item">
+                <span class="check" aria-hidden="true">✓</span>
+                Direct API Execution
+              </div>
+              <div class="hero-trust-item">
+                <span class="check" aria-hidden="true">✓</span>
+                Sub-millisecond Latency
+              </div>
+              <div class="hero-trust-item">
+                <span class="check" aria-hidden="true">✓</span>
+                Encrypted WebSockets
+              </div>
+            </div>
+          </div>
+
+          <!-- Right — Motion Graphic Hero Terminal -->
+          <div class="hero-visual reveal-right">
+            <div class="hero-motion-cockpit">
+              <!-- Cockpit Top HUD Bar -->
+              <div class="cockpit-header">
+                <div class="cockpit-header-left">
+                  <div class="market-pair-tag">
+                    <span class="crypto-icon">₿</span>
+                    <span class="pair-name">BTC / USDT</span>
+                    <span class="timeframe-tag">1s LIVE</span>
+                  </div>
+                  <div class="cockpit-price-display">
+                    <span class="live-price-val" id="hero-live-price">$96,482.50</span>
+                    <span class="live-change-badge positive" id="hero-live-change">+4.82%</span>
+                  </div>
+                </div>
+
+                <div class="cockpit-header-right">
+                  <div class="cockpit-status-pill">
+                    <span class="radar-dot"></span>
+                    <span class="status-text">QUANT ENGINE ACTIVE</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Canvas Display -->
+              <div class="cockpit-canvas-wrap">
+                <canvas id="hero-chart-canvas"></canvas>
+                <div class="chart-scanline-overlay" aria-hidden="true"></div>
+                <div class="chart-corner-decor tl" aria-hidden="true"></div>
+                <div class="chart-corner-decor tr" aria-hidden="true"></div>
+                <div class="chart-corner-decor bl" aria-hidden="true"></div>
+                <div class="chart-corner-decor br" aria-hidden="true"></div>
+              </div>
+
+              <!-- Cockpit Bottom HUD Stats -->
+              <div class="cockpit-footer">
+                <div class="cockpit-stat-item">
+                  <span class="label">API LATENCY</span>
+                  <span class="val mono"><span class="highlight-gold">1.2</span> ms</span>
+                </div>
+                <div class="cockpit-stat-item">
+                  <span class="label">24H SIGNALS</span>
+                  <span class="val mono">348 <span class="sub-label">TRIGGERS</span></span>
+                </div>
+                <div class="cockpit-stat-item">
+                  <span class="label">FILL RATE</span>
+                  <span class="val mono"><span class="highlight-green">99.98%</span></span>
+                </div>
+                <div class="cockpit-stat-item">
+                  <span class="label">ORDERBOOK DEPTH</span>
+                  <span class="val mono">$42.8M</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating Motion HUD Badges -->
+            <div class="hero-float-hud badge-top" aria-hidden="true">
+              <div class="hud-badge-icon">⚡</div>
+              <div class="hud-badge-content">
+                <div class="hud-badge-title">Algorithmic Match</div>
+                <div class="hud-badge-sub">Binance ⇄ Bybit • <strong>+0.38% Arbitrage</strong></div>
+              </div>
+            </div>
+
+            <div class="hero-float-hud badge-bottom" aria-hidden="true">
+              <div class="hud-badge-icon pulse-emerald">●</div>
+              <div class="hud-badge-content">
+                <div class="hud-badge-title">High-Freq Stream</div>
+                <div class="hud-badge-sub">Sub-millisecond WebSocket Connected</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 3 — CAPABILITY HIGHLIGHTS                    -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="stats" aria-label="Platform capabilities">
+      <div class="container">
+        <div class="glass stats-bar reveal">
+          <div class="stat-item">
+            <div class="stat-number mono" style="font-size:1.8rem; color:var(--emerald-soft);">
+              Real-Time
+            </div>
+            <div class="stat-label">Market Data Streams</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number mono" style="font-size:1.8rem;">
+              Algorithmic
+            </div>
+            <div class="stat-label">Trade Execution</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number mono" style="font-size:1.8rem; color:var(--emerald-soft);">
+              Deep Tech
+            </div>
+            <div class="stat-label">Market Analysis</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number mono" style="font-size:1.8rem; color:var(--gold-soft);">
+              Institutional
+            </div>
+            <div class="stat-label">Security Standards</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- TICKER — Exchange Partners Marquee                   -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="ticker" aria-hidden="true">
+      <div class="ticker-track-wrap">
+        <div class="ticker-track">
+          <!-- Set 1 -->
+          <div class="ticker-item highlight"><span class="ti-dot"></span>Binance</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Bybit</div>
+          <div class="ticker-item"><span class="ti-dot"></span>OKX</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Kraken</div>
+          <div class="ticker-item highlight"><span class="ti-dot"></span>Coinbase Pro</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Bitfinex</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Deribit</div>
+          <div class="ticker-item highlight"><span class="ti-dot"></span>Huobi</div>
+          <div class="ticker-item"><span class="ti-dot"></span>KuCoin</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Gate.io</div>
+          <div class="ticker-item highlight"><span class="ti-dot"></span>MEXC</div>
+          <div class="ticker-item"><span class="ti-dot"></span>BitMEX</div>
+          <!-- Set 2 (duplicate for seamless loop) -->
+          <div class="ticker-item highlight"><span class="ti-dot"></span>Binance</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Bybit</div>
+          <div class="ticker-item"><span class="ti-dot"></span>OKX</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Kraken</div>
+          <div class="ticker-item highlight"><span class="ti-dot"></span>Coinbase Pro</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Bitfinex</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Deribit</div>
+          <div class="ticker-item highlight"><span class="ti-dot"></span>Huobi</div>
+          <div class="ticker-item"><span class="ti-dot"></span>KuCoin</div>
+          <div class="ticker-item"><span class="ti-dot"></span>Gate.io</div>
+          <div class="ticker-item highlight"><span class="ti-dot"></span>MEXC</div>
+          <div class="ticker-item"><span class="ti-dot"></span>BitMEX</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 4 — HOW IT WORKS                             -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="how-it-works" aria-labelledby="hiw-title">
+      <div class="container">
+        <div class="text-center reveal">
+          <div class="section-eyebrow">Simple Process</div>
+          <h2 class="section-title" id="hiw-title">
+            From Data to<br><em>Execution in 3 Steps</em>
+          </h2>
+          <p class="section-subtitle">
+            We've designed Finovo to integrate seamlessly with your workflow —
+            providing instant analytics and execution capabilities in minutes.
+          </p>
+        </div>
+
+        <div class="steps-grid reveal-stagger">
+
+          <div class="step-card glass reveal-child reveal-left">
+            <div class="step-number">Step 01</div>
+            <div class="step-icon-wrap" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Connect & Analyze</h3>
+            <p class="step-desc">
+              Link your exchange accounts via secure API keys. Access real-time order books,
+              historical data, and deep technical indicators natively within your dashboard.
+            </p>
+          </div>
+
+          <div class="step-card glass reveal-child">
+            <div class="step-number">Step 02</div>
+            <div class="step-icon-wrap" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                <polyline points="17 6 23 6 23 12"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Deploy Strategies</h3>
+            <p class="step-desc">
+              Execute trades manually using our advanced interface, or deploy automated
+              algorithmic models to capitalize on market inefficiencies instantly.
+            </p>
+          </div>
+
+          <div class="step-card glass reveal-child reveal-right">
+            <div class="step-number">Step 03</div>
+            <div class="step-icon-wrap" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Track Performance</h3>
+            <p class="step-desc">
+              Monitor your portfolio's alpha with institutional-grade reporting. Review
+              latency metrics, trade history, and real-time asset distributions.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 5 — INVESTMENT PLANS                         -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="plans" aria-labelledby="plans-title">
+      <div class="container">
+        <div class="text-center reveal">
+          <div class="section-eyebrow">Subscription Tiers</div>
+          <h2 class="section-title" id="plans-title">
+            Tools for<br><em>Every Trader</em>
+          </h2>
+          <p class="section-subtitle">
+            Whether you're performing manual technical analysis or running high-frequency
+            algorithmic bots, Finovo provides the data and execution speed you need.
+          </p>
+        </div>
+
+        <div class="plans-grid reveal-stagger">
+
+          <!-- Starter Plan -->
+          <div class="plan-card glass reveal-child reveal-left">
+            <div class="plan-tier">Basic Tier</div>
+            <div class="plan-name">Analytics</div>
+            <div class="plan-roi">Free</div>
+            <div class="plan-roi-label">Forever free</div>
+
+            <div class="plan-divider"></div>
+
+            <ul class="plan-features" aria-label="Basic plan features">
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Real-time charting (Standard)
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                End-of-day market summaries
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Standard email support
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Manual trade execution
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Connect up to 2 exchanges
+              </li>
+            </ul>
+
+            <div class="plan-min">
+              Cost: <span>$0 / month</span>
+            </div>
+
+            <a href="index.html" class="btn btn-secondary" style="width:100%; justify-content:center;" id="plan-starter-cta">
+              Open Account → Start Here
+            </a>
+          </div>
+
+          <!-- Growth Plan (Featured) -->
+          <div class="plan-card featured reveal-child reveal-scale">
+            <div class="plan-featured-badge">Most Popular</div>
+            <div class="plan-tier">Pro Tier</div>
+            <div class="plan-name">Trading Signals</div>
+            <div class="plan-roi">$49</div>
+            <div class="plan-roi-label">Per month</div>
+
+            <div class="plan-divider" style="background:rgba(250,204,21,0.2);"></div>
+
+            <ul class="plan-features" aria-label="Pro plan features">
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Advanced tick-by-tick data
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Custom algorithmic alerts
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Priority email support
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Smart order routing execution
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Dedicated Discord channel
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Unlimited exchange integrations
+              </li>
+            </ul>
+
+            <div class="plan-min" style="border-color:rgba(250,204,21,0.2);">
+              Cost: <span style="color:var(--gold-soft);">$49 / month</span>
+            </div>
+
+            <a href="index.html" class="btn btn-primary" style="width:100%; justify-content:center; background:linear-gradient(135deg,var(--gold) 0%,#eab308 100%); box-shadow:0 0 0 0 rgba(250,204,21,0.2);" id="plan-growth-cta">
+              Get Started — Best Value
+            </a>
+          </div>
+
+          <!-- Elite Plan -->
+          <div class="plan-card glass reveal-child">
+            <div class="plan-tier">API Tier</div>
+            <div class="plan-name">Institutional</div>
+            <div class="plan-roi">$199</div>
+            <div class="plan-roi-label">Per month</div>
+
+            <div class="plan-divider"></div>
+
+            <ul class="plan-features" aria-label="Institutional plan features">
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Direct WebSocket API access
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Sub-millisecond latency routing
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Exclusive developer events
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Colocated server access
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Dedicated technical account manager
+              </li>
+              <li>
+                <span class="fi" aria-hidden="true">✓</span>
+                Institutional block trading suite
+              </li>
+            </ul>
+
+            <div class="plan-min">
+              Cost: <span>$199 / month</span>
+            </div>
+
+            <a href="index.html" class="btn btn-secondary" style="width:100%; justify-content:center;" id="plan-elite-cta">
+              Unlock Elite Access →
+            </a>
+          </div>
+
+        </div>
+
+        <p style="text-align:center; margin-top:32px; font-size:12px; color:rgba(138,148,164,0.7); font-family:var(--font-mono);">
+          * Trading cryptocurrencies carries a high level of risk. Historical data is not indicative of future performance.
+          Algorithms may fail. Please review API limitations and terms before subscribing.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION — CUSTOMER REVIEWS                           -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="reviews" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="text-center reveal">
+          <div class="section-eyebrow">Community Voices</div>
+          <h2 class="section-title" id="reviews-title">
+            Trusted by <em>Professional Traders</em>
+          </h2>
+          <p class="section-subtitle">
+            From day traders to quantitative hedge funds, Finovo powers serious market participants worldwide.
+          </p>
+        </div>
+      </div>
+
+      <!-- Auto-scrolling marquee reviews -->
+      <div class="reviews-track-wrap" style="margin-top: 60px;">
+        <div class="reviews-track" id="reviews-track">
+
+          <!-- Card 1 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"The sub-millisecond execution is real. I've moved from a 3-broker setup to just Finovo. The API routing is flawless on Binance and Bybit simultaneously."</p>
+            <div class="review-author">
+              <div class="review-avatar gold-av">AK</div>
+              <div>
+                <div class="review-name">Arjun K.</div>
+                <div class="review-role">Quant Trader · Mumbai</div>
+              </div>
+              <div class="review-badge">PRO</div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"Finally a platform that treats me like an institutional trader. The technical analysis depth is unmatched — RSI, MACD, Bollinger all custom-configurable."</p>
+            <div class="review-author">
+              <div class="review-avatar blue-av">ST</div>
+              <div>
+                <div class="review-name">Sarah T.</div>
+                <div class="review-role">Fund Manager · London</div>
+              </div>
+              <div class="review-badge">API</div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"The automated signal triggers saved me from two major downturns last quarter. Finovo's algo engine actually understands market structure."</p>
+            <div class="review-author">
+              <div class="review-avatar green-av">MR</div>
+              <div>
+                <div class="review-name">Marcus R.</div>
+                <div class="review-role">Crypto Analyst · Berlin</div>
+              </div>
+              <div class="review-badge">PRO</div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"I run multi-exchange arbitrage strategies. Finovo's WebSocket latency is the lowest I've tested — consistently under 2ms on colocation."</p>
+            <div class="review-author">
+              <div class="review-avatar purple-av">JL</div>
+              <div>
+                <div class="review-name">James L.</div>
+                <div class="review-role">HFT Developer · Singapore</div>
+              </div>
+              <div class="review-badge">API</div>
+            </div>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"The non-custodial model was my dealbreaker for other platforms. With Finovo, my assets never leave my exchange. I feel fully in control."</p>
+            <div class="review-author">
+              <div class="review-avatar rose-av">PG</div>
+              <div>
+                <div class="review-name">Priya G.</div>
+                <div class="review-role">Retail Trader · Toronto</div>
+              </div>
+              <div class="review-badge">BASIC</div>
+            </div>
+          </div>
+
+          <!-- Card 6 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"Switched to Finovo 3 months ago. The real-time order book integration and smart order routing has genuinely improved my fill rates on volatile days."</p>
+            <div class="review-author">
+              <div class="review-avatar gold-av">DO</div>
+              <div>
+                <div class="review-name">Daniel O.</div>
+                <div class="review-role">Day Trader · New York</div>
+              </div>
+              <div class="review-badge">PRO</div>
+            </div>
+          </div>
+
+          <!-- Card 7 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"The dashboard UX is beautiful and extremely functional. I can see all my positions across OKX, Kraken, and Binance in one glance with live P&amp;L."</p>
+            <div class="review-author">
+              <div class="review-avatar blue-av">YN</div>
+              <div>
+                <div class="review-name">Yuki N.</div>
+                <div class="review-role">Portfolio Manager · Tokyo</div>
+              </div>
+              <div class="review-badge">API</div>
+            </div>
+          </div>
+
+          <!-- Card 8 -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"Finovo Pro tier is worth every cent. The tick-by-tick data alone has transformed how I backtest strategies. The signal accuracy is remarkable."</p>
+            <div class="review-author">
+              <div class="review-avatar green-av">CR</div>
+              <div>
+                <div class="review-name">Carlos R.</div>
+                <div class="review-role">Algo Strategist · São Paulo</div>
+              </div>
+              <div class="review-badge">PRO</div>
+            </div>
+          </div>
+
+          <!-- Duplicate set for seamless infinite loop -->
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"The sub-millisecond execution is real. I've moved from a 3-broker setup to just Finovo. The API routing is flawless on Binance and Bybit simultaneously."</p>
+            <div class="review-author">
+              <div class="review-avatar gold-av">AK</div>
+              <div><div class="review-name">Arjun K.</div><div class="review-role">Quant Trader · Mumbai</div></div>
+              <div class="review-badge">PRO</div>
+            </div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"Finally a platform that treats me like an institutional trader. The technical analysis depth is unmatched — RSI, MACD, Bollinger all custom-configurable."</p>
+            <div class="review-author">
+              <div class="review-avatar blue-av">ST</div>
+              <div><div class="review-name">Sarah T.</div><div class="review-role">Fund Manager · London</div></div>
+              <div class="review-badge">API</div>
+            </div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"The automated signal triggers saved me from two major downturns last quarter. Finovo's algo engine actually understands market structure."</p>
+            <div class="review-author">
+              <div class="review-avatar green-av">MR</div>
+              <div><div class="review-name">Marcus R.</div><div class="review-role">Crypto Analyst · Berlin</div></div>
+              <div class="review-badge">PRO</div>
+            </div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"I run multi-exchange arbitrage strategies. Finovo's WebSocket latency is the lowest I've tested — consistently under 2ms on colocation."</p>
+            <div class="review-author">
+              <div class="review-avatar purple-av">JL</div>
+              <div><div class="review-name">James L.</div><div class="review-role">HFT Developer · Singapore</div></div>
+              <div class="review-badge">API</div>
+            </div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+            <p class="review-text">"Switched to Finovo 3 months ago. The real-time order book integration and smart order routing has genuinely improved my fill rates on volatile days."</p>
+            <div class="review-author">
+              <div class="review-avatar gold-av">DO</div>
+              <div><div class="review-name">Daniel O.</div><div class="review-role">Day Trader · New York</div></div>
+              <div class="review-badge">PRO</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 7 — WHY FINOVO (TRUST PILLARS)               -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="why" aria-labelledby="why-title">
+      <div class="container">
+        <div class="text-center reveal">
+
+          <div class="section-eyebrow">Our Commitments</div>
+          <h2 class="section-title" id="why-title">
+            Built on a Foundation<br>of <em>Trust & Transparency</em>
+          </h2>
+          <p class="section-subtitle">
+            Every feature in Finovo is designed to protect your capital and keep you in control.
+            We hold ourselves to institutional-grade standards — not retail minimums.
+          </p>
+        </div>
+
+        <div class="pillars-grid reveal-stagger">
+
+          <div class="pillar-card glass reveal-child">
+            <div class="pillar-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3 class="pillar-title">Direct API Execution</h3>
+            <p class="pillar-desc">
+              Your trades are routed directly to the exchange API without intermediary handling.
+              Achieve complete control over your orders with zero platform-induced latency.
+            </p>
+          </div>
+
+          <div class="pillar-card glass reveal-child">
+            <div class="pillar-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <h3 class="pillar-title">Non-Custodial Design</h3>
+            <p class="pillar-desc">
+              We never hold your funds. Finovo connects to your existing exchange wallets via API keys,
+              keeping you in complete custody of your assets at all times.
+            </p>
+          </div>
+
+          <div class="pillar-card glass reveal-child">
+            <div class="pillar-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <h3 class="pillar-title">Encrypted WebSockets</h3>
+            <p class="pillar-desc">
+              All data streams are secured using AES-256 encryption. Your API keys and trading
+              strategies are securely locked in our institutional-grade vault infrastructure.
+            </p>
+          </div>
+
+          <div class="pillar-card glass reveal-child">
+            <div class="pillar-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <h3 class="pillar-title">Latency Optimization</h3>
+            <p class="pillar-desc">
+              Our servers are colocated near major crypto exchanges to ensure sub-millisecond
+              data delivery and trade execution. Never miss a market movement again.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 8 — FAQ                                      -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="text-center reveal">
+          <div class="section-eyebrow">FAQ</div>
+          <h2 class="section-title" id="faq-title">
+            Common Questions,<br><em>Straight Answers</em>
+          </h2>
+          <p class="section-subtitle">
+            Everything you need to know about how Finovo works, how your money is managed,
+            and how to get the most from the platform.
+          </p>
+        </div>
+
+        <div class="faq-list reveal" role="list">
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" id="faq-q1" aria-expanded="false" aria-controls="faq-a1">
+              What is Finovo, and who is it designed for?
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer" id="faq-a1" role="region" aria-labelledby="faq-q1">
+              <div class="faq-answer-inner">
+                Finovo is an advanced crypto analytics and algorithmic trading platform designed for
+                professional traders. It provides real-time market data, deep technical analysis,
+                and API execution routing in a single, secure dashboard.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" id="faq-q2" aria-expanded="false" aria-controls="faq-a2">
+              How does the algorithmic execution engine work?
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer" id="faq-a2" role="region" aria-labelledby="faq-q2">
+              <div class="faq-answer-inner">
+                Our engine scans connected exchanges for market inefficiencies, arbitrage opportunities,
+                and momentum shifts according to your parameters. Once an entry is triggered, the system
+                routes the order via your API keys with sub-millisecond latency.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" id="faq-q3" aria-expanded="false" aria-controls="faq-a3">
+              Do I need to deposit crypto into Finovo?
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer" id="faq-a3" role="region" aria-labelledby="faq-q3">
+              <div class="faq-answer-inner">
+                No. Finovo is strictly non-custodial. You simply link your existing exchange accounts
+                (like Binance, Bybit, or Kraken) using API keys. Your funds never leave your exchange
+                wallet, ensuring you retain full control over your capital at all times.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" id="faq-q4" aria-expanded="false" aria-controls="faq-a4">
+              What exchanges are supported?
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer" id="faq-a4" role="region" aria-labelledby="faq-q4">
+              <div class="faq-answer-inner">
+                Finovo currently supports native integration with Binance, Bybit, OKX, and Kraken via
+                low-latency WebSockets. We are constantly expanding our supported exchanges based on
+                institutional demand and API reliability.
+              </div>
+            </div>
+          </div>
+
+
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" id="faq-q6" aria-expanded="false" aria-controls="faq-a6">
+              Are my API keys secure?
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer" id="faq-a6" role="region" aria-labelledby="faq-q6">
+              <div class="faq-answer-inner">
+                Yes. All API keys are encrypted at rest using AES-256 encryption. We strictly require
+                you to disable withdrawal permissions on any API keys connected to Finovo. We only ask
+                for read and trade permissions, ensuring we can never withdraw your assets.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" id="faq-q7" aria-expanded="false" aria-controls="faq-a7">
+              Do you guarantee trading returns?
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer" id="faq-a7" role="region" aria-labelledby="faq-q7">
+              <div class="faq-answer-inner">
+                No. Trading cryptocurrencies carries significant risk. Finovo provides the tools, data,
+                and execution speed necessary for professional trading, but market conditions dictate
+                actual performance. We provide the infrastructure, you provide the strategy.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question" id="faq-q8" aria-expanded="false" aria-controls="faq-a8">
+              How do I reach Finovo's support team?
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer" id="faq-a8" role="region" aria-labelledby="faq-q8">
+              <div class="faq-answer-inner">
+                Support is available directly through your dashboard via the "Support Tickets" section.
+                You can raise a ticket describing your issue, and our team will respond within one
+                business day. Elite plan members benefit from a dedicated relationship manager for
+                priority assistance. Growth plan members have access to a priority support channel.
+                We do not offer phone support at this time to maintain response quality and security.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 9 — CTA BANNER                               -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <section id="cta" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="glass-2 cta-card reveal">
+          <div class="section-eyebrow" style="justify-content:center; display:flex; margin-bottom:18px;">Start Today</div>
+          <h2 class="cta-title" id="cta-title">
+            Ready to Trade <em>Smarter?</em>
+          </h2>
+          <p class="cta-desc">
+            Join professional traders already analyzing the markets on Finovo. Link your exchange
+            in under 5 minutes — no credit card required to start.
+          </p>
+          <div class="cta-buttons">
+            <a href="index.html" class="btn btn-primary btn-lg" id="cta-primary-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              Open Your Account →
+            </a>
+            <a href="#plans" class="btn btn-secondary btn-lg" id="cta-plans-btn">
+              Browse Subscription Tiers
+            </a>
+          </div>
+          <p class="cta-note">Free to register · No credit card required · KYC required to invest</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════ -->
+    <!-- SECTION 10 — FOOTER                                  -->
+    <!-- ════════════════════════════════════════════════════ -->
+    <footer role="contentinfo">
+      <div class="container">
+        <div class="footer-grid">
+
+          <!-- Brand Column -->
+          <div class="footer-brand">
+            <img src="img/logo-title.png" alt="FINOVO"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+            <span style="display:none; font-family:'IBM Plex Mono',monospace; font-size:1.5rem; font-weight:600; color:#10B981; letter-spacing:0.06em; margin-bottom:16px; display:block;">FINOVO</span>
+            <p class="footer-tagline">
+              Institutional-grade trading infrastructure for the modern trader.
+              Deep analytics. Direct execution.
+            </p>
+            <div class="footer-social" aria-label="Social links">
+              <!-- Twitter/X -->
+              <a href="#" class="social-btn" aria-label="Follow Finovo on X (Twitter)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </a>
+              <!-- LinkedIn -->
+              <a href="#" class="social-btn" aria-label="Follow Finovo on LinkedIn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/>
+                  <circle cx="4" cy="4" r="2"/>
+                </svg>
+              </a>
+              <!-- Telegram -->
+              <a href="#" class="social-btn" aria-label="Join Finovo on Telegram">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.026 9.551c-.149.67-.545.834-1.104.519l-3.047-2.245-1.47 1.415c-.163.163-.299.299-.614.299l.219-3.107 5.654-5.105c.245-.218-.054-.34-.381-.122L7.232 14.61 4.22 13.698c-.656-.204-.67-.656.136-.971l10.879-4.196c.546-.199 1.023.133.847.717z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Platform Column -->
+          <div>
+            <div class="footer-col-title">Platform</div>
+            <ul class="footer-links" role="list">
+              <li><a href="#how-it-works">How It Works</a></li>
+              <li><a href="#plans">Subscription Tiers</a></li>
+              <li><a href="#why">Why Finovo</a></li>
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </div>
+
+          <!-- Account Column -->
+          <div>
+            <div class="footer-col-title">Account</div>
+            <ul class="footer-links" role="list">
+              <li><a href="index.html" id="footer-signin">Sign In</a></li>
+              <li><a href="index.html" id="footer-register">Create Account</a></li>
+              <li><a href="index.html" id="footer-kyc">KYC Verification</a></li>
+              <li><a href="index.html" id="footer-support">Support Tickets</a></li>
+            </ul>
+          </div>
+
+          <!-- Legal Column -->
+          <div>
+            <div class="footer-col-title">Legal</div>
+            <ul class="footer-links" role="list">
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Risk Disclosure</a></li>
+              <li><a href="#">Refund Policy</a></li>
+              <li><a href="#">Grievance Redressal</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="footer-bottom">
+          <span class="footer-copy">© 2026 Finovo. All rights reserved.</span>
+          <div class="footer-legal">
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+            <a href="#">Risk Disclosure</a>
+          </div>
+        </div>
+
+        <p class="footer-disclaimer">
+          <strong style="color:var(--mute);">Trading Risk Disclaimer:</strong>
+          All trading involves risk. Past performance of any trading strategy or algorithmic
+          model is not indicative of future results. The data presented is for informational
+          purposes and should not be construed as financial advice. Finovo provides analytics
+          and execution tools, but does not guarantee profitability. Trade only what you can
+          afford to lose.
+        </p>
+
+      </div>
+    </footer>
+
+  </div><!-- /page-wrapper -->
+
+  <!-- Scripts -->
+  <script src="js/landing.js" defer></script>
+
+</body>
+</html>

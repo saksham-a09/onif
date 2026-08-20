@@ -38,9 +38,9 @@ Three distinct font families, each assigned a strict, non-substitutable role:
   --emerald-soft: #34D399;
   --emerald-deep: #059669;
 
-  /* Secondary Accent: Warm Gold (Premium Tier, Highlights & Signals) */
-  --gold:      #F59E0B;
-  --gold-soft: #FBBF24;
+  /* Secondary Accent: Radiant Gold (Premium Tier, Highlights & Signals) */
+  --gold:      #FACC15;
+  --gold-soft: #FDE047;
 }
 ```
 
