@@ -205,7 +205,7 @@ function formatNumber(n, decimals) {
   let dpr = 1;
   let dataPoints = [];
   let candles = [];
-  let signals = [];
+  let strategyMilestones = [];
   let scanlineX = 0;
   const steadyPrice = 96482.50;
 
@@ -225,7 +225,7 @@ function formatNumber(n, decimals) {
   function initChartData() {
     dataPoints = [];
     candles = [];
-    signals = [];
+    strategyMilestones = [];
 
     // Realistic upward trend structure with healthy retracements
     const deltas = [
@@ -248,22 +248,22 @@ function formatNumber(n, decimals) {
       candles.push({ open, high, low, close, volume: vol });
     }
 
-    // Set curated signals at key breakout points
-    signals = [
-      { index: 8, type: 'BUY', price: dataPoints[8], alpha: 0.85, radius: 2 },
-      { index: 18, type: 'BUY', price: dataPoints[18], alpha: 0.9, radius: 2 },
-      { index: 28, type: 'BUY', price: dataPoints[28], alpha: 0.95, radius: 2 }
+    // Set curated strategy execution events at key breakout points
+    strategyMilestones = [
+      { index: 8, label: '⚡ ARB EXECUTION', price: dataPoints[8], alpha: 0.85, radius: 2 },
+      { index: 18, label: '⚡ ALPHA HARVEST', price: dataPoints[18], alpha: 0.9, radius: 2 },
+      { index: 28, label: '⚡ PROFIT SHARE', price: dataPoints[28], alpha: 0.95, radius: 2 }
     ];
 
     if (priceEl) {
       priceEl.textContent = '$' + steadyPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     if (changeEl) {
-      changeEl.textContent = '+4.82%';
+      changeEl.textContent = '+4.82% / WK';
       changeEl.className = 'live-change-badge positive';
     }
     if (statusEl) {
-      statusEl.textContent = 'QUANT ENGINE ACTIVE';
+      statusEl.textContent = 'STRATEGY DESK ACTIVE';
     }
   }
 
@@ -392,9 +392,9 @@ function formatNumber(n, decimals) {
     ctx.stroke();
     ctx.shadowBlur = 0; // reset
 
-    // 5. Draw Signals & Pulse Rings
-    for (let i = 0; i < signals.length; i++) {
-      const s = signals[i];
+    // 5. Draw Strategy Execution Milestones & Pulse Rings
+    for (let i = 0; i < strategyMilestones.length; i++) {
+      const s = strategyMilestones[i];
       const sx = s.index * stepX;
       const sy = getY(s.price);
 
@@ -403,16 +403,15 @@ function formatNumber(n, decimals) {
 
       ctx.beginPath();
       ctx.arc(sx, sy, ringPulse, 0, Math.PI * 2);
-      ctx.strokeStyle = s.type === 'BUY' ? `rgba(52, 211, 153, ${ringAlpha})` : `rgba(250, 204, 21, ${ringAlpha})`;
+      ctx.strokeStyle = `rgba(250, 204, 21, ${ringAlpha})`;
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Signal Marker Pill
-      ctx.fillStyle = s.type === 'BUY' ? 'rgba(16, 185, 129, 0.95)' : 'rgba(250, 204, 21, 0.95)';
+      // Strategy Marker Pill
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.95)';
       ctx.font = 'bold 9px "IBM Plex Mono", monospace';
       ctx.textAlign = 'center';
-      const label = s.type === 'BUY' ? '⚡ LONG' : '⚡ SHORT';
-      ctx.fillText(label, sx, sy - 14);
+      ctx.fillText(s.label, sx, sy - 14);
     }
 
     // 6. Draw Current Price Dot & Crosshair Pulse
