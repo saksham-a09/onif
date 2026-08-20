@@ -26,10 +26,38 @@ let state = {
 
 // Initialize Application on Page Load
 document.addEventListener('DOMContentLoaded', () => {
+  // Parse referral code from search params or hash
+  const urlParams = new URLSearchParams(window.location.search);
+  let refCode = urlParams.get('ref');
+  if (!refCode && window.location.hash.includes('ref=')) {
+    const hashParams = new URLSearchParams(window.location.hash.split('?')[1] || window.location.hash.replace('#', ''));
+    refCode = hashParams.get('ref');
+  }
+
+  if (refCode) {
+    const regRef = document.getElementById('reg-refcode');
+    if (regRef) regRef.value = refCode;
+  }
+
+  if (window.location.hash.includes('register') || refCode) {
+    switchAuthTab('register');
+  } else if (window.location.hash.includes('forgot')) {
+    switchAuthTab('forgot');
+  } else if (window.location.hash.includes('login')) {
+    switchAuthTab('login');
+  }
+
   if (!state.token) {
     showAuthOverlay();
   } else {
-    loadAllAPIData();
+    loadAllAPIData().then(() => {
+      // Check for deep view routes in hash if logged in
+      const validViews = ['dashboard', 'investments', 'wallet', 'referrals', 'kyc', 'support'];
+      const currentHash = window.location.hash.replace('#', '').toLowerCase();
+      if (validViews.includes(currentHash)) {
+        switchNav(currentHash);
+      }
+    });
   }
 });
 

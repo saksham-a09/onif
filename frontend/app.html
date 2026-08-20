@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FINOVO - Institutional Investment & Referral Portal</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+
+<body>
+  <!-- Ambient Animated Background -->
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="noise-overlay"></div>
+
+  <!-- ============================================== -->
+  <!-- BRAND CONFIGURATION                            -->
+  <!-- Change your Logo URL and Brand Name here       -->
+  <!-- ============================================== -->
+  <script>
+    window.BRAND_CONFIG = {
+      name: "FINOVO",
+      logoUrl: "data:image/png;base64,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"
+
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.brand-text-dyn').forEach(el => el.textContent = BRAND_CONFIG.name);
+      document.querySelectorAll('.brand-logo-dyn').forEach(el => {
+        if (el.tagName === 'IMG') {
+          el.src = BRAND_CONFIG.logoUrl;
+        } else {
+          el.innerHTML = `<img src="${BRAND_CONFIG.logoUrl}" style="width:100%; height:100%; object-fit:contain; border-radius:inherit;">`;
+        }
+      });
+    });
+  </script>
+  <!-- ============================================== -->
+
+  <!-- Auth Screen Overlay (Login / Register) -->
+  <div id="auth-screen" class="auth-screen" style="display: none;">
+    <div class="shell">
+      <!-- LEFT — brand panel -->
+      <div class="brand-panel">
+        <canvas id="authCanvas"></canvas>
+        <div class="logo"><img class="logo-img" src="img/logo-title.png" style="height: 110px; object-fit: contain;">
+        </div>
+
+        <div class="brand-copy">
+          <div class="eyebrow">WELCOME BACK</div>
+          <h1>Your portfolio, exactly<br>where you left it.</h1>
+          <p>Sign in to track balances, review market-linked yield, and manage withdrawals from one dashboard.</p>
+
+          <div class="trust-list">
+            <div class="item"><span class="tick">&check;</span> Segregated custody</div>
+            <div class="item"><span class="tick">&check;</span> Two-factor withdrawal confirmation</div>
+            <div class="item"><span class="tick">&check;</span> Full fee transparency, always</div>
+          </div>
+        </div>
+
+        <div class="brand-foot">&copy; 2026 <span class="brand-text-dyn">FINOVO</span>. All rights reserved.</div>
+      </div>
+
+      <!-- RIGHT — form panel -->
+      <div class="form-panel">
+        <div class="form-wrap">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <a href="/" style="font-size: 12px; color: var(--mute); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mute)'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Homepage
+            </a>
+          </div>
+          <img class="logo-img mobile-logo" src="img/logo-title.png" style="height: 110px; object-fit: contain;">
+
+          <div class="form-head">
+            <h2 id="auth-form-title">Sign in</h2>
+            <p id="auth-form-subtitle">New to Finovo? <a href="#"
+                onclick="switchAuthTab('register'); return false;">Create an account</a></p>
+          </div>
+
+          <!-- Login Form -->
+          <form id="form-login" onsubmit="handleLogin(event)">
+            <div class="field">
+              <label>Email or Username</label>
+              <div class="input-row">
+                <input type="text" id="login-email" placeholder="you@example.com or johndoe" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Password</label>
+              <div class="input-row">
+                <input type="password" id="login-password" placeholder="Enter your password" required>
+                <button type="button" class="toggle-pw"
+                  onclick="const pw = document.getElementById('login-password'); pw.type = pw.type === 'password' ? 'text' : 'password'; this.innerText = pw.type === 'password' ? 'SHOW' : 'HIDE';">SHOW</button>
+              </div>
+            </div>
+
+            <div class="row-between">
+              <label class="remember">
+                <input type="checkbox"> Remember me
+              </label>
+              <a href="#" onclick="switchAuthTab('forgot'); return false;" class="forgot">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Sign In</button>
+
+            <div class="legal">
+              By continuing, you agree to Finovo's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+            </div>
+          </form>
+
+          <!-- Register Form -->
+          <form id="form-register" onsubmit="handleRegister(event)" style="display: none;">
+            <div class="field">
+              <label>Full Name</label>
+              <div class="input-row" style="display: flex; gap: 10px;">
+                <input type="text" id="reg-firstname" placeholder="First Name" required>
+                <input type="text" id="reg-lastname" placeholder="Last Name" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Username</label>
+              <div class="input-row">
+                <input type="text" id="reg-username" placeholder="johndoe" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Email Address</label>
+              <div class="input-row">
+                <input type="email" id="reg-email" placeholder="user@example.com" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Password</label>
+              <div class="input-row">
+                <input type="password" id="reg-password" placeholder="Minimum 8 characters" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Confirm Password</label>
+              <div class="input-row">
+                <input type="password" id="reg-password2" placeholder="Re-enter your password" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Sponsor / Referral Code (Optional)</label>
+              <div class="input-row">
+                <input type="text" id="reg-refcode" placeholder="e.g. ABC12345">
+              </div>
+            </div>
+
+            <button type="submit" id="reg-submit-btn" class="btn btn-primary">Create Account</button>
+
+            <div class="divider">or</div>
+
+            <div class="row-between" style="justify-content: center;">
+              <span>Already have an account? <a href="#" onclick="switchAuthTab('login'); return false;"
+                  class="forgot">Sign in</a></span>
+            </div>
+          </form>
+
+          <!-- OTP Verification Form (shown after registration) -->
+          <div id="form-verify-otp" style="display: none;">
+            <div class="otp-verify-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p class="otp-verify-desc">We've sent a 6-digit verification code to<br><strong
+                id="otp-email-display"></strong></p>
+
+            <form onsubmit="handleVerifyOTP(event)">
+              <div class="otp-input-group">
+                <input type="text" id="otp-d1" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  autocomplete="one-time-code" required>
+                <input type="text" id="otp-d2" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  required>
+                <input type="text" id="otp-d3" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  required>
+                <input type="text" id="otp-d4" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  required>
+                <input type="text" id="otp-d5" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  required>
+                <input type="text" id="otp-d6" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  required>
+              </div>
+
+              <button type="submit" id="otp-submit-btn" class="btn btn-primary"
+                style="width:100%; justify-content:center; margin-top:8px;">Verify Email</button>
+            </form>
+
+            <div class="otp-resend-row">
+              <span id="otp-countdown" class="otp-countdown-text"></span>
+              <button id="otp-resend-btn" class="otp-resend-btn" onclick="handleResendOTP()" disabled>Resend
+                Code</button>
+            </div>
+
+            <div style="margin-top: 20px; text-align:center;">
+              <a href="#" onclick="switchAuthTab('register'); return false;" class="forgot" style="font-size:13px;">←
+                Back to registration</a>
+            </div>
+          </div>
+
+          <!-- Forgot Password Form -->
+          <form id="form-forgot-password" onsubmit="handleForgotPassword(event)" style="display: none;">
+            <div class="field">
+              <label>Email Address or Username</label>
+              <div class="input-row">
+                <input type="text" id="forgot-email" placeholder="you@example.com or johndoe" required>
+              </div>
+            </div>
+
+            <button type="submit" id="forgot-submit-btn" class="btn btn-primary"
+              style="width:100%; justify-content:center; margin-top:8px;">Send Reset Code</button>
+
+            <div class="divider">or</div>
+
+            <div class="row-between" style="justify-content: center;">
+              <span>Remember your password? <a href="#" onclick="switchAuthTab('login'); return false;"
+                  class="forgot">Sign in</a></span>
+            </div>
+          </form>
+
+          <!-- Reset Password Form -->
+          <form id="form-reset-password" onsubmit="handleResetPassword(event)" style="display: none;">
+            <div class="field">
+              <label>Account (Email or Username)</label>
+              <div class="input-row">
+                <input type="text" id="reset-email" placeholder="Account identifier" required readonly
+                  style="opacity: 0.8; cursor: not-allowed;">
+              </div>
+            </div>
+
+            <div class="field">
+              <label>6-Digit Verification Code</label>
+              <div class="input-row">
+                <input type="text" id="reset-otp" placeholder="Enter 6-digit OTP" maxlength="6" pattern="[0-9]{6}"
+                  required style="font-family: var(--font-mono); letter-spacing: 3px; font-weight:600;">
+              </div>
+            </div>
+
+            <div class="field">
+              <label>New Password</label>
+              <div class="input-row">
+                <input type="password" id="reset-new-password" placeholder="Minimum 8 characters" required>
+                <button type="button" class="toggle-pw"
+                  onclick="const pw = document.getElementById('reset-new-password'); pw.type = pw.type === 'password' ? 'text' : 'password'; this.innerText = pw.type === 'password' ? 'SHOW' : 'HIDE';">SHOW</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Confirm New Password</label>
+              <div class="input-row">
+                <input type="password" id="reset-new-password2" placeholder="Re-enter new password" required>
+              </div>
+            </div>
+
+            <button type="submit" id="reset-submit-btn" class="btn btn-primary"
+              style="width:100%; justify-content:center; margin-top:8px;">Reset Password</button>
+
+            <div class="otp-resend-row">
+              <span id="reset-otp-countdown" class="otp-countdown-text"></span>
+              <button type="button" id="reset-otp-resend-btn" class="otp-resend-btn" onclick="handleResendForgotOTP()"
+                disabled>Resend Code</button>
+            </div>
+
+            <div style="margin-top: 20px; text-align:center;">
+              <a href="#" onclick="switchAuthTab('forgot'); return false;" class="forgot" style="font-size:13px;">←
+                Change email/username</a> &nbsp;|&nbsp;
+              <a href="#" onclick="switchAuthTab('login'); return false;" class="forgot" style="font-size:13px;">Sign
+                in</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="main-wrapper">
+    <!-- Topbar Header (Horizontal Navigation) -->
+    <header class="topbar glass-header">
+      <div class="topbar-brand">
+        <a href="/" title="FINOVO Home" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="img/logo-title.png" alt="FINOVO" style="height: 110px; object-fit: contain;">
+        </a>
+      </div>
+
+      <!-- 1. Regular User Navigation Bar (Default for Non-Admins) -->
+      <nav class="top-nav" id="top-nav-user">
+        <a class="nav-item active" onclick="switchNav('dashboard')" id="nav-dashboard">
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" onclick="switchNav('investments')" id="nav-investments">
+          <span>Investments</span>
+        </a>
+        <a class="nav-item" onclick="switchNav('wallet')" id="nav-wallet">
+          <span>Wallet & Ledger</span>
+        </a>
+        <a class="nav-item" onclick="switchNav('referrals')" id="nav-referrals">
+          <span>Referral Team</span>
+        </a>
+        <a class="nav-item" onclick="switchNav('kyc')" id="nav-kyc">
+          <span>KYC Verification</span>
+          <span class="tab-badge" id="top-badge-kyc" style="display:none; background:#ef4444;">!</span>
+        </a>
+        <a class="nav-item" onclick="switchNav('support')" id="nav-support">
+          <span>Support Tickets</span>
+        </a>
+      </nav>
+
+      <!-- 2. Admin Action Menu Navigation Bar (Primary Default for Admins) -->
+      <nav class="top-nav" id="top-nav-admin" style="display: none;">
+        <a class="nav-item active" onclick="switchAdminNav('overview')" id="nav-adm-overview">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Overview</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('investments')" id="nav-adm-investments">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          <span>Investments & Deposits</span>
+          <span class="tab-badge" id="top-badge-inv" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('withdrawals')" id="nav-adm-withdrawals">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>Withdrawals Queue</span>
+          <span class="tab-badge" id="top-badge-wdr" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('users')" id="nav-adm-users">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Users</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('support')" id="nav-adm-support">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Support Desk</span>
+          <span class="tab-badge" id="top-badge-tkt" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="switchAdminNav('settings')" id="nav-adm-settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+          <span>Rules & Plans</span>
+        </a>
+
+        <!-- Sub-Menu Dropdown for User Views -->
+        <div class="nav-dropdown-wrapper" id="adm-user-dropdown-wrap">
+          <div class="nav-item nav-dropdown-btn" id="nav-adm-investor-sub">
+            <span style="display:flex; align-items:center; gap:5px; color: var(--gold);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Investor Views ▾
+            </span>
+          </div>
+          <div class="nav-dropdown-menu" id="adm-user-dropdown-menu">
+            <div
+              style="padding: 6px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mute); font-family: var(--font-mono);">
+              User Member Portals
+            </div>
+            <a class="nav-dropdown-item" onclick="switchNav('dashboard')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              </svg>
+              <span>Member Dashboard</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('investments')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              </svg>
+              <span>Investment Plans</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('wallet')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              </svg>
+              <span>Wallet & Ledger</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('referrals')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+              </svg>
+              <span>Referral Network</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('kyc')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>KYC Verification</span>
+            </a>
+            <a class="nav-dropdown-item" onclick="switchNav('support')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>Support Ticket Center</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="topbar-actions">
+        <!-- User Actions (shown when not admin) -->
+        <div id="user-topbar-actions" style="display: flex; gap: 8px;">
+          <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ Invest</button>
+          <button class="btn btn-sm btn-secondary" onclick="openModal('modal-withdraw')">Withdraw</button>
+        </div>
+
+        <!-- Admin Quick Action (shown when admin) -->
+        <div id="admin-topbar-actions" style="display: none;">
+          <button class="btn btn-sm btn-gold" onclick="openModal('modal-admin-trigger-roi')"
+            style="font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 5px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Trigger ROI
+          </button>
+        </div>
+
+        <div class="topbar-user" style="margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line);">
+          <div class="user-avatar" id="sidebar-avatar">U</div>
+          <div class="user-info-text">
+            <div class="user-name" id="sidebar-username">Alice Smith</div>
+            <div style="display: flex; gap: 6px; align-items: center; margin-top: 2px;">
+              <span class="user-role" id="sidebar-userrole">Level 2 Unlock</span>
+              <span id="sidebar-kyc-badge" class="badge badge-unverified"
+                style="font-size: 9.5px; padding: 2px 6px; cursor: pointer;" onclick="switchNav('kyc')">KYC
+                Pending</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="handleLogout()" class="btn btn-sm btn-secondary" style="padding: 6px 10px;" title="Logout">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Views Container -->
+    <main class="content-body">
+
+      <!-- Administrator Preview Banner (Shown when admin is viewing user/investor pages) -->
+      <div class="admin-mode-banner" id="admin-investor-mode-banner" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">👑</span>
+          <div>
+            <b style="color: var(--gold);">Investor Preview Mode</b>
+            <div style="font-size: 11px; color: var(--mute);">You are previewing the member experience as an
+              Administrator.</div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-gold" onclick="switchAdminNav('overview')">
+          ← Return to Admin Console
+        </button>
+      </div>
+
+      <!-- ================= 1. DASHBOARD VIEW ================= -->
+      <section id="view-dashboard" class="page-view active">
+        <!-- Metric Cards Grid -->
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Wallet Balance</div>
+              <div class="stat-value" id="dash-wallet-balance">$1,450.00</div>
+            </div>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Active Investments</div>
+              <div class="stat-value" id="dash-active-invest">$1,000.00</div>
+            </div>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Total ROI Earned</div>
+              <div class="stat-value" id="dash-total-roi" style="color: var(--gold);">$125.00</div>
+            </div>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Direct Referral Income</div>
+              <div class="stat-value" id="dash-direct-income" style="color: var(--gold);">$80.00</div>
+            </div>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Content Grid -->
+        <div class="grid-2">
+          <!-- Active Investment Progress -->
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">Portfolio</div>
+                <h2 class="section-title">Active Investments</h2>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ New Plan</button>
+            </div>
+            <div id="dash-active-investments-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Quick Referral Share Box -->
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">Affiliate</div>
+                <h2 class="section-title">Your Referral Code</h2>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--mute); margin-bottom: 16px; line-height: 1.6;">
+              Share your link to earn <b style="color: var(--text);">2.0% Direct Commission</b> credited to your oldest
+              active plan + <b style="color: var(--text);">1.5% Weekly ROI Level Income</b> up to 5 levels. Commission
+              income fills and accelerates your investment plan toward max return.
+            </p>
+            <div class="ref-box">
+              <input type="text" id="dash-ref-link" class="ref-code-input" readonly
+                value="https://finovo.app/register?ref=ALICE123">
+              <button class="btn btn-sm btn-primary" onclick="copyReferralLink()">Copy Link</button>
+            </div>
+            <div
+              style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 13px; font-family: var(--font-mono);">
+              <span style="color: var(--mute);">Direct Downlines: <b id="dash-downline-count"
+                  style="color: var(--text);">4 Users</b></span>
+              <span style="color: var(--mute);">Unlocked Levels: <b id="dash-unlocked-levels"
+                  style="color: var(--gold);">Level 2</b></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Ledger Activity Table -->
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">Transactions</div>
+              <h2 class="section-title">Recent Wallet Ledger</h2>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="switchNav('wallet')">View All Ledger</button>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Balance After</th>
+                  <th>Date & Description</th>
+                </tr>
+              </thead>
+              <tbody id="dash-ledger-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. INVESTMENTS VIEW ================= -->
+      <section id="view-investments" class="page-view">
+
+        <!-- KYC Verification Required Alert (shown if user not approved) -->
+        <div id="inv-kyc-lock-banner"
+          style="display: none; background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(250, 204, 21, 0.08) 100%); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 14px; align-items: center;">
+              <div
+                style="width: 42px; height: 42px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <div>
+                <b style="color: #ffffff; font-size: 15px; display: block; margin-bottom: 3px;"
+                  id="inv-kyc-lock-title">Identity Verification Required to Buy Plans</b>
+                <p style="font-size: 12.5px; color: var(--mute); margin: 0; line-height: 1.5;" id="inv-kyc-lock-desc">
+                  You must complete your KYC identity verification before you can invest in packages or activate
+                  deposits.
+                </p>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="switchNav('kyc')"
+              style="white-space: nowrap; font-size: 12px; padding: 8px 16px;">
+              Verify Identity (KYC)
+            </button>
+          </div>
+        </div>
+
+        <!-- How It Works Info Banner -->
+        <div
+          style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.18); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 24px; display: flex; gap: 14px; align-items: flex-start;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FACC15" stroke-width="2"
+            style="flex-shrink:0; margin-top:2px;">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px;">How Investment Works
+            </div>
+            <div style="font-size: 12px; color: var(--mute); line-height: 1.7;">
+              <b style="color:var(--text);">Step 1:</b> Choose a plan &amp; enter the amount → <b
+                style="color:var(--text);">Step 2:</b> Send USDT to the platform wallet and paste your transaction hash
+              → <b style="color:var(--text);">Step 3:</b> Admin verifies your deposit and activates the plan → <b
+                style="color:var(--text);">Step 4:</b> Weekly ROI credited to your wallet. Referral commissions you earn
+              fill your oldest active plan automatically.
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">Plans</div>
+            <h2 class="section-title">Investment Plans</h2>
+            <p style="font-size: 13px; color: var(--mute); margin-top: 4px;">Choose a plan, send USDT and provide
+              deposit proof — admin will verify and activate your investment.</p>
+          </div>
+        </div>
+
+        <!-- Plan Cards Grid -->
+        <div class="grid-3">
+          <!-- Starter Plan -->
+          <div class="plan-card">
+            <div class="plan-name">Starter Plan</div>
+            <div class="plan-roi">2.50% <span>/ weekly ROI</span></div>
+            <ul class="plan-features">
+              <li>Min Investment <span>$100.00</span></li>
+              <li>Max Investment <span>$1,000.00</span></li>
+              <li>Max Total Return <span>300.00%</span></li>
+              <li>Duration <span>120 Weeks</span></li>
+            </ul>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;"
+              onclick="openInvestModal('Starter Plan', 100, 1000)">Invest Starter</button>
+          </div>
+
+          <!-- Pro Plan -->
+          <div class="plan-card popular">
+            <div class="popular-badge">Popular</div>
+            <div class="plan-name">Pro Plan</div>
+            <div class="plan-roi">3.50% <span>/ weekly ROI</span></div>
+            <ul class="plan-features">
+              <li>Min Investment <span>$500.00</span></li>
+              <li>Max Investment <span>$5,000.00</span></li>
+              <li>Max Total Return <span>300.00%</span></li>
+              <li>Duration <span>120 Weeks</span></li>
+            </ul>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;"
+              onclick="openInvestModal('Pro Plan', 500, 5000)">Invest Pro Plan</button>
+          </div>
+
+          <!-- Elite Plan -->
+          <div class="plan-card">
+            <div class="plan-name">Elite Plan</div>
+            <div class="plan-roi">5.00% <span>/ weekly ROI</span></div>
+            <ul class="plan-features">
+              <li>Min Investment <span>$1,000.00</span></li>
+              <li>Max Investment <span>$10,000.00</span></li>
+              <li>Max Total Return <span>300.00%</span></li>
+              <li>Duration <span>120 Weeks</span></li>
+            </ul>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;"
+              onclick="openInvestModal('Elite Plan', 1000, 10000)">Invest Elite Plan</button>
+          </div>
+        </div>
+
+        <!-- My Investments List -->
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">History</div>
+              <h2 class="section-title">My Investments History</h2>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Plan Name</th>
+                  <th>Amount</th>
+                  <th>Max Return</th>
+                  <th>Credited ROI</th>
+                  <th>Status</th>
+                  <th>Start Date</th>
+                </tr>
+              </thead>
+              <tbody id="investments-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. WALLET & TRANSACTIONS VIEW ================= -->
+      <section id="view-wallet" class="page-view">
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Wallet Balance</div>
+              <div class="stat-value" id="wallet-pg-balance">$1,450.00</div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ New Plan</button>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Total Invested</div>
+              <div class="stat-value" id="wallet-pg-deposited">$1,000.00</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Total Withdrawn</div>
+              <div class="stat-value" id="wallet-pg-withdrawn">$50.00</div>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="openModal('modal-withdraw')">Withdraw</button>
+          </div>
+          <div class="card stat-card">
+            <div>
+              <div class="stat-title">Lifetime Earnings</div>
+              <div class="stat-value" id="wallet-pg-earnings" style="color: var(--gold);">$205.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investment Deposits & Withdrawal History -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">Investment Deposits</div>
+                <h2 class="section-title">Deposit History</h2>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="switchNav('investments')">+ New Plan</button>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Plan</th>
+                    <th>Amount</th>
+                    <th>Network</th>
+                    <th>Tx Hash</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="deposits-tbody">
+                  <!-- Rendered via JS from state.investments -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">Withdrawals</div>
+                <h2 class="section-title">Withdrawals History</h2>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Net Payout</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="withdrawals-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. REFERRAL NETWORK VIEW ================= -->
+      <section id="view-referrals" class="page-view">
+        <!-- Referral Level Unlock Overview -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">Unlock Progress</div>
+                <h2 class="section-title">Multi-Level Unlock Status</h2>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+              Active Directs unlock downline levels up to 5 levels deep.
+            </p>
+            <div id="referral-levels-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">Earnings</div>
+                <h2 class="section-title">Referral Earnings Summary</h2>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div
+                style="display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm);">
+                <div>
+                  <span>Direct Income (2.0%)</span>
+                  <div style="font-size: 11px; color: var(--mute); margin-top: 3px;">Credited to your oldest active plan
+                  </div>
+                </div>
+                <b id="ref-summary-direct"
+                  style="color: var(--gold); font-size: 18px; font-family: var(--font-mono);">$80.00</b>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm);">
+                <div>
+                  <span>ROI Level Income (1.5%)</span>
+                  <div style="font-size: 11px; color: var(--mute); margin-top: 3px;">Fills your oldest active plan
+                    weekly</div>
+                </div>
+                <b id="ref-summary-roi"
+                  style="color: var(--gold); font-size: 18px; font-family: var(--font-mono);">$25.00</b>
+              </div>
+              <div
+                style="font-size: 11px; color: var(--mute); padding: 10px 12px; background: rgba(250,204,21,0.06); border: 1px solid rgba(250,204,21,0.15); border-radius: var(--radius-sm); line-height: 1.6;">
+                <b style="color: var(--gold);">Note:</b> All commissions are credited to your <b>oldest active
+                  investment
+                  plan</b>, accelerating it toward its max return. If you have no active plan, income is credited to
+                your wallet balance.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Team Members Table -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">Direct Team</div>
+              <h2 class="section-title">My Direct Downline Members</h2>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>User Email</th>
+                  <th>Username</th>
+                  <th>Joined Date</th>
+                  <th>Direct Level</th>
+                </tr>
+              </thead>
+              <tbody id="referral-team-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Commissions Ledger Table -->
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">Commissions</div>
+              <h2 class="section-title">Earned Referral Commissions (5 Levels)</h2>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Level</th>
+                  <th>From User</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="referral-commissions-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. SUPPORT TICKETS VIEW ================= -->
+      <section id="view-support" class="page-view">
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">New Ticket</div>
+                <h2 class="section-title">Create Support Ticket</h2>
+              </div>
+            </div>
+            <form id="form-support-ticket" onsubmit="handleCreateTicket(event)">
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <input type="text" id="ticket-subject" class="form-control" placeholder="How can we help you?" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="ticket-category" class="form-control">
+                  <option value="GENERAL">General Question</option>
+                  <option value="DEPOSIT">Investment Deposit Query</option>
+                  <option value="WITHDRAWAL">Withdrawal Issue</option>
+                  <option value="REFERRAL">Referral / Commission</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea id="ticket-message" class="form-control" rows="4" placeholder="Describe your request..."
+                  required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Support Ticket</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow">History</div>
+                <h2 class="section-title">Your Support Tickets</h2>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="support-tickets-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. KYC IDENTITY VERIFICATION VIEW ================= -->
+      <section id="view-kyc" class="page-view">
+        <div class="card"
+          style="margin-bottom: 24px; border: 1px solid rgba(250, 204, 21, 0.25); background: linear-gradient(135deg, rgba(250, 204, 21, 0.04) 0%, rgba(14, 19, 25, 0.7) 100%);">
+          <div class="section-header" style="align-items: center;">
+            <div>
+              <div class="eyebrow" style="color: var(--gold-soft);">Security &amp; Regulatory Compliance</div>
+              <h2 class="section-title">Identity Verification (KYC)</h2>
+            </div>
+            <div id="kyc-badge-container">
+              <span class="badge badge-unverified" id="kyc-header-badge"
+                style="font-size: 12px; padding: 6px 12px;">UNVERIFIED</span>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--mute); line-height: 1.6; max-width: 820px; margin-bottom: 0;">
+            To ensure AML compliance, identity safety, and platform protection, all investors must verify their
+            government-issued identity before purchasing investment packages or activating crypto deposits.
+          </p>
+        </div>
+
+        <!-- 1. APPROVED STATE -->
+        <div id="kyc-view-approved" style="display: none;">
+          <div class="card kyc-verified-card"
+            style="border: 1px solid rgba(250, 204, 21, 0.35); background: linear-gradient(135deg, rgba(250, 204, 21, 0.08) 0%, rgba(6, 9, 14, 0.8) 100%); padding: 28px;">
+            <div class="kyc-verified-hero" style="display: flex; gap: 18px; align-items: center; margin-bottom: 24px;">
+              <div class="kyc-verified-icon"
+                style="width: 58px; height: 58px; border-radius: 50%; background: rgba(250, 204, 21, 0.15); border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="badge badge-approved" style="margin-bottom: 6px; font-size: 11px;">Verified Investor Account
+                </div>
+                <h3 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0;">KYC Identity Verified
+                </h3>
+                <p style="font-size: 13px; color: var(--mute); margin: 0; line-height: 1.5;">
+                  Your government ID has been reviewed and verified by our compliance team. You have full access to all
+                  investment plans, deposits, weekly ROI earnings, and instant withdrawals.
+                </p>
+              </div>
+            </div>
+
+            <div class="kyc-details-grid"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px;">
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Document
+                  Type</span>
+                <b class="kyc-detail-val" id="kyc-appr-doctype" style="color: var(--text); font-size: 14px;">—</b>
+              </div>
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Document
+                  ID Number</span>
+                <b class="kyc-detail-val" id="kyc-appr-docnum"
+                  style="color: var(--gold); font-family: var(--font-mono); font-size: 14px;">—</b>
+              </div>
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Country</span>
+                <b class="kyc-detail-val" id="kyc-appr-country" style="color: var(--text); font-size: 14px;">—</b>
+              </div>
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Verified
+                  Status</span>
+                <b class="kyc-detail-val" style="color: var(--gold); font-weight: 700; font-size: 14px;">Level 1
+                  Verified</b>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="switchNav('investments')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                  <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+                Purchase Investment Plan
+              </button>
+              <button class="btn btn-secondary" onclick="switchNav('wallet')">
+                View Wallet &amp; Ledger
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. PENDING REVIEW STATE -->
+        <div id="kyc-view-pending" style="display: none;">
+          <div class="card kyc-pending-card"
+            style="border: 1px solid rgba(250, 204, 21, 0.35); background: linear-gradient(135deg, rgba(250, 204, 21, 0.06) 0%, rgba(6, 9, 14, 0.8) 100%); padding: 28px;">
+            <div class="kyc-pending-hero" style="display: flex; gap: 18px; align-items: center; margin-bottom: 24px;">
+              <div class="kyc-pending-icon"
+                style="width: 58px; height: 58px; border-radius: 50%; background: rgba(250, 204, 21, 0.15); border: 2px solid #facc15; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="badge"
+                  style="background: rgba(250, 204, 21, 0.2); color: var(--gold); margin-bottom: 6px; font-size: 11px;">
+                  Verification In Review</div>
+                <h3 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0;">KYC Submission Under
+                  Compliance Review</h3>
+                <p style="font-size: 13px; color: var(--mute); margin: 0; line-height: 1.5;">
+                  Your document submission has been received. Our compliance team is currently reviewing your identity.
+                  Investment package purchases will unlock immediately upon approval.
+                </p>
+              </div>
+            </div>
+
+            <div class="kyc-details-grid"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px;">
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Submitted
+                  Document</span>
+                <b class="kyc-detail-val" id="kyc-pend-doctype" style="color: var(--text); font-size: 14px;">—</b>
+              </div>
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Document
+                  Number</span>
+                <b class="kyc-detail-val" id="kyc-pend-docnum"
+                  style="color: var(--gold); font-family: var(--font-mono); font-size: 14px;">—</b>
+              </div>
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Submission
+                  Date</span>
+                <b class="kyc-detail-val" id="kyc-pend-date" style="color: var(--text); font-size: 14px;">—</b>
+              </div>
+              <div class="kyc-detail-item">
+                <span class="kyc-detail-label"
+                  style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Review
+                  Queue</span>
+                <b class="kyc-detail-val" style="color: var(--gold); font-size: 14px;">Priority Review Queue</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. UNVERIFIED / REJECTED FORM STATE -->
+        <div id="kyc-view-unverified" style="display: none;">
+
+          <!-- Rejection Alert -->
+          <div id="kyc-rejection-alert"
+            style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: var(--radius-sm); padding: 16px 20px; margin-bottom: 24px;">
+            <div style="display: flex; gap: 14px; align-items: flex-start;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"
+                style="flex-shrink:0; margin-top:2px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+              <div>
+                <b style="color: #f87171; font-size: 14px; display: block; margin-bottom: 4px;">Previous KYC Submission
+                  Was Rejected</b>
+                <p id="kyc-rejection-msg" style="font-size: 13px; color: var(--text); margin: 0; line-height: 1.5;">
+                  Your document could not be verified. Please review the requirements below and upload a clear,
+                  unexpired government-issued ID.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Submission Form -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Step-by-Step Verification</div>
+                  <h2 class="section-title">Submit Verification Details</h2>
+                </div>
+              </div>
+
+              <form id="form-kyc-submit" onsubmit="handleKYCSubmit(event)">
+                <div class="form-group">
+                  <label class="form-label">Document Type <span style="color: var(--accent-danger);">*</span></label>
+                  <select id="kyc-doc-type" class="form-control" required onchange="handleKYCDocTypeChange()">
+                    <option value="">Select Government Document Type</option>
+                    <option value="PASSPORT">Passport</option>
+                    <option value="NATIONAL_ID">National Identity Card</option>
+                    <option value="DRIVERS_LICENSE">Driver's License</option>
+                    <option value="RESIDENCE_PERMIT">Residence Permit / Government ID</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Document Identification Number (ID / Passport No.) <span
+                      style="color: var(--accent-danger);">*</span></label>
+                  <input type="text" id="kyc-doc-number" class="form-control"
+                    placeholder="Enter document identification number" style="font-family: var(--font-mono);" required>
+                </div>
+
+                <div class="grid-2" style="gap: 14px;">
+                  <div class="form-group">
+                    <label class="form-label">Legal First Name <span
+                        style="color: var(--accent-danger);">*</span></label>
+                    <input type="text" id="kyc-first-name" class="form-control"
+                      placeholder="Legal first name (as shown on ID)" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Legal Last Name <span
+                        style="color: var(--accent-danger);">*</span></label>
+                    <input type="text" id="kyc-last-name" class="form-control"
+                      placeholder="Legal last name (as shown on ID)" required>
+                  </div>
+                </div>
+
+                <div class="grid-2" style="gap: 14px;">
+                  <div class="form-group">
+                    <label class="form-label">Issuing Country <span
+                        style="color: var(--accent-danger);">*</span></label>
+                    <input type="text" id="kyc-country" class="form-control" placeholder="Country of issuance" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" id="kyc-dob" class="form-control">
+                  </div>
+                </div>
+
+                <!-- Document Upload Area -->
+                <div class="grid-2" style="gap: 14px; margin-bottom: 22px;">
+                  <div class="form-group">
+                    <label class="form-label">Front Image <span style="color: var(--accent-danger);">*</span></label>
+                    <div class="kyc-dropzone" id="kyc-dropzone-box-front"
+                      onclick="document.getElementById('kyc-file-input-front').click()">
+                      <input type="file" id="kyc-file-input-front" accept="image/*,.pdf" style="display:none;"
+                        onchange="handleKYCFileSelect(event, 'front')" required>
+                      <div class="kyc-dropzone-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="1.8">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                      </div>
+                      <div style="font-size: 13px; font-weight: 600; color: var(--text);"
+                        id="kyc-file-name-display-front">
+                        Click to upload front
+                      </div>
+                      <div style="font-size: 11px; color: var(--mute); margin-top: 4px;">
+                        JPG, PNG, PDF
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Back Image <span style="color: var(--accent-danger);">*</span></label>
+                    <div class="kyc-dropzone" id="kyc-dropzone-box-back"
+                      onclick="document.getElementById('kyc-file-input-back').click()">
+                      <input type="file" id="kyc-file-input-back" accept="image/*,.pdf" style="display:none;"
+                        onchange="handleKYCFileSelect(event, 'back')" required>
+                      <div class="kyc-dropzone-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="1.8">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                      </div>
+                      <div style="font-size: 13px; font-weight: 600; color: var(--text);"
+                        id="kyc-file-name-display-back">
+                        Click to upload back
+                      </div>
+                      <div style="font-size: 11px; color: var(--mute); margin-top: 4px;">
+                        JPG, PNG, PDF
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="kyc-submit-btn"
+                  style="width: 100%; justify-content: center;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <polyline points="9 12 11 14 15 10"></polyline>
+                  </svg>
+                  Submit Identity Documents for Verification
+                </button>
+              </form>
+            </div>
+
+            <!-- KYC Guidelines & Instructions -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Document Requirements</div>
+                  <h2 class="section-title">Verification Criteria</h2>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="kyc-req-item">
+                  <div class="kyc-req-bullet">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <div>
+                    <b style="color: var(--text); font-size: 13px;">Government-Issued &amp; Valid</b>
+                    <p
+                      style="font-size: 12px; color: var(--mute); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
+                      Document must be an official government-issued ID (Passport, National ID, or Driver's License)
+                      with a valid expiration date.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="kyc-req-item">
+                  <div class="kyc-req-bullet">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <div>
+                    <b style="color: var(--text); font-size: 13px;">Clear &amp; Fully Legible</b>
+                    <p
+                      style="font-size: 12px; color: var(--mute); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
+                      All four corners must be visible with no blur, glare, reflections, or cropped edges. Text and
+                      photo must be crisp.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="kyc-req-item">
+                  <div class="kyc-req-bullet">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <div>
+                    <b style="color: var(--text); font-size: 13px;">Original &amp; Unaltered</b>
+                    <p
+                      style="font-size: 12px; color: var(--mute); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
+                      Photoshopped images, black-and-white photocopies, or edited photos will be rejected by the
+                      compliance review team.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  style="margin-top: 10px; padding: 14px 16px; background: rgba(250, 204, 21, 0.06); border: 1px solid rgba(250, 204, 21, 0.2); border-radius: var(--radius-sm); font-size: 12px; color: var(--text); line-height: 1.5;">
+                  <b style="color: var(--gold-soft);">Privacy &amp; Encryption:</b> Your identity documents are
+                  stored in an encrypted vault and accessed solely for regulatory compliance purposes.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. ADMIN PORTAL VIEW ================= -->
+      <section id="view-admin" class="page-view">
+        <div class="admin-header-panel">
+          <div class="admin-header-title">
+            <div class="admin-badge-pill">
+              <span class="pulse-dot"></span>
+              FINOVO CORE OPERATIONS HUB
+            </div>
+            <h1 class="admin-main-title">Administrative Command Center</h1>
+            <p class="admin-main-subtitle">Manage deposits, execute withdrawals, inspect users, and configure live
+              system rules.</p>
+          </div>
+          <div class="admin-header-actions">
+            <button class="btn btn-sm btn-secondary" onclick="loadAdminData(true)" title="Refresh all admin telemetry">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Refresh Telemetry
+            </button>
+            <button class="btn btn-sm btn-gold" onclick="openModal('modal-admin-trigger-roi')">
+              ⚡ Trigger Weekly ROI
+            </button>
+          </div>
+        </div>
+
+
+        <!-- 1. ADMIN OVERVIEW SUB-PAGE -->
+        <div id="adm-content-overview" class="admin-subpage active">
+          <div class="grid-4" style="margin-bottom: 24px;">
+            <div class="card stat-card admin-stat-card">
+              <div>
+                <div class="stat-title">Platform Registered Users</div>
+                <div class="stat-value" id="adm-stat-users">0</div>
+                <div class="stat-subtext" id="adm-stat-users-sub">0 verified • 0 active</div>
+              </div>
+              <div class="stat-icon icon-users">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="card stat-card admin-stat-card">
+              <div>
+                <div class="stat-title">Active Investment Capital</div>
+                <div class="stat-value" id="adm-stat-active-inv" style="color: var(--gold);">$0.00</div>
+                <div class="stat-subtext" id="adm-stat-inv-sub">0 active plans</div>
+              </div>
+              <div class="stat-icon icon-invest">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                  <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <div class="card stat-card admin-stat-card highlight-gold">
+              <div>
+                <div class="stat-title">Pending Deposit Approvals</div>
+                <div class="stat-value" id="adm-stat-pending-dep" style="color: var(--gold);">$0.00</div>
+                <div class="stat-subtext" id="adm-stat-pending-dep-sub">0 deposits awaiting proof check</div>
+              </div>
+              <div class="stat-icon icon-pending">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <div class="card stat-card admin-stat-card highlight-danger">
+              <div>
+                <div class="stat-title">Pending Withdrawals</div>
+                <div class="stat-value" id="adm-stat-pending-wdr" style="color: #F87171;">$0.00</div>
+                <div class="stat-subtext" id="adm-stat-pending-wdr-sub">0 payouts queued</div>
+              </div>
+              <div class="stat-icon icon-wdr">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Pending Deposits Queue -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Action Queue</div>
+                  <h2 class="section-title">Pending Investment Deposits</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="switchAdminTab('investments')">View All</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Plan & Amount</th>
+                      <th>Tx Hash & Proof</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-overview-deposits-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Pending Withdrawals Queue -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Action Queue</div>
+                  <h2 class="section-title">Pending Payout Requests</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="switchAdminTab('withdrawals')">View All</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Amount & Fee</th>
+                      <th>Destination</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-overview-withdrawals-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Secondary Overview Grid: Financial Liabilities & Tickets -->
+          <div class="grid-2" style="margin-top: 24px;">
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">System Balances</div>
+                  <h2 class="section-title">Platform Financial Liabilities</h2>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total User Spendable Balances</span>
+                  <b class="liability-val" id="adm-fin-balance">$0.00</b>
+                </div>
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total Lifetime Platform Deposits</span>
+                  <b class="liability-val" id="adm-fin-deposits">$0.00</b>
+                </div>
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total ROI Payouts Generated</span>
+                  <b class="liability-val" id="adm-fin-roi" style="color:var(--gold);">$0.00</b>
+                </div>
+                <div class="admin-liability-row">
+                  <span class="liability-label">Total Direct & Level Commissions Paid</span>
+                  <b class="liability-val" id="adm-fin-comm" style="color:var(--gold);">$0.00</b>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Support Queue</div>
+                  <h2 class="section-title">Recent Support Tickets</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="switchAdminTab('support')">Open Desk</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Subject</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-overview-tickets-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ADMIN INVESTMENTS & DEPOSIT PROOFS SUB-PAGE -->
+        <div id="adm-content-investments" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">Deposit Verification</div>
+                <h2 class="section-title">Investment Plan Deposits & Verifications</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-inv-filter-status" class="form-control admin-filter-select"
+                  onchange="filterAdminInvestments()">
+                  <option value="all">All Statuses</option>
+                  <option value="DEPOSIT_PENDING" selected>Pending Approval</option>
+                  <option value="ACTIVE">Active Plans</option>
+                  <option value="COMPLETED">Completed Plans</option>
+                  <option value="REJECTED">Rejected Deposits</option>
+                </select>
+                <input type="text" id="adm-inv-search" class="form-control admin-search-input"
+                  placeholder="Search by email, TxID, or ID..." oninput="debounceAdminSearch('investments')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminInvestments()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Investor</th>
+                    <th>Plan</th>
+                    <th>Amount</th>
+                    <th>Network</th>
+                    <th>Tx Hash / Proof</th>
+                    <th>Status</th>
+                    <th>Submitted At</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-investments-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. ADMIN WITHDRAWALS SUB-PAGE -->
+        <div id="adm-content-withdrawals" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">Payouts Processing</div>
+                <h2 class="section-title">Platform Withdrawals Queue</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-wdr-filter-status" class="form-control admin-filter-select"
+                  onchange="filterAdminWithdrawals()">
+                  <option value="all">All Statuses</option>
+                  <option value="PENDING" selected>Pending Review</option>
+                  <option value="APPROVED">Approved & Paid</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+                <input type="text" id="adm-wdr-search" class="form-control admin-search-input"
+                  placeholder="Search by email, wallet address..." oninput="debounceAdminSearch('withdrawals')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminWithdrawals()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Fee</th>
+                    <th>Net Payout</th>
+                    <th>Network & Address</th>
+                    <th>Status</th>
+                    <th>Requested Date</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-withdrawals-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ADMIN USER MANAGEMENT SUB-PAGE -->
+        <div id="adm-content-users" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">User Directory</div>
+                <h2 class="section-title">Registered Accounts & Access Control</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-usr-filter-role" class="form-control admin-filter-select" onchange="filterAdminUsers()">
+                  <option value="">All Roles</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="USER">User</option>
+                  <option value="SUPPORT">Support</option>
+                  <option value="FINANCE">Finance</option>
+                </select>
+                <select id="adm-usr-filter-kyc" class="form-control admin-filter-select" onchange="filterAdminUsers()">
+                  <option value="">All KYC</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="UNVERIFIED">Unverified</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+                <input type="text" id="adm-usr-search" class="form-control admin-search-input"
+                  placeholder="Search name, email, ref code..." oninput="debounceAdminSearch('users')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminUsers()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User / Full Name</th>
+                    <th>Role</th>
+                    <th>KYC Status</th>
+                    <th>Wallet Balance</th>
+                    <th>Total Invested</th>
+                    <th>Level</th>
+                    <th>Sponsor</th>
+                    <th>Joined Date</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-users-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. ADMIN SUPPORT TICKETS SUB-PAGE -->
+        <div id="adm-content-support" class="admin-subpage">
+          <div class="card">
+            <div class="section-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="eyebrow">Helpdesk Console</div>
+                <h2 class="section-title">Support Ticket Management</h2>
+              </div>
+              <div class="admin-filter-bar">
+                <select id="adm-tkt-filter-status" class="form-control admin-filter-select"
+                  onchange="filterAdminTickets()">
+                  <option value="all">All Tickets</option>
+                  <option value="OPEN" selected>Open</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="RESOLVED">Resolved</option>
+                  <option value="CLOSED">Closed</option>
+                </select>
+                <input type="text" id="adm-tkt-search" class="form-control admin-search-input"
+                  placeholder="Search ticket subject, user email..." oninput="debounceAdminSearch('tickets')">
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminTickets()">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Replies</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-tickets-tbody">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. ADMIN SYSTEM SETTINGS & PLANS SUB-PAGE -->
+        <div id="adm-content-settings" class="admin-subpage">
+          <!-- Company Deposit Wallets & QR Configuration -->
+          <div class="card"
+            style="margin-bottom: 24px; border: 1px solid rgba(250, 204, 21, 0.3); background: linear-gradient(135deg, rgba(250, 204, 21, 0.04) 0%, rgba(14, 19, 25, 0.6) 100%);">
+            <div class="section-header">
+              <div>
+                <div class="eyebrow" style="color: var(--gold-soft);">Official Deposit Receiving Channels</div>
+                <h2 class="section-title">Company Deposit Wallets &amp; QR Codes</h2>
+              </div>
+              <div class="badge badge-approved" style="font-size: 11px;">Active on User Buy Modals</div>
+            </div>
+            <p style="font-size: 13px; color: var(--mute); margin-bottom: 20px; line-height: 1.5;">
+              Configure official USDT receiving addresses and payment QR codes for Binance Smart Chain (BEP20) and TRON
+              (TRC20). Users can scan the QR code or copy the address when buying plans.
+            </p>
+            <form onsubmit="handleAdminSaveCompanyWallets(event)">
+              <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 20px;">
+
+                <!-- BEP20 Card -->
+                <div
+                  style="background: rgba(6, 9, 14, 0.6); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 600; font-size: 13px; color: var(--text);">USDT (BEP20 – BSC)</span>
+                    <span class="badge"
+                      style="font-size: 10px; background: rgba(250, 204, 21, 0.15); color: var(--gold);">BSC
+                      Network</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" style="font-size: 12px;">Deposit Wallet Address</label>
+                    <input type="text" id="adm-wallet-bep20" class="form-control"
+                      placeholder="Enter BSC (BEP20) wallet address (e.g. 0x...)"
+                      style="font-family: var(--font-mono); font-size: 12.5px;" oninput="updateAdminQRPreview('BEP20')"
+                      required>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 6px;">
+                    <label class="form-label" style="font-size: 12px; display: flex; justify-content: space-between;">
+                      <span>Deposit QR Code</span>
+                      <span id="adm-bep20-qr-status"
+                        style="font-size: 11px; color: var(--gold-soft); font-weight: normal;">Auto-Generated</span>
+                    </label>
+                    <input type="hidden" id="adm-wallet-bep20-qr">
+                    <div style="display: flex; gap: 14px; align-items: center;">
+                      <div class="admin-qr-preview-box" id="adm-bep20-qr-wrap" title="Click to zoom QR"
+                        onclick="openLightbox(document.getElementById('adm-bep20-qr-img').src)">
+                        <img id="adm-bep20-qr-img" src="" alt="BEP20 QR"
+                          style="width: 72px; height: 72px; border-radius: 4px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                      </div>
+                      <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <label class="btn btn-sm btn-secondary"
+                          style="cursor: pointer; justify-content: center; font-size: 11px; padding: 6px 10px;">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                          </svg>
+                          Upload Custom QR
+                          <input type="file" accept="image/*" style="display:none;"
+                            onchange="handleAdminQRUpload(event, 'BEP20')">
+                        </label>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                          style="font-size: 11px; justify-content: center; padding: 6px 10px;"
+                          onclick="resetAdminQR('BEP20')">
+                          Auto-Generate QR
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TRC20 Card -->
+                <div
+                  style="background: rgba(6, 9, 14, 0.6); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 600; font-size: 13px; color: var(--text);">USDT (TRC20 – TRON)</span>
+                    <span class="badge"
+                      style="font-size: 10px; background: rgba(239, 68, 68, 0.15); color: #f87171;">TRON Network</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" style="font-size: 12px;">Deposit Wallet Address</label>
+                    <input type="text" id="adm-wallet-trc20" class="form-control"
+                      placeholder="Enter TRON (TRC20) wallet address (e.g. T...)"
+                      style="font-family: var(--font-mono); font-size: 12.5px;" oninput="updateAdminQRPreview('TRC20')"
+                      required>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 6px;">
+                    <label class="form-label" style="font-size: 12px; display: flex; justify-content: space-between;">
+                      <span>Deposit QR Code</span>
+                      <span id="adm-trc20-qr-status"
+                        style="font-size: 11px; color: var(--gold-soft); font-weight: normal;">Auto-Generated</span>
+                    </label>
+                    <input type="hidden" id="adm-wallet-trc20-qr">
+                    <div style="display: flex; gap: 14px; align-items: center;">
+                      <div class="admin-qr-preview-box" id="adm-trc20-qr-wrap" title="Click to zoom QR"
+                        onclick="openLightbox(document.getElementById('adm-trc20-qr-img').src)">
+                        <img id="adm-trc20-qr-img" src="" alt="TRC20 QR"
+                          style="width: 72px; height: 72px; border-radius: 4px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
+                      </div>
+                      <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <label class="btn btn-sm btn-secondary"
+                          style="cursor: pointer; justify-content: center; font-size: 11px; padding: 6px 10px;">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                          </svg>
+                          Upload Custom QR
+                          <input type="file" accept="image/*" style="display:none;"
+                            onchange="handleAdminQRUpload(event, 'TRC20')">
+                        </label>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                          style="font-size: 11px; justify-content: center; padding: 6px 10px;"
+                          onclick="resetAdminQR('TRC20')">
+                          Auto-Generate QR
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn btn-primary" id="adm-save-wallets-btn">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  Save Company Deposit Wallets &amp; QR Codes
+                </button>
+              </div>
+            </form>
+          </div>
+
+
+          <div class="grid-2">
+            <!-- Global Business Parameters -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Business Rules</div>
+                  <h2 class="section-title">Platform Global Settings</h2>
+                </div>
+                <button class="btn btn-sm btn-secondary" onclick="loadAdminSettings()">Refresh</button>
+              </div>
+              <p style="font-size: 13px; color: var(--mute); margin-bottom: 16px;">
+                Adjust business constants dynamically without restarting services.
+              </p>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Key</th>
+                      <th>Value</th>
+                      <th>Description</th>
+                      <th style="text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-settings-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Investment Plans Management -->
+            <div class="card">
+              <div class="section-header">
+                <div>
+                  <div class="eyebrow">Tier Architecture</div>
+                  <h2 class="section-title">Investment Plans Manager</h2>
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="openPlanModal()">+ Add New Plan</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Plan Name</th>
+                      <th>Weekly ROI</th>
+                      <th>Min / Max ($)</th>
+                      <th>Duration</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adm-plans-tbody">
+                    <!-- Rendered via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1. Withdrawal Modal -->
+  <div id="modal-withdraw" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Withdraw Wallet Funds</h3>
+        <button class="modal-close" onclick="closeModal('modal-withdraw')">&times;</button>
+      </div>
+      <form onsubmit="handleWithdrawSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Withdrawal Type</label>
+          <select id="wdr-type" class="form-control" onchange="updateWithdrawalFeeCalc()">
+            <option value="PROFIT">Profit Withdrawal (Fee $1, Min $10)</option>
+            <option value="CAPITAL">Capital Withdrawal (Fee $10, Min $100)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Requested Amount ($)</label>
+          <input type="number" id="wdr-amount" class="form-control" min="10" step="0.01" value="100.00"
+            oninput="updateWithdrawalFeeCalc()" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Network</label>
+          <select id="wdr-network" class="form-control">
+            <option value="BEP20">BEP20 (USDT)</option>
+            <option value="TRC20">TRC20 (USDT)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destination Wallet Address</label>
+          <input type="text" id="wdr-address" class="form-control" placeholder="Paste your USDT wallet address"
+            required>
+        </div>
+        <div
+          style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--text-muted);">Transaction Fee:</span>
+            <span id="wdr-fee-preview">$1.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-weight: 700;">
+            <span>Net Received Amount:</span>
+            <span id="wdr-net-preview" style="color: var(--gold); font-family: var(--font-mono);">$99.00</span>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Submit Withdrawal
+          Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. New Investment + Deposit Proof Modal -->
+  <div id="modal-invest" class="modal-backdrop">
+    <div class="modal" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Buy Investment Plan</h3>
+        <button class="modal-close" onclick="closeModal('modal-invest')">&times;</button>
+      </div>
+      <form id="invest-form" onsubmit="handleInvestSubmit(event)" enctype="multipart/form-data">
+        <input type="hidden" id="inv-plan-name">
+
+        <!-- Step 1: Plan & Amount -->
+        <div
+          style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); margin-bottom: 12px; font-weight: 600;">
+          Step 1 — Plan Selection</div>
+        <div class="form-group">
+          <label class="form-label">Selected Plan</label>
+          <input type="text" id="inv-plan-display" class="form-control" readonly
+            style="font-weight: 700; color: var(--gold); font-family: var(--font-mono);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Investment Amount ($)</label>
+          <input type="number" id="inv-amount" class="form-control" min="100" step="1" required
+            oninput="updateMaxReturnCalc()">
+        </div>
+        <div
+          style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--mute);">Max Total Return:</span>
+            <span id="inv-max-return"
+              style="color: var(--gold); font-weight: 700; font-family: var(--font-mono);">$0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--mute);">Referral commissions fill your oldest active plan</span>
+          </div>
+        </div>
+
+        <!-- Step 2: Deposit Proof -->
+        <div
+          style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); margin-bottom: 12px; font-weight: 600; border-top: 1px solid var(--line); padding-top: 16px;">
+          Step 2 — Send Crypto &amp; Provide Proof</div>
+        <p style="font-size: 12px; color: var(--mute); margin-bottom: 14px; line-height: 1.6;">
+          Send the exact investment amount in USDT to the platform wallet, then paste the transaction hash below. Admin
+          will verify and activate your investment.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Deposit Network <span style="color: var(--accent-danger);">*</span></label>
+          <select id="inv-network" class="form-control" required onchange="handleDepositNetworkChange()">
+            <option value="">— Select Network —</option>
+            <option value="BEP20">BEP20 (Binance Smart Chain – USDT)</option>
+            <option value="TRC20">TRC20 (TRON – USDT)</option>
+          </select>
+        </div>
+
+        <!-- Official Company Deposit Address & QR Box -->
+        <div id="company-deposit-box" class="company-wallet-card" style="display: none;">
+          <div class="company-wallet-header">
+            <span class="company-wallet-label">Official Deposit Destination (<span
+                id="dep-network-label">BEP20</span>)</span>
+            <span class="badge badge-approved" id="dep-network-badge">USDT</span>
+          </div>
+          <div class="company-wallet-body">
+            <div class="company-qr-layout">
+              <div class="company-qr-container" title="Click to zoom QR Code"
+                onclick="openLightbox(document.getElementById('company-deposit-qr-img').src)">
+                <img id="company-deposit-qr-img" src="" alt="Deposit QR Code" class="company-deposit-qr-img">
+                <span class="qr-scan-hint">Click to Enlarge</span>
+              </div>
+              <div class="company-addr-col">
+                <div style="font-size: 11px; color: var(--mute); margin-bottom: 5px; font-weight: 500;">Deposit Wallet
+                  Address:</div>
+                <div class="wallet-addr-wrap" style="margin-bottom: 8px;">
+                  <input type="text" id="company-wallet-addr" class="wallet-addr-input" readonly>
+                  <button type="button" class="btn btn-sm btn-primary copy-addr-btn"
+                    onclick="copyCompanyDepositAddress()" id="btn-copy-deposit-addr" title="Copy Address">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+                <div class="company-wallet-notice">
+                  Send only <strong>USDT (<span id="dep-network-notice">BEP20</span>)</strong> to this address. Funds
+                  are verified by admin before activation.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <label class="form-label">Transaction Hash (TxID)</label>
+          <input type="text" id="inv-txhash" class="form-control" placeholder="Enter transaction hash or TxID">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Sender Wallet Address</label>
+          <input type="text" id="inv-sender" class="form-control" placeholder="Enter your sender USDT wallet address">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Payment Screenshot (optional)</label>
+          <input type="file" id="inv-proof" class="form-control" accept="image/*,.pdf" style="padding: 8px;">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 4px;">
+          Submit Investment &amp; Deposit Proof
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Ticket Thread Modal -->
+  <div id="modal-ticket-thread" class="modal-backdrop">
+    <div class="modal" style="max-width: 650px; width: 100%;">
+      <div class="modal-header"
+        style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px;">
+        <div>
+          <h3 class="modal-title" id="thread-ticket-subject"
+            style="font-family: var(--font-heading); font-size: 18px; font-weight: 500;">Ticket Details</h3>
+          <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+            <span id="thread-ticket-status" class="badge badge-approved">OPEN</span>
+            <span id="thread-ticket-date" style="font-size: 12px; color: var(--mute);"></span>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-ticket-thread')">&times;</button>
+      </div>
+
+      <!-- Thread Messages Container -->
+      <div id="thread-messages-list"
+        style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-right: 6px;">
+        <!-- Populated via JS -->
+      </div>
+
+      <!-- Reply Box -->
+      <form id="thread-reply-form" onsubmit="handleSendReply(event)">
+        <input type="hidden" id="thread-ticket-id">
+        <div class="field" style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: var(--mute);">Add a Reply</label>
+          <textarea id="thread-reply-message" rows="3"
+            style="width:100%; background:var(--field); border:1px solid var(--line); color:var(--text); font-family:var(--font-family); font-size:14px; padding:10px 12px; border-radius:4px; outline:none;"
+            placeholder="Type your reply here..." required></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end;">
+          <button type="submit" class="btn btn-primary" style="padding: 8px 18px; font-size: 13px;">Send Reply</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN ACTION MODALS ================= -->
+
+  <!-- ================= ADMIN ACTION MODALS ================= -->
+
+  <!-- A1. Full Deposit & Investment Dossier Modal -->
+  <div id="modal-admin-proof" class="modal-backdrop">
+    <div class="modal" style="max-width: 900px; width: 100%; max-height: 92vh; display: flex; flex-direction: column;">
+      <div class="modal-header"
+        style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="stat-icon icon-invest" style="width:36px; height:36px;"><svg width="20" height="20"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg></div>
+          <div>
+            <h3 class="modal-title" style="font-size: 18px; margin: 0;">Investment Deposit Dossier</h3>
+            <div style="font-size: 12px; color: var(--mute); font-family: var(--font-mono); margin-top: 2px;"
+              id="adm-proof-inv-id-label"></div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="adm-proof-status-badge" class="badge badge-approved">PENDING</span>
+          <button class="modal-close" onclick="closeModal('modal-admin-proof')">&times;</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Modal Body -->
+      <div style="overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 20px;">
+        <div class="grid-2" style="align-items: start;">
+          <!-- LEFT: Proof Image & Media Previewer -->
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="section-title"
+              style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute);">Deposit
+              Payment Proof</div>
+            <div id="adm-proof-image-wrap" class="inspector-proof-container">
+              <img id="adm-proof-img" src="" alt="Deposit Proof" class="inspector-proof-img"
+                onclick="openLightbox(this.src)">
+              <div id="adm-proof-placeholder" class="inspector-proof-placeholder" style="display:none;">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="1.5"
+                  style="margin-bottom:8px;">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <div>No Screenshot Uploaded</div>
+                <div style="font-size: 11px; color: var(--mute); margin-top: 4px;">Verified on-chain via TxID Hash</div>
+              </div>
+            </div>
+
+            <div id="adm-proof-media-actions" style="display: flex; gap: 8px; justify-content: center;">
+              <button type="button" id="adm-proof-btn-view" class="btn btn-sm btn-secondary"
+                onclick="openLightbox(document.getElementById('adm-proof-img').src)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="11" y1="8" x2="11" y2="14"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                Zoom Preview
+              </button>
+              <a id="adm-proof-link-full" href="#" target="_blank" class="btn btn-sm btn-secondary"
+                style="text-decoration:none;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                Open Full File
+              </a>
+            </div>
+
+            <!-- Blockchain TxID Action Box -->
+            <div
+              style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div
+                style="font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                <span>On-Chain Blockchain Verification</span>
+                <span id="adm-proof-network-pill" class="badge badge-approved" style="font-size: 10px;">BEP20</span>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <div style="font-size: 11px; color: var(--mute); margin-bottom: 3px;">Transaction Hash (TxID):</div>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" id="adm-proof-txhash" class="form-control" readonly
+                    style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-proof-txhash')"
+                    style="padding: 4px 10px;">Copy</button>
+                </div>
+              </div>
+              <div style="margin-bottom: 10px;">
+                <div style="font-size: 11px; color: var(--mute); margin-bottom: 3px;">Investor Sender Wallet Address:
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" id="adm-proof-sender" class="form-control" readonly
+                    style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-proof-sender')"
+                    style="padding: 4px 10px;">Copy</button>
+                </div>
+              </div>
+              <a id="adm-proof-explorer-btn" href="#" target="_blank" class="btn btn-sm btn-secondary"
+                style="width: 100%; justify-content: center; text-decoration: none; font-size: 12px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                Verify on Blockchain Explorer ↗
+              </a>
+            </div>
+          </div>
+
+          <!-- RIGHT: Detailed Breakdown -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <!-- Investor Dossier Card -->
+            <div
+              style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div
+                style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin-bottom: 10px;">
+                Investor Profile
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Full Name / Email:</span>
+                  <b id="adm-proof-investor-name" style="color: var(--text);"></b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Username / ID:</span>
+                  <span id="adm-proof-investor-id"
+                    style="font-family: var(--font-mono); color: var(--mute); font-size: 11px;"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Sponsor / Parent:</span>
+                  <span id="adm-proof-sponsor" style="color: var(--text);"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Sponsor Unlock Level:</span>
+                  <span id="adm-proof-user-level" class="badge badge-approved" style="font-size: 10px;">Level 0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Investment Plan & Numbers Card -->
+            <div
+              style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div
+                style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin-bottom: 10px;">
+                Investment Capital &amp; Returns
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Plan Tier:</span>
+                  <b id="adm-proof-plan-name" style="color: var(--text);"></b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Weekly ROI Rate:</span>
+                  <b id="adm-proof-plan-roi" style="color: var(--gold); font-family: var(--font-mono);"></b>
+                </div>
+                <div
+                  style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+                  <span style="color: var(--mute);">Invested Principal Amount:</span>
+                  <b id="adm-proof-amount"
+                    style="color: var(--text); font-family: var(--font-mono); font-size: 16px;">$0.00</b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Max Total Return (300% Cap):</span>
+                  <b id="adm-proof-max-return" style="color: var(--gold); font-family: var(--font-mono);">$0.00</b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Credited ROI + Direct Commissions:</span>
+                  <span id="adm-proof-credited" style="font-family: var(--font-mono);">$0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--mute);">Remaining Capacity to Fill:</span>
+                  <span id="adm-proof-remaining" style="font-family: var(--font-mono); color: var(--gold);">$0.00</span>
+                </div>
+                <div>
+                  <div
+                    style="display: flex; justify-content: space-between; font-size: 11px; color: var(--mute); margin-bottom: 3px;">
+                    <span>Fill Progress</span>
+                    <span id="adm-proof-progress-pct">0%</span>
+                  </div>
+                  <div class="progress-bar-bg" style="height: 6px;">
+                    <div id="adm-proof-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline & Status Details -->
+            <div
+              style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+              <div
+                style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mute); margin-bottom: 8px;">
+                Timeline &amp; Audit Trail
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--mute);">
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Submitted At:</span>
+                  <span id="adm-proof-time-submitted" style="color: var(--text); font-family: var(--font-mono);"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Reviewed / Approved At:</span>
+                  <span id="adm-proof-time-approved" style="color: var(--text); font-family: var(--font-mono);"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Reviewed By Administrator:</span>
+                  <span id="adm-proof-admin-reviewer" style="color: var(--text);"></span>
+                </div>
+                <div id="adm-proof-rejection-row"
+                  style="display: none; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); padding: 8px; border-radius: 4px; margin-top: 4px;">
+                  <span style="color: #F87171; font-weight: 600;">Rejection Reason: </span>
+                  <span id="adm-proof-rejection-reason" style="color: var(--text);"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" id="adm-proof-inv-id">
+        <!-- Action Buttons Footer -->
+        <div id="adm-proof-actions-bar"
+          style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-proof')">Close
+            Details</button>
+          <button type="button" id="adm-proof-btn-reject" class="btn btn-danger"
+            onclick="openRejectInvestmentModal(document.getElementById('adm-proof-inv-id').value)">Reject
+            Deposit</button>
+          <button type="button" id="adm-proof-btn-approve" class="btn btn-primary"
+            onclick="submitApproveInvestment(document.getElementById('adm-proof-inv-id').value)">Approve & Activate
+            Plan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A1.1 Full Withdrawal Details Inspector Modal -->
+  <div id="modal-admin-wdr-detail" class="modal-backdrop">
+    <div class="modal" style="max-width: 750px; width: 100%; max-height: 92vh; display: flex; flex-direction: column;">
+      <div class="modal-header"
+        style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="stat-icon icon-wdr" style="width:36px; height:36px;"><svg width="20" height="20"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg></div>
+          <div>
+            <h3 class="modal-title" style="font-size: 18px; margin: 0;">Withdrawal Payout Inspector</h3>
+            <div style="font-size: 12px; color: var(--mute); font-family: var(--font-mono); margin-top: 2px;"
+              id="adm-wdr-id-label"></div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="adm-wdr-status-badge" class="badge badge-approved">PENDING</span>
+          <button class="modal-close" onclick="closeModal('modal-admin-wdr-detail')">&times;</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div style="overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 16px;">
+        <!-- Financial Calculation Banner -->
+        <div
+          style="background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(0,0,0,0.4) 100%); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-sm); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+              <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute);">Net
+                Payout Amount to Send</div>
+              <div id="adm-wdr-net-display"
+                style="font-size: 26px; font-family: var(--font-mono); font-weight: 700; color: var(--gold);">$0.00
+              </div>
+            </div>
+            <span id="adm-wdr-type-badge" class="badge badge-approved"
+              style="font-size: 12px; padding: 6px 12px;">PROFIT WITHDRAWAL</span>
+          </div>
+
+          <div class="grid-3" style="font-size: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+            <div>
+              <span style="color: var(--mute);">Requested Amount:</span>
+              <div id="adm-wdr-gross-display"
+                style="font-family: var(--font-mono); font-weight: 600; color: var(--text); font-size: 14px;">$0.00
+              </div>
+            </div>
+            <div>
+              <span style="color: var(--mute);">Transaction Fee:</span>
+              <div id="adm-wdr-fee-display" style="font-family: var(--font-mono); color: var(--mute); font-size: 14px;">
+                $1.00</div>
+            </div>
+            <div>
+              <span style="color: var(--mute);">Capital Charge ($10):</span>
+              <div id="adm-wdr-charge-display"
+                style="font-family: var(--font-mono); color: var(--mute); font-size: 14px;">$0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- User Profile & Balance -->
+          <div
+            style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+            <div
+              style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin-bottom: 10px;">
+              User Dossier
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--mute);">Email Address:</span>
+                <b id="adm-wdr-user-email" style="color: var(--text);"></b>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--mute);">Full Name:</span>
+                <span id="adm-wdr-user-name" style="color: var(--text);"></span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--mute);">Username:</span>
+                <span id="adm-wdr-user-username" style="font-family: var(--font-mono); color: var(--mute);"></span>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+                <span style="color: var(--mute);">Current Wallet Balance:</span>
+                <b id="adm-wdr-user-balance" style="color: var(--gold); font-family: var(--font-mono);">$0.00</b>
+              </div>
+            </div>
+          </div>
+
+          <!-- Destination & On-Chain Address -->
+          <div
+            style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+            <div
+              style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text); margin-bottom: 10px; display: flex; justify-content: space-between;">
+              <span>Crypto Destination</span>
+              <span id="adm-wdr-network-badge" class="badge badge-approved" style="font-size: 10px;">BEP20</span>
+            </div>
+            <div style="font-size: 11px; color: var(--mute); margin-bottom: 3px;">Destination USDT Wallet Address:</div>
+            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+              <input type="text" id="adm-wdr-address-input" class="form-control" readonly
+                style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+              <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-wdr-address-input')"
+                style="padding: 4px 10px;">Copy</button>
+            </div>
+            <a id="adm-wdr-address-explorer-btn" href="#" target="_blank" class="btn btn-sm btn-secondary"
+              style="width: 100%; justify-content: center; text-decoration: none; font-size: 11px;">
+              Inspect Wallet Address on Explorer ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Payout TxID & Audit History -->
+        <div
+          style="background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px;">
+          <div
+            style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mute); margin-bottom: 8px;">
+            Audit &amp; Processing History
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--mute);">
+            <div style="display: flex; justify-content: space-between;">
+              <span>Requested Date:</span>
+              <span id="adm-wdr-time-requested" style="color: var(--text); font-family: var(--font-mono);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Processed / Reviewed Date:</span>
+              <span id="adm-wdr-time-reviewed" style="color: var(--text); font-family: var(--font-mono);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Reviewed By:</span>
+              <span id="adm-wdr-reviewer" style="color: var(--text);"></span>
+            </div>
+            <div id="adm-wdr-txhash-row" style="display: none; margin-top: 4px;">
+              <div style="font-size: 11px; color: var(--mute); margin-bottom: 2px;">Payout Transaction Hash:</div>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="adm-wdr-txhash-input" class="form-control" readonly
+                  style="font-family: var(--font-mono); font-size: 11px; padding: 6px 8px;">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="copyElementText('adm-wdr-txhash-input')"
+                  style="padding: 4px 10px;">Copy</button>
+              </div>
+            </div>
+            <div id="adm-wdr-notes-row"
+              style="display: none; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); padding: 8px; border-radius: 4px; margin-top: 4px;">
+              <span style="color: #F87171; font-weight: 600;">Rejection / Notes: </span>
+              <span id="adm-wdr-notes" style="color: var(--text);"></span>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" id="adm-wdr-detail-id">
+        <!-- Action Buttons Footer -->
+        <div id="adm-wdr-actions-bar"
+          style="border-top: 1px solid var(--line); padding-top: 14px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-wdr-detail')">Close</button>
+          <button type="button" id="adm-wdr-btn-reject" class="btn btn-danger"
+            onclick="openRejectWithdrawalModal(document.getElementById('adm-wdr-detail-id').value)">Reject
+            Withdrawal</button>
+          <button type="button" id="adm-wdr-btn-approve" class="btn btn-primary"
+            onclick="submitApproveWithdrawal(document.getElementById('adm-wdr-detail-id').value)">Approve &amp; Pay
+            Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A1.2 Full Image Lightbox Modal -->
+  <div id="modal-admin-lightbox" class="modal-backdrop" onclick="closeModal('modal-admin-lightbox')"
+    style="background: rgba(0,0,0,0.85); z-index: 10000;">
+    <div
+      style="max-width: 90vw; max-height: 90vh; position: relative; display: flex; align-items: center; justify-content: center;"
+      onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal('modal-admin-lightbox')"
+        style="position: absolute; top: -40px; right: 0; font-size: 32px; color: #FFF;">&times;</button>
+      <img id="adm-lightbox-img" src="" alt="Proof Full Image"
+        style="max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: var(--radius-sm); box-shadow: 0 20px 60px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.2);">
+    </div>
+  </div>
+
+  <!-- A2. Reject Investment Modal -->
+  <div id="modal-admin-reject-inv" class="modal-backdrop">
+    <div class="modal" style="max-width: 460px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--accent-danger, #EF4444);">Reject Deposit Verification</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-reject-inv')">&times;</button>
+      </div>
+      <form onsubmit="handleRejectInvestmentSubmit(event)">
+        <input type="hidden" id="adm-reject-inv-id">
+        <p style="font-size: 13px; color: var(--mute); margin-bottom: 14px;">
+          Provide an optional reason why this deposit could not be verified (e.g. invalid hash, wrong amount,
+          unconfirmed on-chain).
+        </p>
+        <div class="form-group">
+          <label class="form-label">Rejection Reason</label>
+          <textarea id="adm-reject-inv-reason" class="form-control" rows="3" placeholder="Reason for rejection..."
+            required></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-reject-inv')">Cancel</button>
+          <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A3. Reject Withdrawal Modal -->
+  <div id="modal-admin-reject-wdr" class="modal-backdrop">
+    <div class="modal" style="max-width: 460px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--accent-danger, #EF4444);">Reject Withdrawal Request</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-reject-wdr')">&times;</button>
+      </div>
+      <form onsubmit="handleRejectWithdrawalSubmit(event)">
+        <input type="hidden" id="adm-reject-wdr-id">
+        <p style="font-size: 13px; color: var(--mute); margin-bottom: 14px;">
+          Provide the reason for rejecting this payout request.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Rejection Reason</label>
+          <textarea id="adm-reject-wdr-reason" class="form-control" rows="3" placeholder="Reason for rejection..."
+            required></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-reject-wdr')">Cancel</button>
+          <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A4. Manage User Modal -->
+  <div id="modal-admin-manage-user" class="modal-backdrop">
+    <div class="modal" style="max-width: 580px; width: 100%;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="adm-usr-modal-name">Manage User Account</h3>
+          <div style="font-size: 12px; color: var(--mute); margin-top: 2px;" id="adm-usr-modal-email"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-admin-manage-user')">&times;</button>
+      </div>
+
+      <!-- User Status & Role Form -->
+      <form onsubmit="handleUpdateUserSubmit(event)"
+        style="border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 18px;">
+        <input type="hidden" id="adm-usr-id">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Platform Role</label>
+            <select id="adm-usr-role" class="form-control">
+              <option value="USER">Regular User</option>
+              <option value="ADMIN">Platform Administrator</option>
+              <option value="SUPPORT">Support Staff</option>
+              <option value="FINANCE">Finance Auditor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">KYC Verification Status</label>
+            <select id="adm-usr-kyc" class="form-control">
+              <option value="UNVERIFIED">Unverified</option>
+              <option value="PENDING">Pending Review</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- KYC Document Review Box (if user submitted document) -->
+        <div id="adm-usr-kyc-doc-box"
+          style="margin-bottom: 16px; padding: 12px 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: var(--radius-sm); display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 12px; font-weight: 600; color: var(--gold-soft);">Uploaded KYC Document</span>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm btn-primary" onclick="adminQuickKYCStatus('APPROVED')"
+                style="padding: 3px 8px; font-size: 11px;">Approve KYC</button>
+              <button type="button" class="btn btn-sm btn-danger" onclick="adminQuickKYCStatus('REJECTED')"
+                style="padding: 3px 8px; font-size: 11px;">Reject KYC</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="admin-qr-preview-box" id="adm-usr-kyc-img-wrap"
+              style="width: 56px; height: 56px; cursor: pointer;"
+              onclick="openLightbox(document.getElementById('adm-usr-kyc-img').src)">
+              <img id="adm-usr-kyc-img" src="" alt="KYC Document" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="font-size: 12px; line-height: 1.5; color: var(--mute);">
+              <div>Type: <b id="adm-usr-kyc-doctype" style="color: var(--text);">—</b></div>
+              <div>ID Number: <b id="adm-usr-kyc-docnum"
+                  style="color: var(--gold); font-family: var(--font-mono);">—</b></div>
+              <a id="adm-usr-kyc-doclink" href="#" target="_blank"
+                style="color: var(--gold); text-decoration: underline; font-size: 11px; margin-top: 2px; display: inline-block;">Open
+                Full Document</a>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" id="adm-usr-verified"> Email Verified
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" id="adm-usr-active"> Account Active
+          </label>
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary">Save Profile Settings</button>
+      </form>
+
+      <!-- Balance Adjustment Section -->
+      <div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Adjust User Wallet Balance</div>
+        <p style="font-size: 12px; color: var(--mute); margin-bottom: 12px;">
+          Manually credit or debit funds to this user's wallet with an immutable audit entry. Current Balance: <b
+            id="adm-usr-curr-balance" style="color:var(--gold); font-family:var(--font-mono);">$0.00</b>
+        </p>
+        <form onsubmit="handleAdjustBalanceSubmit(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Action</label>
+              <select id="adm-adj-action" class="form-control">
+                <option value="CREDIT">Credit Balance (+)</option>
+                <option value="DEBIT">Debit Balance (-)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount ($)</label>
+              <input type="number" id="adm-adj-amount" class="form-control" min="0.01" step="0.01" placeholder="50.00"
+                required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reason for Adjustment</label>
+            <input type="text" id="adm-adj-reason" class="form-control"
+              placeholder="e.g. Promotional credit, deposit recovery, correction" required>
+          </div>
+          <button type="submit" class="btn btn-sm btn-gold">Execute Balance Adjustment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- A5. Admin Ticket Thread Modal -->
+  <div id="modal-admin-ticket-thread" class="modal-backdrop">
+    <div class="modal" style="max-width: 650px; width: 100%;">
+      <div class="modal-header"
+        style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px;">
+        <div>
+          <h3 class="modal-title" id="adm-thread-ticket-subject" style="font-size: 18px;">Ticket Details</h3>
+          <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+            <span id="adm-thread-ticket-user" style="font-size: 12px; color: var(--mute);"></span>
+            <span id="adm-thread-ticket-status" class="badge badge-approved">OPEN</span>
+            <span id="adm-thread-ticket-date" style="font-size: 12px; color: var(--mute);"></span>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-admin-ticket-thread')">&times;</button>
+      </div>
+
+      <!-- Thread Messages List -->
+      <div id="adm-thread-messages-list"
+        style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-right: 6px;">
+        <!-- Populated via JS -->
+      </div>
+
+      <!-- Admin Reply Box -->
+      <form onsubmit="handleAdminSendReply(event)">
+        <input type="hidden" id="adm-thread-ticket-id">
+        <div class="field" style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: var(--mute);">Staff Reply</label>
+          <textarea id="adm-thread-reply-message" rows="3" class="form-control"
+            placeholder="Type your official support response here..." required></textarea>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 12px; color: var(--mute); margin: 0;">Set Status:</label>
+            <select id="adm-thread-new-status" class="form-control admin-filter-select"
+              style="padding: 4px 8px; font-size: 12px;">
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="CLOSED">Closed</option>
+              <option value="OPEN">Open</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="padding: 8px 18px; font-size: 13px;">Send Staff
+            Reply</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A6. Edit Platform Setting Modal -->
+  <div id="modal-admin-edit-setting" class="modal-backdrop">
+    <div class="modal" style="max-width: 480px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Platform Setting</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-edit-setting')">&times;</button>
+      </div>
+      <form onsubmit="handleAdminSaveSetting(event)">
+        <input type="hidden" id="adm-setting-key">
+        <div class="form-group">
+          <label class="form-label">Parameter Key</label>
+          <input type="text" id="adm-setting-key-disp" class="form-control" readonly
+            style="font-family: var(--font-mono); color: var(--gold);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <div id="adm-setting-desc" style="font-size: 12px; color: var(--mute); margin-bottom: 4px;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Setting Value</label>
+          <input type="text" id="adm-setting-value" class="form-control" required
+            style="font-family: var(--font-mono);">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary"
+            onclick="closeModal('modal-admin-edit-setting')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Parameter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A7. Create/Edit Investment Plan Modal -->
+  <div id="modal-admin-plan" class="modal-backdrop">
+    <div class="modal" style="max-width: 520px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="adm-plan-modal-title">Create Investment Plan</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-plan')">&times;</button>
+      </div>
+      <form onsubmit="handleAdminSavePlan(event)">
+        <input type="hidden" id="adm-plan-id">
+        <div class="form-group">
+          <label class="form-label">Plan Name</label>
+          <input type="text" id="adm-plan-name" class="form-control" placeholder="e.g. Master Yield Plan" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input type="text" id="adm-plan-desc" class="form-control" placeholder="Plan brief description...">
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Weekly ROI Rate (%)</label>
+            <input type="number" id="adm-plan-roi" class="form-control" min="0.1" step="0.01" placeholder="3.50"
+              required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duration (Weeks)</label>
+            <input type="number" id="adm-plan-duration" class="form-control" min="1" step="1" value="120" required>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Min Investment ($)</label>
+            <input type="number" id="adm-plan-min" class="form-control" min="1" step="1" placeholder="100.00" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Investment ($)</label>
+            <input type="number" id="adm-plan-max" class="form-control" min="1" step="1" placeholder="5000.00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" id="adm-plan-active" checked> Plan Is Active & Available for Investors
+          </label>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-admin-plan')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Plan Tier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- A8. Trigger ROI Confirmation Modal -->
+  <div id="modal-admin-trigger-roi" class="modal-backdrop">
+    <div class="modal" style="max-width: 480px; width: 100%;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--gold);">⚡ Trigger Weekly ROI Distribution</h3>
+        <button class="modal-close" onclick="closeModal('modal-admin-trigger-roi')">&times;</button>
+      </div>
+      <div>
+        <p style="font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 14px;">
+          This will execute the Weekly ROI calculation engine for <b>all active investments</b> across the platform:
+        </p>
+        <ul style="font-size: 12px; color: var(--mute); line-height: 1.8; margin-left: 18px; margin-bottom: 16px;">
+          <li>Credits weekly return to each investor's spendable wallet balance</li>
+          <li>Fills up investor plans toward their maximum cap (300%)</li>
+          <li>Distributes 1.5% weekly ROI level commissions up to 5 levels to upline sponsors' oldest active plans</li>
+          <li>Completes fully matured investment plans</li>
+        </ul>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary"
+            onclick="closeModal('modal-admin-trigger-roi')">Cancel</button>
+          <button type="button" class="btn btn-gold" onclick="submitTriggerROIEngine()">Execute Distribution
+            Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/app.js?v=2"></script>
+</body>
+
+</html>

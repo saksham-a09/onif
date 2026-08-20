@@ -80,7 +80,7 @@ class DashboardView(APIView):
             'user_id': str(user.id),
             'parent_id': str(user.parent_id) if user.parent_id else None,
             'referral_code': user.referral_code,
-            'referral_link': f"{request.scheme}://{request.get_host()}/register?ref={user.referral_code}",
+            'referral_link': f"{request.scheme}://{request.get_host()}/app.html#register?ref={user.referral_code}",
 
             # Wallet
             'wallet_balance': float(wallet.balance) if wallet else 0.0,

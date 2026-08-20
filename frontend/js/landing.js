@@ -6,7 +6,7 @@
 
 'use strict';
 
-/* ── 1. Navbar Scroll Behaviour ───────────────────────────── */
+/* ── 1. Navbar Scroll Behaviour & Session Detection ───────── */
 (function initNav() {
   const nav = document.getElementById('lp-nav');
   if (!nav) return;
@@ -17,6 +17,28 @@
 
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll(); // run on load
+
+  // If user already has an active session, personalize the CTA buttons
+  try {
+    const token = localStorage.getItem('finovo_token');
+    if (token) {
+      const signInBtn = document.getElementById('nav-signin');
+      const getStartedBtn = document.getElementById('nav-getstarted');
+      const heroSecondary = document.getElementById('hero-cta-secondary');
+      if (signInBtn) {
+        signInBtn.innerText = 'Launch App →';
+        signInBtn.href = 'app.html';
+      }
+      if (getStartedBtn) {
+        getStartedBtn.innerText = 'Dashboard →';
+        getStartedBtn.href = 'app.html';
+      }
+      if (heroSecondary) {
+        heroSecondary.innerText = 'Open Member Dashboard →';
+        heroSecondary.href = 'app.html';
+      }
+    }
+  } catch (e) {}
 })();
 
 /* ── 2. Smooth Anchor Navigation ──────────────────────────── */
