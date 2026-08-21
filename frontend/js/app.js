@@ -22,6 +22,7 @@ let state = {
     TRC20_QR: '',
   },
   apiConnected: false,
+  levelStats: [],
   pagination: {
     team: { next: null, previous: null, count: 0 },
     adminUsers: { next: null, previous: null, count: 0 }
@@ -237,7 +238,7 @@ async function loadAllAPIData() {
     hideAuthOverlay();
 
     // 2. Fetch Dashboard Overview & All Core Resources Parallelly
-    const [overviewData, investmentsData, plansData, ledgerData, teamData, commData, depositsData, withdrawalsData, ticketsData] = await Promise.all([
+    const [overviewData, investmentsData, plansData, ledgerData, teamData, commData, depositsData, withdrawalsData, ticketsData, levelsData] = await Promise.all([
       apiCall('/dashboard/').catch(() => null),
       apiCall('/investments/').catch(() => []),
       apiCall('/investments/plans/').catch(() => []),
@@ -247,6 +248,7 @@ async function loadAllAPIData() {
       apiCall('/deposits/').catch(() => []),
       apiCall('/withdrawals/').catch(() => []),
       apiCall('/support/tickets/').catch(() => []),
+      apiCall('/referrals/levels/').catch(() => []),
     ]);
 
     if (overviewData) {
@@ -277,6 +279,7 @@ async function loadAllAPIData() {
     state.deposits = Array.isArray(depositsData) ? depositsData : (depositsData.results || []);
     state.withdrawals = Array.isArray(withdrawalsData) ? withdrawalsData : (withdrawalsData.results || []);
     state.tickets = Array.isArray(ticketsData) ? ticketsData : (ticketsData.results || []);
+    state.levelStats = Array.isArray(levelsData) ? levelsData : (levelsData.results || []);
 
     renderAllViews();
   } catch (err) {
@@ -639,8 +642,22 @@ function renderWithdrawalsTable() {
   });
 }
 
+let teamSearchTimeout = null;
+function debounceTeamSearch() {
+  clearTimeout(teamSearchTimeout);
+  teamSearchTimeout = setTimeout(() => {
+    loadTeamData();
+  }, 500);
+}
+
 async function loadTeamData(overrideUrl = null) {
   let url = overrideUrl || '/referrals/team/';
+  if (!overrideUrl) {
+    const searchVal = document.getElementById('referral-team-search')?.value || '';
+    if (searchVal) {
+      url += `?search=${encodeURIComponent(searchVal)}`;
+    }
+  }
   try {
     const data = await apiCall(url);
     const teamData = Array.isArray(data) ? data : (data.results || []);
@@ -664,7 +681,7 @@ function renderTeamTable() {
   if (state.team.length === 0) {
     teamTbody.innerHTML = `
       <tr>
-        <td colspan="4" style="padding: 0;">
+        <td colspan="8" style="padding: 0;">
           <div class="empty-state">
             <div class="empty-state-title">No Team Members Yet</div>
             <div class="empty-state-desc">Share your referral link to build your team and unlock up to 5 commission levels!</div>
@@ -681,6 +698,10 @@ function renderTeamTable() {
           <td>${m.username || 'N/A'}</td>
           <td style="font-size: 12px; color: var(--text-muted);">${dateJoined}</td>
           <td><span class="badge badge-approved">Direct (Level 1)</span></td>
+          <td style="font-family: var(--font-mono); font-weight: 600;">${m.total_refers || 0}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600;">$${Number(m.investment_sum || 0).toFixed(2)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; color: var(--up);">$${Number(m.direct_income_sum || 0).toFixed(2)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; color: var(--gold);">$${Number(m.roi_income_sum || 0).toFixed(2)}</td>
         </tr>
       `;
     });
@@ -708,13 +729,35 @@ function renderReferralView() {
 
   thresholds.forEach(t => {
     const isUnlocked = currentLvl >= t.lvl;
+    const stats = state.levelStats?.find(s => s.level === t.lvl) || { total_refers: 0, total_investment: 0, direct_income: 0, roi_income: 0 };
+
     container.innerHTML += `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); margin-bottom: 8px;">
-        <div>
-          <b>Level ${t.lvl}</b>
-          <div style="font-size: 12px; color: var(--text-muted);">Requires ${t.req} Active Direct Referrals</div>
+      <div style="display: flex; flex-direction: column; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); margin-bottom: 12px; padding: 12px 16px; border: 1px solid var(--line-light);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <b>Level ${t.lvl}</b>
+            <div style="font-size: 12px; color: var(--text-muted);">Requires ${t.req} Active Direct Referrals</div>
+          </div>
+          <span class="badge ${isUnlocked ? 'badge-approved' : 'badge-pending'}">${isUnlocked ? 'UNLOCKED' : 'LOCKED'}</span>
         </div>
-        <span class="badge ${isUnlocked ? 'badge-approved' : 'badge-pending'}">${isUnlocked ? 'UNLOCKED' : 'LOCKED'}</span>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; border-top: 1px solid var(--line-light); padding-top: 12px;">
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total Refers</div>
+            <div style="font-family: var(--font-mono); font-weight: 600; font-size: 14px;">${stats.total_refers}</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Investment</div>
+            <div style="font-family: var(--font-mono); font-weight: 600; font-size: 14px;">$${Number(stats.total_investment).toFixed(2)}</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Direct Income</div>
+            <div style="font-family: var(--font-mono); font-weight: 600; font-size: 14px; color: var(--up);">$${Number(stats.direct_income).toFixed(2)}</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">ROI Income</div>
+            <div style="font-family: var(--font-mono); font-weight: 600; font-size: 14px; color: var(--gold);">$${Number(stats.roi_income).toFixed(2)}</div>
+          </div>
+        </div>
       </div>
     `;
   });
@@ -1924,14 +1967,14 @@ function formatApiUrl(url) {
 function renderPaginationControls(containerId, paginationState, loadFunction) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  
+
   if (!paginationState.next && !paginationState.previous) {
     container.innerHTML = '';
     return;
   }
 
   let pageInfo = `Total: ${paginationState.count} items`;
-  
+
   container.innerHTML = `
     <div class="pagination-info">${pageInfo}</div>
     <button class="pagination-btn" id="${containerId}-prev" ${!paginationState.previous ? 'disabled' : ''}>
@@ -1941,10 +1984,10 @@ function renderPaginationControls(containerId, paginationState, loadFunction) {
       Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px;"><path d="M9 18l6-6-6-6"/></svg>
     </button>
   `;
-  
+
   const prevBtn = document.getElementById(`${containerId}-prev`);
   const nextBtn = document.getElementById(`${containerId}-next`);
-  
+
   if (prevBtn && paginationState.previous) {
     prevBtn.onclick = () => loadFunction(formatApiUrl(paginationState.previous));
   }

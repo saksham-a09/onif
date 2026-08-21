@@ -925,6 +925,9 @@
               <h2 class="section-title">My Direct Downline Members</h2>
             </div>
           </div>
+          <div class="filters-row" style="margin-bottom: 16px;">
+            <input type="text" id="referral-team-search" class="admin-search-input" placeholder="Search team by email or username..." onkeyup="debounceTeamSearch()" style="width: 100%; max-width: 400px;">
+          </div>
           <div class="table-responsive">
             <table class="custom-table">
               <thead>
@@ -933,6 +936,10 @@
                   <th>Username</th>
                   <th>Joined Date</th>
                   <th>Direct Level</th>
+                  <th>Team Size</th>
+                  <th>Investment</th>
+                  <th>Direct Comm.</th>
+                  <th>ROI Comm.</th>
                 </tr>
               </thead>
               <tbody id="referral-team-tbody">
