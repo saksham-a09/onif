@@ -49,6 +49,9 @@ db.sqlite3
 db.sqlite3-journal
 media/
 static/staticfiles/
+create_referral_tree.py
+backend/create_referral_tree.py
+
 
 # Environments & Secrets
 .env

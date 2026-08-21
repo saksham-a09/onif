@@ -136,7 +136,7 @@ function updateConnectionBadge(isConnected) {
 function showAuthOverlay() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'block';
-  
+
   // Hide main app elements so they don't show through the transparent glass auth screen
   const mainWrapper = document.querySelector('.main-wrapper');
   if (mainWrapper) mainWrapper.style.display = 'none';
@@ -162,49 +162,49 @@ function initAuthCanvas() {
   const candleW = 9, gapW = 7;
   let candles = [], lastPrice = 100;
 
-  function nextCandle(){
+  function nextCandle() {
     const open = lastPrice;
     const change = (Math.random() - 0.47) * 5.5;
     const close = Math.max(30, open + change);
     const high = Math.max(open, close) + Math.random() * 3;
     const low = Math.min(open, close) - Math.random() * 3;
     lastPrice = close;
-    return {open, close, high, low};
+    return { open, close, high, low };
   }
-  function seedCandles(width){
+  function seedCandles(width) {
     candles = []; lastPrice = 100;
     const count = Math.ceil(width / (candleW + gapW)) + 3;
-    for(let i=0;i<count;i++) candles.push(nextCandle());
+    for (let i = 0; i < count; i++) candles.push(nextCandle());
   }
-  function draw(){
+  function draw() {
     const w = canvas.width / dpr, h = canvas.height / dpr;
-    ctx.clearRect(0,0,w,h);
+    ctx.clearRect(0, 0, w, h);
     const values = candles.flatMap(c => [c.high, c.low]);
     const max = Math.max(...values), min = Math.min(...values);
     const pad = 20;
     const scaleY = v => h - pad - ((v - min) / ((max - min) || 1)) * (h - pad * 2);
-    candles.forEach((c,i) => {
+    candles.forEach((c, i) => {
       const x = i * (candleW + gapW);
       const up = c.close >= c.open;
       ctx.strokeStyle = up ? 'rgba(198, 153, 61, 0.65)' : 'rgba(228,105,78,0.45)';
       ctx.fillStyle = up ? 'rgba(198, 153, 61, 0.3)' : 'rgba(228,105,78,0.20)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(x + candleW/2, scaleY(c.high));
-      ctx.lineTo(x + candleW/2, scaleY(c.low));
+      ctx.moveTo(x + candleW / 2, scaleY(c.high));
+      ctx.lineTo(x + candleW / 2, scaleY(c.low));
       ctx.stroke();
       const yO = scaleY(c.open), yC = scaleY(c.close);
-      const top = Math.min(yO,yC), hgt = Math.max(2, Math.abs(yO-yC));
+      const top = Math.min(yO, yC), hgt = Math.max(2, Math.abs(yO - yC));
       ctx.fillRect(x, top, candleW, hgt);
     });
   }
-  function resize(){
+  function resize() {
     if (!canvas.parentElement) return;
     const rect = canvas.parentElement.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     seedCandles(rect.width);
     draw();
   }
@@ -302,7 +302,7 @@ function renderAllViews() {
     if (userActions) userActions.style.display = 'none';
     if (adminActions) adminActions.style.display = 'flex';
     document.getElementById('sidebar-userrole').innerHTML = `<span class="badge badge-admin">ADMIN COMMAND</span>`;
-    
+
     // Automatically default to Admin Overview on login
     switchAdminNav('overview');
   } else {
@@ -365,13 +365,14 @@ function renderAllViews() {
 
   // Dashboard Stats
   document.getElementById('dash-wallet-balance').innerText = `$${Number(state.wallet.balance || 0).toFixed(2)}`;
-  
+
   const activeInvestSum = state.investments
     .filter(i => i.status === 'ACTIVE')
     .reduce((sum, item) => sum + Number(item.amount), 0);
   document.getElementById('dash-active-invest').innerText = `$${activeInvestSum.toFixed(2)}`;
   document.getElementById('dash-total-roi').innerText = `$${Number(state.wallet.total_roi_earned || 0).toFixed(2)}`;
   document.getElementById('dash-direct-income').innerText = `$${Number(state.wallet.total_direct_income || 0).toFixed(2)}`;
+  document.getElementById('dash-level-roi').innerText = `$${Number(state.wallet.total_referral_income || 0).toFixed(2)}`;
 
   // Referral Link
   const refCode = state.user.referral_code || '';
@@ -507,7 +508,7 @@ function renderMyInvestmentsTable() {
         <td style="font-family: var(--font-mono);">
           ${isDepositPending ? '—' : `$${credited.toFixed(2)} <small style="color:var(--text-muted);">(${pct.toFixed(0)}%)</small>`}
         </td>
-        <td><span class="badge badge-${(inv.status || 'PENDING').toLowerCase().replace('_','-')}">${inv.status.replace('_',' ')}</span></td>
+        <td><span class="badge badge-${(inv.status || 'PENDING').toLowerCase().replace('_', '-')}">${inv.status.replace('_', ' ')}</span></td>
         <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
       </tr>
     `;
@@ -576,7 +577,7 @@ function renderDepositsTable() {
     const statusBadge = inv.status === 'DEPOSIT_PENDING'
       ? '<span class="badge badge-pending">AWAITING REVIEW</span>'
       : `<span class="badge badge-${(inv.status || 'pending').toLowerCase()}">${inv.status}</span>`;
-    
+
     const proofThumb = inv.deposit_proof_url
       ? `<img src="${inv.deposit_proof_url}" class="proof-thumbnail" onclick="openLightbox('${inv.deposit_proof_url}')" title="Click to enlarge proof screenshot">`
       : `<span style="font-size:11px; color:var(--mute);">TxID Only</span>`;
@@ -652,7 +653,7 @@ function renderReferralView() {
     container.innerHTML += `
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); margin-bottom: 8px;">
         <div>
-          <b>Level ${t.lvl} Commission (${t.lvl === 1 ? 'Direct 2%' : 'ROI 1.5%'})</b>
+          <b>Level ${t.lvl}</b>
           <div style="font-size: 12px; color: var(--text-muted);">Requires ${t.req} Active Direct Referrals</div>
         </div>
         <span class="badge ${isUnlocked ? 'badge-approved' : 'badge-pending'}">${isUnlocked ? 'UNLOCKED' : 'LOCKED'}</span>
@@ -760,7 +761,7 @@ async function openTicketThreadModal(ticketId) {
   document.getElementById('thread-ticket-id').value = ticketId;
   const listContainer = document.getElementById('thread-messages-list');
   listContainer.innerHTML = '<div style="text-align: center; color: var(--mute); padding: 20px;">Loading ticket thread...</div>';
-  
+
   try {
     const ticket = await apiCall(`/support/tickets/${ticketId}/`);
     document.getElementById('thread-ticket-subject').innerText = ticket.subject || 'Ticket Thread';
@@ -793,7 +794,7 @@ function renderTicketThreadMessages(ticket) {
     const bg = isStaff ? 'rgba(63,203,140,0.06)' : 'var(--field)';
     const border = isStaff ? '1px solid rgba(63,203,140,0.2)' : '1px solid var(--line)';
     const nameColor = isStaff ? 'var(--gold-soft)' : 'var(--text)';
-    
+
     listContainer.innerHTML += `
       <div style="background: ${bg}; border: ${border}; padding: 12px 14px; border-radius: 4px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -972,7 +973,7 @@ function showOTPStep(email) {
   if (subtitle) subtitle.innerHTML = 'Enter the 6-digit code we sent to your inbox.';
 
   // Clear all digit inputs
-  ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+  ['otp-d1', 'otp-d2', 'otp-d3', 'otp-d4', 'otp-d5', 'otp-d6'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.value = ''; el.className = 'otp-digit'; }
   });
@@ -988,7 +989,7 @@ function showOTPStep(email) {
 }
 
 function initOTPDigitBehaviour() {
-  const ids = ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'];
+  const ids = ['otp-d1', 'otp-d2', 'otp-d3', 'otp-d4', 'otp-d5', 'otp-d6'];
   ids.forEach((id, idx) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1042,12 +1043,12 @@ function startOTPCountdown(seconds) {
 }
 
 function getOTPValue() {
-  return ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6']
+  return ['otp-d1', 'otp-d2', 'otp-d3', 'otp-d4', 'otp-d5', 'otp-d6']
     .map(id => (document.getElementById(id)?.value || '')).join('');
 }
 
 function setOTPDigitState(state) {
-  ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+  ['otp-d1', 'otp-d2', 'otp-d3', 'otp-d4', 'otp-d5', 'otp-d6'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.className = `otp-digit${state ? ` ${state}` : ''}`;
   });
@@ -1134,7 +1135,7 @@ async function handleVerifyOTP(e) {
     showToast(err.message || 'Invalid or expired OTP.', true);
     // Reset error state after animation
     setTimeout(() => {
-      ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+      ['otp-d1', 'otp-d2', 'otp-d3', 'otp-d4', 'otp-d5', 'otp-d6'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.className = `otp-digit${el.value ? ' otp-filled' : ''}`;
       });
@@ -1150,7 +1151,7 @@ async function handleResendOTP() {
     showToast('A new code has been sent to your email.');
     startOTPCountdown(60);
     // Clear digit inputs
-    ['otp-d1','otp-d2','otp-d3','otp-d4','otp-d5','otp-d6'].forEach(id => {
+    ['otp-d1', 'otp-d2', 'otp-d3', 'otp-d4', 'otp-d5', 'otp-d6'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.value = ''; el.className = 'otp-digit'; }
     });
@@ -1723,7 +1724,7 @@ function renderOverviewTicketsQueue(items) {
       <tr>
         <td style="font-weight:600; color:var(--text);">${tkt.user_email}</td>
         <td>${tkt.subject}</td>
-        <td><span class="badge badge-${(tkt.status || 'open').toLowerCase().replace('_','-')}">${tkt.status}</span></td>
+        <td><span class="badge badge-${(tkt.status || 'open').toLowerCase().replace('_', '-')}">${tkt.status}</span></td>
         <td>
           <button class="btn btn-sm btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="openAdminTicketModal('${tkt.id}')">Reply</button>
         </td>
@@ -1790,7 +1791,7 @@ function renderAdminInvestments(investments) {
             <span style="font-family:var(--font-mono); font-size:11px; color:var(--text);" title="${inv.deposit_txn_hash || ''}">${txShort}</span>
           </div>
         </td>
-        <td><span class="badge badge-${inv.status.toLowerCase().replace('_','-')}">${inv.status.replace('_',' ')}</span></td>
+        <td><span class="badge badge-${inv.status.toLowerCase().replace('_', '-')}">${inv.status.replace('_', ' ')}</span></td>
         <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
         <td style="text-align:right;">
           <div style="display:inline-flex; gap:6px;">
@@ -1856,7 +1857,7 @@ function renderAdminWithdrawals(withdrawals) {
           <div style="font-family:var(--font-mono); font-size:12px; color:var(--text);" title="${wdr.wallet_address || ''}">${addrShort}</div>
           <span class="badge badge-approved" style="font-size:10px;">${wdr.network}</span>
         </td>
-        <td><span class="badge badge-${wdr.status.toLowerCase().replace('_','-')}">${wdr.status}</span></td>
+        <td><span class="badge badge-${wdr.status.toLowerCase().replace('_', '-')}">${wdr.status}</span></td>
         <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
         <td style="text-align:right;">
           <div style="display:inline-flex; gap:6px;">
@@ -1982,7 +1983,7 @@ function renderAdminTickets(tickets) {
         <td><b style="color:var(--text);">${tkt.subject}</b></td>
         <td><span class="badge badge-approved" style="font-size:10px;">${tkt.category}</span></td>
         <td style="font-family:var(--font-mono); font-weight:600;">${tkt.replies_count || 0} msgs</td>
-        <td><span class="badge badge-${(tkt.status || 'open').toLowerCase().replace('_','-')}">${tkt.status}</span></td>
+        <td><span class="badge badge-${(tkt.status || 'open').toLowerCase().replace('_', '-')}">${tkt.status}</span></td>
         <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
         <td style="text-align:right;">
           <button class="btn btn-sm btn-primary" onclick="openAdminTicketModal('${tkt.id}')">Open Thread</button>
@@ -2355,29 +2356,29 @@ async function openManageUserModal(userId) {
     document.getElementById('adm-adj-amount').value = '';
     document.getElementById('adm-adj-reason').value = '';
 
-        // Populate KYC Document review box
-        const docBox = document.getElementById('adm-usr-kyc-doc-box');
-        if (docBox) {
-          if (u.kyc_document_front_url || u.kyc_document_back_url) {
-            docBox.style.display = 'block';
-            const docImgWrap = document.getElementById('adm-usr-kyc-img-wrap');
-            if (docImgWrap) {
-              docImgWrap.innerHTML = '';
-              if (u.kyc_document_front_url) {
-                docImgWrap.innerHTML += `<img src="${u.kyc_document_front_url}" alt="KYC Front" style="width: 100%; height: 100%; object-fit: cover; margin-bottom: 4px;" onclick="openLightbox('${u.kyc_document_front_url}')">`;
-              }
-              if (u.kyc_document_back_url) {
-                docImgWrap.innerHTML += `<img src="${u.kyc_document_back_url}" alt="KYC Back" style="width: 100%; height: 100%; object-fit: cover;" onclick="openLightbox('${u.kyc_document_back_url}')">`;
-              }
-            }
-            document.getElementById('adm-usr-kyc-doctype').innerText = u.kyc_document_type || 'Government ID';
-            document.getElementById('adm-usr-kyc-docnum').innerText = u.kyc_document_number || '—';
-            const docLink = document.getElementById('adm-usr-kyc-doclink');
-            if (docLink) docLink.href = u.kyc_document_front_url || u.kyc_document_back_url || '#';
-          } else {
-            docBox.style.display = 'none';
+    // Populate KYC Document review box
+    const docBox = document.getElementById('adm-usr-kyc-doc-box');
+    if (docBox) {
+      if (u.kyc_document_front_url || u.kyc_document_back_url) {
+        docBox.style.display = 'block';
+        const docImgWrap = document.getElementById('adm-usr-kyc-img-wrap');
+        if (docImgWrap) {
+          docImgWrap.innerHTML = '';
+          if (u.kyc_document_front_url) {
+            docImgWrap.innerHTML += `<img src="${u.kyc_document_front_url}" alt="KYC Front" style="width: 100%; height: 100%; object-fit: cover; margin-bottom: 4px;" onclick="openLightbox('${u.kyc_document_front_url}')">`;
+          }
+          if (u.kyc_document_back_url) {
+            docImgWrap.innerHTML += `<img src="${u.kyc_document_back_url}" alt="KYC Back" style="width: 100%; height: 100%; object-fit: cover;" onclick="openLightbox('${u.kyc_document_back_url}')">`;
           }
         }
+        document.getElementById('adm-usr-kyc-doctype').innerText = u.kyc_document_type || 'Government ID';
+        document.getElementById('adm-usr-kyc-docnum').innerText = u.kyc_document_number || '—';
+        const docLink = document.getElementById('adm-usr-kyc-doclink');
+        if (docLink) docLink.href = u.kyc_document_front_url || u.kyc_document_back_url || '#';
+      } else {
+        docBox.style.display = 'none';
+      }
+    }
 
     openModal('modal-admin-manage-user');
   } catch (err) {
@@ -2449,7 +2450,7 @@ async function openAdminTicketModal(ticketId) {
     document.getElementById('adm-thread-ticket-subject').innerText = tkt.subject;
     document.getElementById('adm-thread-ticket-user').innerText = `From: ${tkt.user_email}`;
     document.getElementById('adm-thread-ticket-status').innerText = tkt.status;
-    document.getElementById('adm-thread-ticket-status').className = `badge badge-${tkt.status.toLowerCase().replace('_','-')}`;
+    document.getElementById('adm-thread-ticket-status').className = `badge badge-${tkt.status.toLowerCase().replace('_', '-')}`;
     document.getElementById('adm-thread-ticket-date').innerText = new Date(tkt.created_at).toLocaleString();
     document.getElementById('adm-thread-new-status').value = tkt.status;
     document.getElementById('adm-thread-reply-message').value = '';
