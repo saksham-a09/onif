@@ -22,6 +22,10 @@ let state = {
     TRC20_QR: '',
   },
   apiConnected: false,
+  pagination: {
+    team: { next: null, previous: null, count: 0 },
+    adminUsers: { next: null, previous: null, count: 0 }
+  },
 };
 
 // Initialize Application on Page Load
@@ -266,6 +270,9 @@ async function loadAllAPIData() {
     state.plans = Array.isArray(plansData) ? plansData : (plansData.results || []);
     state.ledger = Array.isArray(ledgerData) ? ledgerData : (ledgerData.results || []);
     state.team = Array.isArray(teamData) ? teamData : (teamData.results || []);
+    if (teamData && !Array.isArray(teamData)) {
+      state.pagination.team = { next: teamData.next, previous: teamData.previous, count: teamData.count };
+    }
     state.commissions = Array.isArray(commData) ? commData : (commData.results || []);
     state.deposits = Array.isArray(depositsData) ? depositsData : (depositsData.results || []);
     state.withdrawals = Array.isArray(withdrawalsData) ? withdrawalsData : (withdrawalsData.results || []);
@@ -632,6 +639,57 @@ function renderWithdrawalsTable() {
   });
 }
 
+async function loadTeamData(overrideUrl = null) {
+  let url = overrideUrl || '/referrals/team/';
+  try {
+    const data = await apiCall(url);
+    const teamData = Array.isArray(data) ? data : (data.results || []);
+    if (data && !Array.isArray(data)) {
+      state.pagination.team = { next: data.next, previous: data.previous, count: data.count };
+    } else {
+      state.pagination.team = { next: null, previous: null, count: teamData.length };
+    }
+    state.team = teamData;
+    renderTeamTable();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+function renderTeamTable() {
+  const teamTbody = document.getElementById('referral-team-tbody');
+  if (!teamTbody) return;
+  teamTbody.innerHTML = '';
+
+  if (state.team.length === 0) {
+    teamTbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="padding: 0;">
+          <div class="empty-state">
+            <div class="empty-state-title">No Team Members Yet</div>
+            <div class="empty-state-desc">Share your referral link to build your team and unlock up to 5 commission levels!</div>
+          </div>
+        </td>
+      </tr>
+    `;
+  } else {
+    state.team.forEach(m => {
+      const dateJoined = m.date_joined ? new Date(m.date_joined).toLocaleDateString() : 'N/A';
+      teamTbody.innerHTML += `
+        <tr>
+          <td><b>${m.email}</b></td>
+          <td>${m.username || 'N/A'}</td>
+          <td style="font-size: 12px; color: var(--text-muted);">${dateJoined}</td>
+          <td><span class="badge badge-approved">Direct (Level 1)</span></td>
+        </tr>
+      `;
+    });
+  }
+  if (state.pagination && state.pagination.team) {
+    renderPaginationControls('referral-team-pagination', state.pagination.team, loadTeamData);
+  }
+}
+
 function renderReferralView() {
   document.getElementById('ref-summary-direct').innerText = `$${Number(state.wallet.total_direct_income || 0).toFixed(2)}`;
   document.getElementById('ref-summary-roi').innerText = `$${Number(state.wallet.total_referral_income || 0).toFixed(2)}`;
@@ -662,33 +720,7 @@ function renderReferralView() {
   });
 
   // Downline Team Table
-  const teamTbody = document.getElementById('referral-team-tbody');
-  teamTbody.innerHTML = '';
-
-  if (state.team.length === 0) {
-    teamTbody.innerHTML = `
-      <tr>
-        <td colspan="4" style="padding: 0;">
-          <div class="empty-state">
-            <div class="empty-state-title">No Team Members Yet</div>
-            <div class="empty-state-desc">Share your referral link to build your team and unlock up to 5 commission levels!</div>
-          </div>
-        </td>
-      </tr>
-    `;
-  } else {
-    state.team.forEach(m => {
-      const dateJoined = m.date_joined ? new Date(m.date_joined).toLocaleDateString() : 'N/A';
-      teamTbody.innerHTML += `
-        <tr>
-          <td><b>${m.email}</b></td>
-          <td>${m.username || 'N/A'}</td>
-          <td style="font-size: 12px; color: var(--text-muted);">${dateJoined}</td>
-          <td><span class="badge badge-approved">Direct (Level 1)</span></td>
-        </tr>
-      `;
-    });
-  }
+  renderTeamTable();
 
   // Commissions Table
   const commTbody = document.getElementById('referral-commissions-tbody');
@@ -1875,26 +1907,81 @@ function renderAdminWithdrawals(withdrawals) {
   });
 }
 
+// ─── Pagination Utilities ───
+function formatApiUrl(url) {
+  if (!url) return null;
+  if (url.startsWith('http')) {
+    const urlObj = new URL(url);
+    let path = urlObj.pathname + urlObj.search;
+    if (path.startsWith(API_BASE)) {
+      path = path.substring(API_BASE.length);
+    }
+    return path;
+  }
+  return url;
+}
+
+function renderPaginationControls(containerId, paginationState, loadFunction) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  if (!paginationState.next && !paginationState.previous) {
+    container.innerHTML = '';
+    return;
+  }
+
+  let pageInfo = `Total: ${paginationState.count} items`;
+  
+  container.innerHTML = `
+    <div class="pagination-info">${pageInfo}</div>
+    <button class="pagination-btn" id="${containerId}-prev" ${!paginationState.previous ? 'disabled' : ''}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M15 18l-6-6 6-6"/></svg> Previous
+    </button>
+    <button class="pagination-btn" id="${containerId}-next" ${!paginationState.next ? 'disabled' : ''}>
+      Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px;"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  `;
+  
+  const prevBtn = document.getElementById(`${containerId}-prev`);
+  const nextBtn = document.getElementById(`${containerId}-next`);
+  
+  if (prevBtn && paginationState.previous) {
+    prevBtn.onclick = () => loadFunction(formatApiUrl(paginationState.previous));
+  }
+  if (nextBtn && paginationState.next) {
+    nextBtn.onclick = () => loadFunction(formatApiUrl(paginationState.next));
+  }
+}
+
 // ─── 4. Admin User Management ───
 function filterAdminUsers() {
   loadAdminUsers();
 }
 
-async function loadAdminUsers() {
-  const roleFilter = document.getElementById('adm-usr-filter-role')?.value || '';
-  const kycFilter = document.getElementById('adm-usr-filter-kyc')?.value || '';
-  const search = document.getElementById('adm-usr-search')?.value.trim() || '';
+async function loadAdminUsers(overrideUrl = null) {
+  let url = overrideUrl;
+  if (typeof url !== 'string') {
+    const roleFilter = document.getElementById('adm-usr-filter-role')?.value || '';
+    const kycFilter = document.getElementById('adm-usr-filter-kyc')?.value || '';
+    const search = document.getElementById('adm-usr-search')?.value.trim() || '';
 
-  let url = `/admin-panel/users/?`;
-  if (roleFilter) url += `&role=${encodeURIComponent(roleFilter)}`;
-  if (kycFilter) url += `&kyc_status=${encodeURIComponent(kycFilter)}`;
-  if (search) url += `&search=${encodeURIComponent(search)}`;
+    url = `/admin-panel/users/?`;
+    if (roleFilter) url += `&role=${encodeURIComponent(roleFilter)}`;
+    if (kycFilter) url += `&kyc_status=${encodeURIComponent(kycFilter)}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+  }
 
   try {
     const data = await apiCall(url);
     const users = Array.isArray(data) ? data : (data.results || []);
+    if (data && !Array.isArray(data)) {
+      state.pagination.adminUsers = { next: data.next, previous: data.previous, count: data.count };
+    } else {
+      state.pagination.adminUsers = { next: null, previous: null, count: users.length };
+    }
     state.admin.users = users;
     renderAdminUsers(users);
+    renderPaginationControls('adm-users-pagination', state.pagination.adminUsers, loadAdminUsers);
   } catch (err) {
     showToast(err.message, true);
   }

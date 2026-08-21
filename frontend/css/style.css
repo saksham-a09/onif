@@ -2122,3 +2122,49 @@ body {
   flex-shrink: 0;
   margin-top: 1px;
 }
+
+/* ─── Pagination Controls ─────────────────────────────────────── */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line-light);
+}
+
+.pagination-controls .pagination-info {
+  font-size: 13px;
+  color: var(--mute);
+  font-family: var(--font-mono);
+}
+
+.pagination-controls .pagination-btn {
+  background: var(--glass-bg-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination-controls .pagination-btn:hover:not(:disabled) {
+  background: rgba(198, 153, 61, 0.15);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.pagination-controls .pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: transparent;
+  border-color: var(--line);
+  color: var(--mute);
+}
