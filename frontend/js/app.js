@@ -186,8 +186,8 @@ function initAuthCanvas() {
     candles.forEach((c,i) => {
       const x = i * (candleW + gapW);
       const up = c.close >= c.open;
-      ctx.strokeStyle = up ? 'rgba(63,203,140,0.5)' : 'rgba(228,105,78,0.45)';
-      ctx.fillStyle = up ? 'rgba(63,203,140,0.22)' : 'rgba(228,105,78,0.20)';
+      ctx.strokeStyle = up ? 'rgba(198, 153, 61, 0.65)' : 'rgba(228,105,78,0.45)';
+      ctx.fillStyle = up ? 'rgba(198, 153, 61, 0.3)' : 'rgba(228,105,78,0.20)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x + candleW/2, scaleY(c.high));

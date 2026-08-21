@@ -349,8 +349,8 @@ function formatNumber(n, decimals) {
       const yLow = getY(c.low);
       const isUp = c.close >= c.open;
 
-      ctx.strokeStyle = isUp ? 'rgba(52, 211, 153, 0.35)' : 'rgba(248, 113, 113, 0.35)';
-      ctx.fillStyle = isUp ? 'rgba(52, 211, 153, 0.25)' : 'rgba(248, 113, 113, 0.25)';
+      ctx.strokeStyle = isUp ? 'rgba(198, 153, 61, 0.45)' : 'rgba(248, 113, 113, 0.35)';
+      ctx.fillStyle = isUp ? 'rgba(198, 153, 61, 0.3)' : 'rgba(248, 113, 113, 0.25)';
 
       // Wick
       ctx.beginPath();
@@ -365,15 +365,15 @@ function formatNumber(n, decimals) {
 
       // Volume histogram bar at bottom
       const volHeight = Math.min(36, (c.volume / 120) * 32);
-      ctx.fillStyle = isUp ? 'rgba(52, 211, 153, 0.18)' : 'rgba(248, 113, 113, 0.18)';
+      ctx.fillStyle = isUp ? 'rgba(198, 153, 61, 0.22)' : 'rgba(248, 113, 113, 0.18)';
       ctx.fillRect(cx - candleWidth / 2, height - volHeight - 5, candleWidth, volHeight);
     }
 
     // 3. Draw Area Fill Under Glowing Trend Line
     const grad = ctx.createLinearGradient(0, 0, 0, height);
-    grad.addColorStop(0, 'rgba(250, 204, 21, 0.28)');
-    grad.addColorStop(0.6, 'rgba(250, 204, 21, 0.06)');
-    grad.addColorStop(1, 'rgba(250, 204, 21, 0)');
+    grad.addColorStop(0, 'rgba(198, 153, 61, 0.28)');
+    grad.addColorStop(0.6, 'rgba(198, 153, 61, 0.06)');
+    grad.addColorStop(1, 'rgba(198, 153, 61, 0)');
 
     ctx.beginPath();
     ctx.moveTo(0, height);
@@ -407,9 +407,9 @@ function formatNumber(n, decimals) {
       ctx.quadraticCurveTo(x0, y0, mx, (y0 + y1) / 2);
     }
     ctx.lineTo(lastX, lastY);
-    ctx.strokeStyle = '#FACC15';
+    ctx.strokeStyle = '#C6993D';
     ctx.lineWidth = 2.5;
-    ctx.shadowColor = '#FACC15';
+    ctx.shadowColor = '#C6993D';
     ctx.shadowBlur = 12;
     ctx.stroke();
     ctx.shadowBlur = 0; // reset
@@ -425,12 +425,12 @@ function formatNumber(n, decimals) {
 
       ctx.beginPath();
       ctx.arc(sx, sy, ringPulse, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(250, 204, 21, ${ringAlpha})`;
+      ctx.strokeStyle = `rgba(198, 153, 61, ${ringAlpha})`;
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // Strategy Marker Pill
-      ctx.fillStyle = 'rgba(250, 204, 21, 0.95)';
+      ctx.fillStyle = 'rgba(198, 153, 61, 0.95)';
       ctx.font = 'bold 9px "IBM Plex Mono", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(s.label, sx, sy - 14);
@@ -440,20 +440,20 @@ function formatNumber(n, decimals) {
     const pulseSize = 4 + Math.sin(time / 200) * 2;
     ctx.beginPath();
     ctx.arc(lastX, lastY, pulseSize + 6, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(250, 204, 21, 0.25)';
+    ctx.fillStyle = 'rgba(198, 153, 61, 0.25)';
     ctx.fill();
 
     ctx.beginPath();
     ctx.arc(lastX, lastY, 4.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#FDE047';
-    ctx.shadowColor = '#FDE047';
+    ctx.fillStyle = '#DFBD69';
+    ctx.shadowColor = '#DFBD69';
     ctx.shadowBlur = 14;
     ctx.fill();
     ctx.shadowBlur = 0;
 
     // Horizontal guide line for current price
     ctx.setLineDash([3, 4]);
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.5)';
+    ctx.strokeStyle = 'rgba(198, 153, 61, 0.5)';
     ctx.beginPath();
     ctx.moveTo(0, lastY);
     ctx.lineTo(width, lastY);
@@ -461,7 +461,7 @@ function formatNumber(n, decimals) {
     ctx.setLineDash([]); // reset
 
     // Current Price HUD Tag on Right Margin
-    ctx.fillStyle = '#FACC15';
+    ctx.fillStyle = '#C6993D';
     ctx.fillRect(width - 78, lastY - 10, 76, 20);
     ctx.fillStyle = '#030507';
     ctx.font = 'bold 10px "IBM Plex Mono", monospace';
@@ -470,7 +470,7 @@ function formatNumber(n, decimals) {
 
     // 7. Scanning Laser Beam Effect
     scanlineX = (scanlineX + 1.2) % width;
-    ctx.strokeStyle = 'rgba(52, 211, 153, 0.15)';
+    ctx.strokeStyle = 'rgba(198, 153, 61, 0.2)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(scanlineX, 0);

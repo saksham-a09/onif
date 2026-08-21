@@ -21,17 +21,17 @@
   --text:        #F1F3F7;
   --mute:        #8A94A4;
 
-  /* Emerald (Swapped to Gold for Crypto Advertising Strategy) */
-  --emerald:       #FACC15;
-  --emerald-soft:  #FDE047;
-  --emerald-deep:  #EAB308;
-  --emerald-glow:  rgba(250, 204, 21, 0.18);
-  --emerald-glow-strong: rgba(250, 204, 21, 0.32);
+  /* Authentic Gold Accent Palette */
+  --emerald:       #C6993D;
+  --emerald-soft:  #DFBD69;
+  --emerald-deep:  #A27B2C;
+  --emerald-glow:  rgba(198, 153, 61, 0.18);
+  --emerald-glow-strong: rgba(198, 153, 61, 0.32);
 
-  /* Gold (Swapped to Emerald) */
-  --gold:        #10B981;
-  --gold-soft:   #34D399;
-  --gold-glow:   rgba(16, 185, 129, 0.18);
+  /* Secondary Gold Accents */
+  --gold:        #C6993D;
+  --gold-soft:   #DFBD69;
+  --gold-glow:   rgba(198, 153, 61, 0.18);
 
   /* Typography */
   --font-heading: 'Fraunces', Georgia, serif;
@@ -314,7 +314,7 @@ section + section {
   width: 60vw;
   height: 60vw;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(250,204,21,0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(198, 153, 61, 0.05) 0%, transparent 70%);
   pointer-events: none;
   animation: hero-glow-pulse 8s ease-in-out infinite alternate;
 }
@@ -327,7 +327,7 @@ section + section {
   width: 50vw;
   height: 50vw;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(198, 153, 61, 0.04) 0%, transparent 70%);
   pointer-events: none;
   animation: hero-glow-pulse 10s ease-in-out infinite alternate-reverse;
 }
@@ -451,10 +451,10 @@ section + section {
   position: relative;
   border-radius: var(--radius);
   background: rgba(8, 12, 18, 0.78);
-  border: 1px solid rgba(250, 204, 21, 0.25);
+  border: 1px solid rgba(198, 153, 61, 0.25);
   box-shadow:
     0 24px 64px -12px rgba(0, 0, 0, 0.85),
-    0 0 35px rgba(250, 204, 21, 0.08),
+    0 0 35px rgba(198, 153, 61, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
@@ -463,10 +463,10 @@ section + section {
 }
 
 .hero-motion-cockpit:hover {
-  border-color: rgba(250, 204, 21, 0.4);
+  border-color: rgba(198, 153, 61, 0.4);
   box-shadow:
     0 32px 72px -10px rgba(0, 0, 0, 0.9),
-    0 0 45px rgba(250, 204, 21, 0.14),
+    0 0 45px rgba(198, 153, 61, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
@@ -493,8 +493,8 @@ section + section {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(250, 204, 21, 0.1);
-  border: 1px solid rgba(250, 204, 21, 0.25);
+  background: rgba(198, 153, 61, 0.1);
+  border: 1px solid rgba(198, 153, 61, 0.25);
   padding: 4px 10px;
   border-radius: 6px;
 }
@@ -518,7 +518,7 @@ section + section {
   font-size: 10px;
   color: var(--emerald-soft);
   font-weight: 600;
-  background: rgba(250, 204, 21, 0.15);
+  background: rgba(198, 153, 61, 0.15);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -548,9 +548,9 @@ section + section {
 }
 
 .live-change-badge.positive {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34D399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(198, 153, 61, 0.15);
+  color: #DFBD69;
+  border: 1px solid rgba(198, 153, 61, 0.3);
 }
 
 .cockpit-status-pill {
@@ -678,7 +678,7 @@ section + section {
 }
 
 .cockpit-stat-item .highlight-green {
-  color: #34D399;
+  color: var(--emerald-soft);
 }
 
 .cockpit-stat-item .sub-label {
@@ -696,8 +696,8 @@ section + section {
   padding: 10px 16px;
   border-radius: var(--radius-sm);
   background: rgba(11, 16, 24, 0.85);
-  border: 1px solid rgba(250, 204, 21, 0.3);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(198, 153, 61, 0.3);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(198, 153, 61, 0.12);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 10;
@@ -713,8 +713,8 @@ section + section {
 .hero-float-hud.badge-bottom {
   bottom: -22px;
   left: -20px;
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.12);
+  border-color: rgba(198, 153, 61, 0.3);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(198, 153, 61, 0.12);
   animation: float-bottom 6s ease-in-out infinite alternate;
 }
 
@@ -737,7 +737,7 @@ section + section {
 }
 
 .hud-badge-icon.pulse-emerald {
-  color: #34D399;
+  color: var(--emerald-soft);
   animation: pulse-dot 1.4s ease-in-out infinite;
 }
 
@@ -797,7 +797,7 @@ section + section {
   position: absolute;
   inset: 0;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(250,204,21,0.04) 100%);
+  background: linear-gradient(135deg, rgba(198, 153, 61, 0.06) 0%, rgba(198, 153, 61, 0.04) 100%);
 }
 
 .stat-item {
@@ -886,7 +886,7 @@ section + section {
   width: 56px; height: 56px;
   border-radius: 16px;
   background: var(--emerald-glow);
-  border: 1px solid rgba(16,185,129,0.25);
+  border: 1px solid rgba(198, 153, 61, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -936,19 +936,19 @@ section + section {
 
 /* Featured plan — gold highlight */
 .plan-card.featured {
-  border: 1px solid rgba(250,204,21,0.4);
-  background: linear-gradient(160deg, rgba(21,28,37,0.7) 0%, rgba(250,204,21,0.06) 100%);
+  border: 1px solid rgba(198, 153, 61, 0.4);
+  background: linear-gradient(160deg, rgba(21,28,37,0.7) 0%, rgba(198, 153, 61, 0.06) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(250,204,21,0.25),
+    inset 0 1px 0 rgba(198, 153, 61, 0.25),
     0 20px 48px rgba(0,0,0,0.55),
-    0 0 60px rgba(250,204,21,0.06);
+    0 0 60px rgba(198, 153, 61, 0.06);
 }
 
 .plan-card.featured:hover {
   box-shadow:
-    inset 0 1px 0 rgba(250,204,21,0.3),
+    inset 0 1px 0 rgba(198, 153, 61, 0.3),
     0 28px 60px rgba(0,0,0,0.6),
-    0 0 80px rgba(250,204,21,0.1);
+    0 0 80px rgba(198, 153, 61, 0.1);
 }
 
 .plan-featured-badge {
@@ -1079,7 +1079,7 @@ section + section {
   width: 60px; height: 60px;
   border-radius: 18px;
   background: var(--emerald-glow);
-  border: 1px solid rgba(16,185,129,0.2);
+  border: 1px solid rgba(198, 153, 61, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1128,7 +1128,7 @@ section + section {
 }
 
 .faq-item.open {
-  border-color: rgba(16,185,129,0.3);
+  border-color: rgba(198, 153, 61, 0.3);
 }
 
 .faq-question {
@@ -1166,7 +1166,7 @@ section + section {
   transform: rotate(45deg);
   color: var(--emerald-soft);
   background: var(--emerald-glow);
-  border-color: rgba(16,185,129,0.3);
+  border-color: rgba(198, 153, 61, 0.3);
 }
 
 .faq-answer {
@@ -1192,12 +1192,12 @@ section + section {
   overflow: hidden;
   background: linear-gradient(135deg,
     rgba(14,19,25,0.7) 0%,
-    rgba(16,185,129,0.08) 50%,
-    rgba(250,204,21,0.05) 100%);
-  border: 1px solid rgba(16,185,129,0.2);
+    rgba(198, 153, 61, 0.08) 50%,
+    rgba(198, 153, 61, 0.05) 100%);
+  border: 1px solid rgba(198, 153, 61, 0.2);
   box-shadow:
     inset 0 1px 0 var(--line-light),
-    0 0 120px rgba(16,185,129,0.06),
+    0 0 120px rgba(198, 153, 61, 0.06),
     0 24px 64px rgba(0,0,0,0.5);
 }
 
@@ -1208,7 +1208,7 @@ section + section {
   transform: translateX(-50%);
   width: 600px; height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(198, 153, 61, 0.07) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -1292,7 +1292,7 @@ footer {
 
 .social-btn:hover {
   color: var(--emerald-soft);
-  border-color: rgba(16,185,129,0.3);
+  border-color: rgba(198, 153, 61, 0.3);
   background: var(--emerald-glow);
 }
 
@@ -1453,8 +1453,8 @@ footer {
 }
 
 .review-card:hover {
-  border-color: rgba(250,204,21,0.3);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 20px rgba(250,204,21,0.08), inset 0 1px 0 var(--line-light);
+  border-color: rgba(198, 153, 61, 0.3);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 20px rgba(198, 153, 61, 0.08), inset 0 1px 0 var(--line-light);
 }
 
 .review-stars {
@@ -1524,7 +1524,7 @@ footer {
   padding: 2px 8px;
   border-radius: 4px;
   background: var(--emerald-glow);
-  border: 1px solid rgba(250,204,21,0.25);
+  border: 1px solid rgba(198, 153, 61, 0.25);
   color: var(--emerald-soft);
   letter-spacing: 0.06em;
   white-space: nowrap;
