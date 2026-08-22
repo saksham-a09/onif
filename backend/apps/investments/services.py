@@ -90,6 +90,27 @@ def activate_investment(investment: Investment, admin_user) -> None:
     wallet.total_invested += investment.amount
     wallet.save(update_fields=['total_deposited', 'total_invested', 'updated_at'])
 
+    # Update 5-level ancestors team_total_investment
+    if investment.user.parent:
+        from django.db.models import F
+        current_parent = investment.user.parent
+        ancestor_ids = []
+        for _ in range(5):
+            if current_parent:
+                ancestor_ids.append(current_parent.id)
+                current_parent = current_parent.parent
+            else:
+                break
+        
+        if ancestor_ids:
+            # Ensure wallets exist
+            for aid in ancestor_ids:
+                Wallet.objects.get_or_create(user_id=aid)
+            
+            Wallet.objects.filter(user_id__in=ancestor_ids).update(
+                team_total_investment=F('team_total_investment') + investment.amount
+            )
+
     # Audit trail — balance_before == balance_after (no spendable change)
     WalletTransaction.objects.create(
         wallet=wallet,

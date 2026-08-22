@@ -12,6 +12,7 @@ from .admin_views import (
     AdminUserListView,
     AdminUserDetailView,
     AdminUserBalanceAdjustView,
+    AdminUserTeamStatsView,
     AdminTicketListView,
     AdminTicketDetailView,
     AdminTicketReplyView,
@@ -41,9 +42,10 @@ urlpatterns = [
     path('withdrawals/<uuid:pk>/approve/', AdminWithdrawalApproveView.as_view(), name='withdrawals_approve'),
     path('withdrawals/<uuid:pk>/reject/', AdminWithdrawalRejectView.as_view(), name='withdrawals_reject'),
 
-    # Users & Balance Adjustments
+    # Users & Balance Adjustments & Team Network
     path('users/', AdminUserListView.as_view(), name='users_list'),
     path('users/<uuid:pk>/', AdminUserDetailView.as_view(), name='users_detail'),
+    path('users/<uuid:pk>/team/', AdminUserTeamStatsView.as_view(), name='users_team'),
     path('users/<uuid:pk>/adjust-balance/', AdminUserBalanceAdjustView.as_view(), name='users_adjust_balance'),
 
     # Support Tickets

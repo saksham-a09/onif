@@ -65,6 +65,32 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         user.set_password(password)
         user.save()
+
+        # Create wallet immediately
+        from apps.wallet.models import Wallet
+        Wallet.objects.get_or_create(user=user)
+
+        # Update 5-level ancestors team_total_members
+        if user.parent:
+            from django.db.models import F
+            current_parent = user.parent
+            ancestor_ids = []
+            for _ in range(5):
+                if current_parent:
+                    ancestor_ids.append(current_parent.id)
+                    current_parent = current_parent.parent
+                else:
+                    break
+            
+            if ancestor_ids:
+                # Ensure all ancestors have wallets before updating
+                for aid in ancestor_ids:
+                    Wallet.objects.get_or_create(user_id=aid)
+                
+                Wallet.objects.filter(user_id__in=ancestor_ids).update(
+                    team_total_members=F('team_total_members') + 1
+                )
+
         return user
 
 

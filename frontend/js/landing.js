@@ -38,7 +38,7 @@
         heroSecondary.href = 'app.html';
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 })();
 
 /* ── 2. Smooth Anchor Navigation ──────────────────────────── */
@@ -91,7 +91,7 @@
         if (scrolled < heroH) {
           const pct = scrolled / heroH;
           heroCopy.style.transform = `translateY(${pct * 40}px)`;
-          heroCopy.style.opacity   = String(1 - pct * 0.6);
+          heroCopy.style.opacity = String(1 - pct * 0.6);
           heroVisual.style.transform = `translateY(${pct * 20}px)`;
         }
         ticking = false;
@@ -106,19 +106,19 @@
 
 /* ── 4. Number Count-Up Animation ─────────────────────────── */
 function animateCount(el) {
-  const target    = parseFloat(el.dataset.target);
-  const prefix    = el.dataset.prefix  || '';
-  const suffix    = el.dataset.suffix  || '';
-  const decimals  = parseInt(el.dataset.decimals || '0', 10);
-  const duration  = parseInt(el.dataset.duration || '2000', 10);
-  const start     = performance.now();
+  const target = parseFloat(el.dataset.target);
+  const prefix = el.dataset.prefix || '';
+  const suffix = el.dataset.suffix || '';
+  const decimals = parseInt(el.dataset.decimals || '0', 10);
+  const duration = parseInt(el.dataset.duration || '2000', 10);
+  const start = performance.now();
 
   const easeOut = t => 1 - Math.pow(1 - t, 3);
 
   const tick = now => {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    const current  = target * easeOut(progress);
+    const current = target * easeOut(progress);
 
     el.textContent = prefix + formatNumber(current, decimals) + suffix;
 
@@ -157,7 +157,7 @@ function formatNumber(n, decimals) {
   const items = document.querySelectorAll('.faq-item');
 
   items.forEach(item => {
-    const btn    = item.querySelector('.faq-question');
+    const btn = item.querySelector('.faq-question');
     const answer = item.querySelector('.faq-answer');
     if (!btn || !answer) return;
 
@@ -183,7 +183,7 @@ function formatNumber(n, decimals) {
 /* ── 6. Mobile Menu Toggle ────────────────────────────────── */
 (function initMobileMenu() {
   const toggle = document.getElementById('nav-mobile-toggle');
-  const menu   = document.getElementById('nav-mobile-menu');
+  const menu = document.getElementById('nav-mobile-menu');
   if (!toggle || !menu) return;
 
   toggle.addEventListener('click', () => {
@@ -272,9 +272,9 @@ function formatNumber(n, decimals) {
 
     // Set curated strategy execution events at key breakout points
     strategyMilestones = [
-      { index: 8, label: '⚡ ARB EXECUTION', price: dataPoints[8], alpha: 0.85, radius: 2 },
-      { index: 18, label: '⚡ ALPHA HARVEST', price: dataPoints[18], alpha: 0.9, radius: 2 },
-      { index: 28, label: '⚡ PROFIT SHARE', price: dataPoints[28], alpha: 0.95, radius: 2 }
+      { index: 8, label: 'ARB EXECUTION', price: dataPoints[8], alpha: 0.85, radius: 2 },
+      { index: 18, label: 'ALPHA HARVEST', price: dataPoints[18], alpha: 0.9, radius: 2 },
+      { index: 28, label: 'PROFIT SHARE', price: dataPoints[28], alpha: 0.95, radius: 2 }
     ];
 
     if (priceEl) {

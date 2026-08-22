@@ -2035,7 +2035,7 @@ function renderAdminUsers(users) {
   tbody.innerHTML = '';
 
   if (users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:32px; color:var(--mute);">No users match the search criteria.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:32px; color:var(--mute);">No users match the search criteria.</td></tr>`;
     return;
   }
 
@@ -2051,20 +2051,31 @@ function renderAdminUsers(users) {
           <div style="display:flex; align-items:center; gap:10px;">
             <div class="user-avatar" style="width:32px; height:32px; font-size:13px;">${initial}</div>
             <div>
-              <div style="font-weight:600; color:var(--text);">${u.full_name || u.email}</div>
+              <div style="font-weight:600; color:var(--text); display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+                <span>${u.full_name || u.email}</span>
+                <span class="badge ${roleBadge}" style="font-size:9px; padding:2px 6px; line-height:1.2;">${u.role}</span>
+                <span class="badge ${kycBadge}" style="font-size:9px; padding:2px 6px; line-height:1.2;">${u.kyc_status}</span>
+                <span class="badge badge-approved" style="font-size:9px; padding:2px 6px; line-height:1.2;">Level ${u.active_level || 0}</span>
+              </div>
               <div style="font-size:11px; color:var(--mute); font-family:var(--font-mono);">${u.email}</div>
             </div>
           </div>
         </td>
-        <td><span class="badge ${roleBadge}">${u.role}</span></td>
-        <td><span class="badge ${kycBadge}">${u.kyc_status}</span></td>
         <td style="font-family:var(--font-mono); font-weight:700; color:var(--gold);">$${Number(u.wallet_balance || 0).toFixed(2)}</td>
         <td style="font-family:var(--font-mono);">$${Number(u.total_invested || 0).toFixed(2)} (${u.active_investments_count || 0})</td>
-        <td><span class="badge badge-approved" style="font-size:10px;">Level ${u.active_level || 0}</span></td>
+        <td style="font-family:var(--font-mono);">$${Number(u.total_withdrawn || 0).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); color:var(--success); font-weight:600;">$${Number(u.total_roi_earned || 0).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); color:var(--accent); font-weight:600;">$${Number(u.total_direct_income || 0).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); color:var(--text); font-weight:600;">$${Number(u.total_referral_income || 0).toFixed(2)}</td>
+        <td style="font-family:var(--font-mono); font-size:12px;">
+          <span style="font-weight:700; color:var(--text);">${u.team_total_members || 0}</span> <span style="color:var(--mute); font-size:11px;">users</span><br>
+          <span style="color:var(--gold); font-size:11px;">$${Number(u.team_total_investment || 0).toFixed(2)}</span>
+        </td>
         <td style="font-size:12px; color:var(--mute);">${u.parent_email || 'Root (None)'}</td>
         <td style="font-size:12px; color:var(--mute);">${dateStr}</td>
-        <td style="text-align:right;">
-          <button class="btn btn-sm btn-secondary" onclick="openManageUserModal('${u.id}')">Manage</button>
+        <td style="text-align:right; white-space:nowrap;">
+          <button class="btn btn-sm btn-secondary" onclick="openAdminUserTeamModal('${u.id}')" style="margin-right:6px; font-size:11px; padding:4px 9px;">Team</button>
+          <button class="btn btn-sm btn-secondary" onclick="openManageUserModal('${u.id}')" style="font-size:11px; padding:4px 9px;">Manage</button>
         </td>
       </tr>
     `;
@@ -2513,6 +2524,54 @@ async function openManageUserModal(userId) {
     openModal('modal-admin-manage-user');
   } catch (err) {
     showToast(err.message, true);
+  }
+}
+
+// 5-Level Team Details Modal for Admin
+async function openAdminUserTeamModal(userId) {
+  try {
+    const data = await apiCall(`/admin-panel/users/${userId}/team/`);
+    const u = data.user;
+    const summary = data.summary;
+    const levels = data.levels || [];
+
+    document.getElementById('adm-team-modal-name').innerText = `Team Network: ${u.full_name || u.email}`;
+    document.getElementById('adm-team-modal-sub').innerText = `${u.email} • Ref Code: ${u.referral_code || 'N/A'} • Active Level: ${u.active_level}`;
+
+    document.getElementById('adm-team-stat-members').innerText = summary.total_team_members;
+    document.getElementById('adm-team-stat-investment').innerText = `$${Number(summary.total_team_investment || 0).toFixed(2)}`;
+    document.getElementById('adm-team-stat-direct').innerText = `$${Number(summary.total_direct_income || 0).toFixed(2)}`;
+    document.getElementById('adm-team-stat-roi').innerText = `$${Number(summary.total_referral_roi_income || 0).toFixed(2)}`;
+
+    const tbody = document.getElementById('adm-team-levels-tbody');
+    tbody.innerHTML = '';
+
+    const rates = [
+      { direct: '2.0%', roi: '1.5%' },
+      { direct: '2.0%', roi: '1.5%' },
+      { direct: '2.0%', roi: '1.5%' },
+      { direct: '2.0%', roi: '1.5%' },
+      { direct: '2.0%', roi: '1.5%' },
+    ];
+
+    levels.forEach(lvl => {
+      const idx = lvl.level - 1;
+      const rate = rates[idx] || { direct: '2.0%', roi: '1.5%' };
+      tbody.innerHTML += `
+        <tr>
+          <td><span class="badge badge-approved" style="font-size:11px;">Level ${lvl.level}</span></td>
+          <td style="font-size:12px; color:var(--mute);">Direct: ${rate.direct} | ROI: ${rate.roi}</td>
+          <td style="font-family:var(--font-mono); font-weight:700; color:var(--text);">${lvl.total_refers}</td>
+          <td style="font-family:var(--font-mono); font-weight:600; color:var(--gold);">$${Number(lvl.total_investment || 0).toFixed(2)}</td>
+          <td style="font-family:var(--font-mono); color:var(--accent);">$${Number(lvl.direct_income || 0).toFixed(2)}</td>
+          <td style="font-family:var(--font-mono); color:var(--text);">$${Number(lvl.roi_income || 0).toFixed(2)}</td>
+        </tr>
+      `;
+    });
+
+    openModal('modal-admin-user-team');
+  } catch (err) {
+    showToast(err.message || 'Failed to load team data', true);
   }
 }
 

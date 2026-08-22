@@ -1,5 +1,6 @@
 from decimal import Decimal
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 from rest_framework import serializers
 
 from apps.investments.models import Investment, Plan
@@ -17,6 +18,12 @@ class AdminUserListSerializer(serializers.ModelSerializer):
     parent_email = serializers.SerializerMethodField()
     wallet_balance = serializers.SerializerMethodField()
     total_invested = serializers.SerializerMethodField()
+    total_withdrawn = serializers.SerializerMethodField()
+    total_roi_earned = serializers.SerializerMethodField()
+    total_direct_income = serializers.SerializerMethodField()
+    total_referral_income = serializers.SerializerMethodField()
+    team_total_members = serializers.SerializerMethodField()
+    team_total_investment = serializers.SerializerMethodField()
     active_investments_count = serializers.SerializerMethodField()
     kyc_document_front_url = serializers.SerializerMethodField()
     kyc_document_back_url = serializers.SerializerMethodField()
@@ -30,7 +37,9 @@ class AdminUserListSerializer(serializers.ModelSerializer):
             'kyc_reviewed_at', 'kyc_rejection_reason',
             'is_email_verified',
             'referral_code', 'parent_email', 'active_level',
-            'wallet_balance', 'total_invested', 'active_investments_count',
+            'wallet_balance', 'total_invested', 'total_withdrawn', 'active_investments_count',
+            'total_roi_earned', 'total_direct_income', 'total_referral_income',
+            'team_total_members', 'team_total_investment',
             'date_joined', 'created_at',
         ]
 
@@ -63,6 +72,30 @@ class AdminUserListSerializer(serializers.ModelSerializer):
     def get_total_invested(self, obj) -> float:
         wallet = getattr(obj, 'wallet', None)
         return float(wallet.total_invested) if wallet else 0.0
+
+    def get_total_withdrawn(self, obj) -> float:
+        wallet = getattr(obj, 'wallet', None)
+        return float(wallet.total_withdrawn) if wallet else 0.0
+
+    def get_total_roi_earned(self, obj) -> float:
+        wallet = getattr(obj, 'wallet', None)
+        return float(wallet.total_roi_earned) if wallet else 0.0
+
+    def get_total_direct_income(self, obj) -> float:
+        wallet = getattr(obj, 'wallet', None)
+        return float(wallet.total_direct_income) if wallet else 0.0
+
+    def get_total_referral_income(self, obj) -> float:
+        wallet = getattr(obj, 'wallet', None)
+        return float(wallet.total_referral_income) if wallet else 0.0
+
+    def get_team_total_members(self, obj) -> int:
+        wallet = getattr(obj, 'wallet', None)
+        return wallet.team_total_members if wallet else 0
+
+    def get_team_total_investment(self, obj) -> float:
+        wallet = getattr(obj, 'wallet', None)
+        return float(wallet.team_total_investment) if wallet else 0.0
 
     def get_active_investments_count(self, obj) -> int:
         return obj.investments.filter(status=Investment.Status.ACTIVE).count()

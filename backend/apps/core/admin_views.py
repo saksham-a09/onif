@@ -2,6 +2,7 @@ import uuid
 from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.db import transaction as db_transaction
+from django.db import models
 from django.db.models import Sum, Q, Count
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
@@ -20,6 +21,7 @@ from apps.transactions.models import Withdrawal, Deposit
 from apps.wallet.models import Wallet, WalletTransaction
 from apps.wallet.services import credit_wallet, debit_wallet
 from apps.support.models import Ticket, TicketReply
+from apps.referrals.models import ReferralCommission
 from apps.core.models import PlatformSettings, AuditLog
 from apps.core.permissions import IsAdminRoleOrStaff, IsSuperAdminOnly
 from apps.core.admin_serializers import (
@@ -441,6 +443,95 @@ class AdminUserDetailView(generics.RetrieveUpdateAPIView):
         if 'kyc_status' in serializer.validated_data:
             instance.kyc_reviewed_at = timezone.now()
             instance.save(update_fields=['kyc_reviewed_at'])
+
+
+
+class AdminUserTeamStatsView(APIView):
+    """
+    GET /api/v1/admin-panel/users/{id}/team/
+    Returns 5-level team hierarchy details for an admin.
+    """
+    permission_classes = [IsAdminRoleOrStaff]
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        levels_data = []
+        
+        current_parents = [user.id]
+        total_members_all = 0
+        total_inv_all = Decimal('0.00')
+        total_dir_inc_all = Decimal('0.00')
+        total_roi_inc_all = Decimal('0.00')
+
+        for level in range(1, 6):
+            if current_parents:
+                level_users = list(User.objects.filter(parent_id__in=current_parents).values('id', 'email', 'first_name', 'last_name', 'username', 'created_at', 'active_level'))
+                level_user_ids = [u['id'] for u in level_users]
+            else:
+                level_users = []
+                level_user_ids = []
+
+            count = len(level_user_ids)
+            total_members_all += count
+
+            if level_user_ids:
+                total_inv = Investment.objects.filter(
+                    user_id__in=level_user_ids,
+                    status__in=[Investment.Status.ACTIVE, Investment.Status.COMPLETED]
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+            else:
+                total_inv = Decimal('0.00')
+
+            total_inv_all += total_inv
+
+            # Direct and ROI commission user earned from this level
+            level_commissions = ReferralCommission.objects.filter(user=user, level=level, is_paid=True)
+            
+            # Combine DIRECT and ROI aggregations into a single query
+            totals = level_commissions.aggregate(
+                dir_total=Sum('amount', filter=models.Q(commission_type=ReferralCommission.CommissionType.DIRECT)),
+                roi_total=Sum('amount', filter=models.Q(commission_type=ReferralCommission.CommissionType.ROI))
+            )
+            
+            dir_inc = totals['dir_total'] or Decimal('0.00')
+            roi_inc = totals['roi_total'] or Decimal('0.00')
+
+            total_dir_inc_all += dir_inc
+            total_roi_inc_all += roi_inc
+
+            levels_data.append({
+                'level': level,
+                'total_refers': count,
+                'total_investment': float(total_inv),
+                'direct_income': float(dir_inc),
+                'roi_income': float(roi_inc),
+                'members': [{
+                    'id': str(u['id']),
+                    'email': u['email'],
+                    'full_name': f"{u['first_name']} {u['last_name']}".strip() or u['email'],
+                    'created_at': u['created_at'].isoformat() if u['created_at'] else None,
+                    'active_level': u['active_level'],
+                } for u in level_users[:25]]
+            })
+
+            current_parents = level_user_ids
+
+        return Response({
+            'user': {
+                'id': str(user.id),
+                'email': user.email,
+                'full_name': user.full_name,
+                'active_level': user.active_level,
+                'referral_code': user.referral_code,
+            },
+            'summary': {
+                'total_team_members': total_members_all,
+                'total_team_investment': float(total_inv_all),
+                'total_direct_income': float(total_dir_inc_all),
+                'total_referral_roi_income': float(total_roi_inc_all),
+            },
+            'levels': levels_data
+        })
 
 
 

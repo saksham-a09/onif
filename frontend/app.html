@@ -76,8 +76,12 @@
       <div class="form-panel">
         <div class="form-wrap">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <a href="/" style="font-size: 12px; color: var(--mute); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mute)'">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Homepage
+            <a href="/"
+              style="font-size: 12px; color: var(--mute); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s;"
+              onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mute)'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg> Back to Homepage
             </a>
           </div>
           <img class="logo-img mobile-logo" src="img/logo-title.png" style="height: 110px; object-fit: contain;">
@@ -926,7 +930,9 @@
             </div>
           </div>
           <div class="filters-row" style="margin-bottom: 16px;">
-            <input type="text" id="referral-team-search" class="admin-search-input" placeholder="Search team by email or username..." onkeyup="debounceTeamSearch()" style="width: 100%; max-width: 400px;">
+            <input type="text" id="referral-team-search" class="admin-search-input"
+              placeholder="Search team by email or username..." onkeyup="debounceTeamSearch()"
+              style="width: 100%; max-width: 400px;">
           </div>
           <div class="table-responsive">
             <table class="custom-table">
@@ -1413,7 +1419,7 @@
               Refresh Telemetry
             </button>
             <button class="btn btn-sm btn-gold" onclick="openModal('modal-admin-trigger-roi')">
-              ⚡ Trigger Weekly ROI
+              Trigger Weekly ROI
             </button>
           </div>
         </div>
@@ -1715,11 +1721,13 @@
                 <thead>
                   <tr>
                     <th>User / Full Name</th>
-                    <th>Role</th>
-                    <th>KYC Status</th>
                     <th>Wallet Balance</th>
                     <th>Total Invested</th>
-                    <th>Level</th>
+                    <th>Total Withdrawn</th>
+                    <th>Total ROI</th>
+                    <th>Direct Income</th>
+                    <th>Referral ROI</th>
+                    <th>5-Level Team</th>
                     <th>Sponsor</th>
                     <th>Joined Date</th>
                     <th style="text-align: right;">Actions</th>
@@ -2755,6 +2763,67 @@
     </div>
   </div>
 
+  <!-- A4.5. Admin User 5-Level Team Modal -->
+  <div id="modal-admin-user-team" class="modal-backdrop">
+    <div class="modal" style="max-width: 760px; width: 100%;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="adm-team-modal-name">User Team Network</h3>
+          <div style="font-size: 12px; color: var(--mute); margin-top: 2px;" id="adm-team-modal-sub"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-admin-user-team')">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding: 0 4px;">
+        <!-- Summary Cards Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; text-align: center;">
+            <div style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.5px;">Total Refers (5 Lvl)</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text); font-family: var(--font-mono); margin-top: 4px;" id="adm-team-stat-members">0</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; text-align: center;">
+            <div style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.5px;">Team Investment</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--gold); font-family: var(--font-mono); margin-top: 4px;" id="adm-team-stat-investment">$0.00</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; text-align: center;">
+            <div style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.5px;">Direct Income</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--accent); font-family: var(--font-mono); margin-top: 4px;" id="adm-team-stat-direct">$0.00</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; text-align: center;">
+            <div style="font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.5px;">Referral ROI</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text); font-family: var(--font-mono); margin-top: 4px;" id="adm-team-stat-roi">$0.00</div>
+          </div>
+        </div>
+
+        <!-- 5-Level Breakdown Table -->
+        <h4 style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+          <span>5-Level Downline Breakdown</span>
+          <span style="font-size: 11px; color: var(--mute); font-weight: normal;">Levels 1 to 5</span>
+        </h4>
+        <div class="table-responsive" style="margin-bottom: 15px;">
+          <table class="custom-table" style="font-size: 13px;">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Commission Rates</th>
+                <th>Referrals Count</th>
+                <th>Total Investment</th>
+                <th>Direct Earned</th>
+                <th>ROI Earned</th>
+              </tr>
+            </thead>
+            <tbody id="adm-team-levels-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; margin-top: 15px;">
+        <button class="btn btn-secondary" onclick="closeModal('modal-admin-user-team')">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- A5. Admin Ticket Thread Modal -->
   <div id="modal-admin-ticket-thread" class="modal-backdrop">
     <div class="modal" style="max-width: 650px; width: 100%;">
@@ -2890,7 +2959,7 @@
   <div id="modal-admin-trigger-roi" class="modal-backdrop">
     <div class="modal" style="max-width: 480px; width: 100%;">
       <div class="modal-header">
-        <h3 class="modal-title" style="color: var(--gold);">⚡ Trigger Weekly ROI Distribution</h3>
+        <h3 class="modal-title" style="color: var(--gold);">Trigger Weekly ROI Distribution</h3>
         <button class="modal-close" onclick="closeModal('modal-admin-trigger-roi')">&times;</button>
       </div>
       <div>

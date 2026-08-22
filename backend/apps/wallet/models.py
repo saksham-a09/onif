@@ -60,6 +60,14 @@ class Wallet(models.Model):
         max_digits=18, decimal_places=2, default=Decimal('0.00'),
         verbose_name=_('Total Invested ($)'),
     )
+    team_total_members = models.IntegerField(
+        default=0,
+        verbose_name=_('5-Level Team Members'),
+    )
+    team_total_investment = models.DecimalField(
+        max_digits=18, decimal_places=2, default=Decimal('0.00'),
+        verbose_name=_('5-Level Team Investment ($)'),
+    )
 
     class Meta:
         verbose_name = _('Wallet')
